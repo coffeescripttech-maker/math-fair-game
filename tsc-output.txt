@@ -1,0 +1,235 @@
+﻿src/App.tsx(449,41): error TS18047: 'phaserRef.current' is possibly 'null'.
+src/App.tsx(449,41): error TS18047: 'phaserRef.current.game' is possibly 'null'.
+src/App.tsx(452,41): error TS18047: 'phaserRef.current' is possibly 'null'.
+src/App.tsx(452,41): error TS18047: 'phaserRef.current.game' is possibly 'null'.
+src/App.tsx(503,51): error TS2339: Property 'timeBonus' does not exist on type 'QuizResult'.
+src/App.tsx(1213,13): error TS1117: An object literal cannot have multiple properties with the same name.
+src/game/scenes/BarangayMap.ts(322,64): error TS2339: Property 'follow' does not exist on type 'Camera'.
+src/game/scenes/BarangayMap.ts(342,62): error TS2339: Property 'follow' does not exist on type 'Camera'.
+src/game/scenes/BarangayMap.ts(392,24): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMap.ts(393,21): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMap.ts(396,9): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMap.ts(514,46): error TS2339: Property 'follow' does not exist on type 'Camera'.
+src/game/scenes/BarangayMap.ts(547,23): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(547,40): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(552,61): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(553,63): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(559,23): error TS2339: Property 'setScale' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(560,23): error TS2339: Property 'setPosition' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(573,27): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(575,27): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(637,62): error TS2551: Property 'width' does not exist on type 'TextureSource[]'. Did you mean 'with'?
+src/game/scenes/BarangayMap.ts(638,62): error TS2339: Property 'height' does not exist on type 'TextureSource[]'.
+src/game/scenes/BarangayMap.ts(870,48): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(878,47): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(886,48): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(894,47): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(907,55): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(920,55): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(932,50): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(946,49): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(962,47): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(975,48): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(990,47): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(1003,48): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(1019,54): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(1034,49): error TS2554: Expected 4 arguments, but got 6.
+src/game/scenes/BarangayMap.ts(1104,21): error TS18047: 'tile.body' is possibly 'null'.
+src/game/scenes/BarangayMap.ts(1104,31): error TS2339: Property 'setSize' does not exist on type 'Body | StaticBody | BodyType'.
+  Property 'setSize' does not exist on type 'BodyType'.
+src/game/scenes/BarangayMap.ts(1347,48): error TS2345: Argument of type 'Set<StaticBody>' is not assignable to parameter of type 'ArcadeColliderType'.
+  Type 'Set<StaticBody>' is missing the following properties from type 'Group': world, classType, physicsType, collisionCategory, and 88 more.
+src/game/scenes/BarangayMap.ts(1727,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/BarangayMap.ts(1728,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/BarangayMap.ts(1729,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/BarangayMap.ts(1732,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/BarangayMap.ts(1733,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/BarangayMap.ts(1737,25): error TS2339: Property 'getData' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'getData' does not exist on type 'Body'.
+src/game/scenes/BarangayMap.ts(1796,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMap.ts(2434,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMap.ts(2460,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMap.ts(2823,64): error TS2339: Property 'follow' does not exist on type 'Camera'.
+src/game/scenes/BarangayMap.ts(2953,21): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2954,21): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2970,34): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2970,46): error TS2339: Property 'scaleX' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2971,35): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2971,48): error TS2339: Property 'scaleY' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2979,33): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2980,34): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2981,32): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(2982,35): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/BarangayMap.ts(3049,32): error TS2339: Property 'getData' does not exist on type 'never'.
+src/game/scenes/BarangayMapNew.ts(128,24): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMapNew.ts(129,21): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMapNew.ts(132,9): error TS2531: Object is possibly 'null'.
+src/game/scenes/BarangayMapNew.ts(145,13): error TS2322: Type 'number[][][]' is not assignable to type 'number[][]'.
+  Type 'number[][]' is not assignable to type 'number[]'.
+    Type 'number[]' is not assignable to type 'number'.
+src/game/scenes/BarangayMapNew.ts(151,9): error TS2322: Type 'Tileset | null' is not assignable to type 'Tileset'.
+  Type 'null' is not assignable to type 'Tileset'.
+src/game/scenes/BarangayMapNew.ts(154,9): error TS2322: Type 'TilemapLayer | null' is not assignable to type 'TilemapLayer'.
+  Type 'null' is not assignable to type 'TilemapLayer'.
+src/game/scenes/BarangayMapNew.ts(155,9): error TS2322: Type 'TilemapLayer | null' is not assignable to type 'TilemapLayer'.
+  Type 'null' is not assignable to type 'TilemapLayer'.
+src/game/scenes/BarangayMapNew.ts(156,9): error TS2322: Type 'TilemapLayer | null' is not assignable to type 'TilemapLayer'.
+  Type 'null' is not assignable to type 'TilemapLayer'.
+src/game/scenes/CharacterCreation.ts(78,36): error TS2345: Argument of type 'Arc' is not assignable to parameter of type 'Rectangle'.
+  Type 'Arc' is missing the following properties from type 'Rectangle': setRounded, setSize
+src/game/scenes/CityMap.ts(331,24): error TS2531: Object is possibly 'null'.
+src/game/scenes/CityMap.ts(332,21): error TS2531: Object is possibly 'null'.
+src/game/scenes/CityMap.ts(335,9): error TS2531: Object is possibly 'null'.
+src/game/scenes/CityMap.ts(774,55): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ "entrepreneur-carlos": string; "accountant-lisa": string; "logistics-manager-ben": string; "sales-director-kim": string; "urban-planner-gina": string; "transit-manager-roy": string; "architect-maya": string; "city-planner-tom": string; "engineer-sarah": string; "transport-chief-mike": string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ "entrepreneur-carlos": string; "accountant-lisa": string; "logistics-manager-ben": string; "sales-director-kim": string; "urban-planner-gina": string; "transit-manager-roy": string; "architect-maya": string; "city-planner-tom": string; "engineer-sarah": string; "transport-chief-mike": string; }'.
+src/game/scenes/CityMap.ts(936,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/CityMap.ts(937,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/CityMap.ts(938,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/CityMap.ts(939,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/CityMap.ts(940,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/CityMap.ts(1327,23): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1327,40): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1332,61): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1333,63): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1339,23): error TS2339: Property 'setScale' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1340,23): error TS2339: Property 'setPosition' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1353,27): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1355,27): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1496,21): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1497,21): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1511,34): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1511,46): error TS2339: Property 'scaleX' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1512,35): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1512,48): error TS2339: Property 'scaleY' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1519,33): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1520,34): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1521,32): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1522,35): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/CityMap.ts(1889,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/CityMap.ts(2203,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/CityMap.ts(2228,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/MissionSystem.ts(226,29): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 1: { name: string; npc: string; description: string; reward: string; task: string; quiz: { question: string; options: string[]; correct: number; explanation: string; }; }; 2: { name: string; npc: string; description: string; reward: string; task: string; quiz: { ...; }; }; ... 7 more ...; 10: { ...; }; }'.
+src/game/scenes/MissionSystem.ts(249,25): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 1: { name: string; npc: string; description: string; reward: string; task: string; quiz: { question: string; options: string[]; correct: number; explanation: string; }; }; 2: { name: string; npc: string; description: string; reward: string; task: string; quiz: { ...; }; }; ... 7 more ...; 10: { ...; }; }'.
+src/game/scenes/MissionSystem.ts(267,17): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 1: { name: string; npc: string; description: string; reward: string; task: string; quiz: { question: string; options: string[]; correct: number; explanation: string; }; }; 2: { name: string; npc: string; description: string; reward: string; task: string; quiz: { ...; }; }; ... 7 more ...; 10: { ...; }; }'.
+src/game/scenes/MissionSystem.ts(286,28): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 1: { name: string; npc: string; description: string; reward: string; task: string; quiz: { question: string; options: string[]; correct: number; explanation: string; }; }; 2: { name: string; npc: string; description: string; reward: string; task: string; quiz: { ...; }; }; ... 7 more ...; 10: { ...; }; }'.
+src/game/scenes/MissionSystem.ts(392,23): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ 1: { name: string; npc: string; description: string; reward: string; task: string; quiz: { question: string; options: string[]; correct: number; explanation: string; }; }; 2: { name: string; npc: string; description: string; reward: string; task: string; quiz: { ...; }; }; ... 7 more ...; 10: { ...; }; }'.
+src/game/scenes/NationalMap.ts(334,24): error TS2531: Object is possibly 'null'.
+src/game/scenes/NationalMap.ts(335,21): error TS2531: Object is possibly 'null'.
+src/game/scenes/NationalMap.ts(338,9): error TS2531: Object is possibly 'null'.
+src/game/scenes/NationalMap.ts(790,55): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ "deped-undersecretary": string; "dost-secretary": string; "ched-commissioner": string; "neda-director-general": string; "national-scientist": string; "pagasa-administrator": string; "psa-administrator": string; "senate-education-chair": string; "dbm-secretary": string; "deped-secretary": string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ "deped-undersecretary": string; "dost-secretary": string; "ched-commissioner": string; "neda-director-general": string; "national-scientist": string; "pagasa-administrator": string; "psa-administrator": string; "senate-education-chair": string; "dbm-secretary": string; "deped-secretary": string; }'.
+src/game/scenes/NationalMap.ts(952,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/NationalMap.ts(953,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/NationalMap.ts(954,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/NationalMap.ts(955,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/NationalMap.ts(956,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/NationalMap.ts(1352,23): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1352,40): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1357,61): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1358,63): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1364,23): error TS2339: Property 'setScale' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1365,23): error TS2339: Property 'setPosition' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1378,27): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1380,27): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1521,21): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1522,21): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1536,34): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1536,46): error TS2339: Property 'scaleX' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1537,35): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1537,48): error TS2339: Property 'scaleY' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1544,33): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1545,34): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1546,32): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1547,35): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/NationalMap.ts(1914,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/NationalMap.ts(2228,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/NationalMap.ts(2253,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/ProvinceMap.ts(334,24): error TS2531: Object is possibly 'null'.
+src/game/scenes/ProvinceMap.ts(335,21): error TS2531: Object is possibly 'null'.
+src/game/scenes/ProvinceMap.ts(338,9): error TS2531: Object is possibly 'null'.
+src/game/scenes/ProvinceMap.ts(778,55): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ "provincial-budget-director": string; "provincial-economist": string; "provincial-engineer": string; "financial-analyst": string; "policy-coordinator": string; "operations-director": string; "land-use-planner": string; "resource-manager": string; "investment-analyst": string; "strategic-planner": string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ "provincial-budget-director": string; "provincial-economist": string; "provincial-engineer": string; "financial-analyst": string; "policy-coordinator": string; "operations-director": string; "land-use-planner": string; "resource-manager": string; "investment-analyst": string; "strategic-planner": string; }'.
+src/game/scenes/ProvinceMap.ts(940,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/ProvinceMap.ts(941,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/ProvinceMap.ts(942,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/ProvinceMap.ts(943,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/ProvinceMap.ts(944,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/ProvinceMap.ts(1340,23): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1340,40): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1345,61): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1346,63): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1352,23): error TS2339: Property 'setScale' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1353,23): error TS2339: Property 'setPosition' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1366,27): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1368,27): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1509,21): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1510,21): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1524,34): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1524,46): error TS2339: Property 'scaleX' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1525,35): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1525,48): error TS2339: Property 'scaleY' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1532,33): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1533,34): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1534,32): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1535,35): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/ProvinceMap.ts(1902,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/ProvinceMap.ts(2216,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/ProvinceMap.ts(2241,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/QuizSystem.ts(317,24): error TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ 1: { badge: string; coins: number; }; 2: { badge: string; coins: number; }; 3: { badge: string; coins: number; }; 4: { badge: string; coins: number; }; 5: { badge: string; coins: number; }; 6: { badge: string; coins: number; }; 7: { ...; }; 8: { ...; }; 9: { ...; }; 10: { ...; }; }'.
+  No index signature with a parameter of type 'number' was found on type '{ 1: { badge: string; coins: number; }; 2: { badge: string; coins: number; }; 3: { badge: string; coins: number; }; 4: { badge: string; coins: number; }; 5: { badge: string; coins: number; }; 6: { badge: string; coins: number; }; 7: { ...; }; 8: { ...; }; 9: { ...; }; 10: { ...; }; }'.
+src/game/scenes/RegionMap.ts(334,24): error TS2531: Object is possibly 'null'.
+src/game/scenes/RegionMap.ts(335,21): error TS2531: Object is possibly 'null'.
+src/game/scenes/RegionMap.ts(338,9): error TS2531: Object is possibly 'null'.
+src/game/scenes/RegionMap.ts(778,55): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ "regional-math-director": string; "regional-analyst": string; "regional-coordinator": string; "regional-strategist": string; "regional-planner": string; "regional-economist": string; "regional-researcher": string; "regional-systems-expert": string; "regional-data-scientist": string; "regional-policy-advisor": stri...'.
+  No index signature with a parameter of type 'string' was found on type '{ "regional-math-director": string; "regional-analyst": string; "regional-coordinator": string; "regional-strategist": string; "regional-planner": string; "regional-economist": string; "regional-researcher": string; "regional-systems-expert": string; "regional-data-scientist": string; "regional-policy-advisor": stri...'.
+src/game/scenes/RegionMap.ts(940,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/RegionMap.ts(941,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/RegionMap.ts(942,17): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/RegionMap.ts(943,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/RegionMap.ts(944,20): error TS2339: Property 'body' does not exist on type 'Body | StaticBody | Tile | GameObjectWithBody'.
+  Property 'body' does not exist on type 'Body'.
+src/game/scenes/RegionMap.ts(1334,23): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1334,40): error TS2339: Property 'texture' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1339,61): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1340,63): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1346,23): error TS2339: Property 'setScale' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1347,23): error TS2339: Property 'setPosition' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1360,27): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1362,27): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1503,21): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1504,21): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1518,34): error TS2339: Property 'width' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1518,46): error TS2339: Property 'scaleX' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1519,35): error TS2339: Property 'height' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1519,48): error TS2339: Property 'scaleY' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1526,33): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1527,34): error TS2339: Property 'x' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1528,32): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1529,35): error TS2339: Property 'y' does not exist on type 'GameObject'.
+src/game/scenes/RegionMap.ts(1896,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/RegionMap.ts(2210,13): error TS2531: Object is possibly 'null'.
+src/game/scenes/RegionMap.ts(2235,13): error TS2531: Object is possibly 'null'.
