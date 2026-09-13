@@ -50,6 +50,18 @@ module.exports = {
                     green: "#42E2B8",
                     orange: "#FF8656",
                 },
+
+                // Tutor Town palette (retro educational game theme)
+                tutor: {
+                    navy: "#071B3A",
+                    blue: "#216FD1",
+                    orange: "#F26522",
+                    yellow: "#FFD84D",
+                    green: "#16B364",
+                    purple: "#7B3FD0",
+                    red: "#F04438",
+                    cream: "#FFF9ED",
+                },
             },
             fontFamily: {
                 display: ["Montserrat", "sans-serif"],

@@ -22,7 +22,7 @@ export enum PlayerTitle {
     WANDERER = "Wanderer", // Walk 10,000 steps
 
     // Collection Titles
-    TREASURE_HUNTER = "Treasure Hunter", // Collect all items in both maps
+    TREASURE_HUNTER = "Treasure Hunter", // Collect all items across all five maps
     COIN_COLLECTOR = "Coin Collector", // Collect 1000 coins total
     BADGE_MASTER = "Badge Master", // Earn all 20 badges
 

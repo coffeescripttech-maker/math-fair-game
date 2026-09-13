@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { GameStateManager } from "../utils/GameStateManager";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export const GameDebugPanel: React.FC = () => {
+    // Only render debug tooling in development builds
+    if (!isDev) {
+        return null;
+    }
     const [debugInfo, setDebugInfo] = useState<any>(null);
     const [isVisible, setIsVisible] = useState(false);
     const gameStateManager = GameStateManager.getInstance();

@@ -6,11 +6,23 @@
 import React, { useState, useEffect } from "react";
 import ShopService from "../services/ShopService";
 import { DailyChallenge } from "../types/shop";
+import {
+    X,
+    CalendarDays,
+    Target,
+    Clock,
+    Check,
+    Coins,
+    Sparkles,
+    Star,
+} from "lucide-react";
 
 interface DailyChallengesProps {
     onClose: () => void;
     isVisible: boolean;
 }
+
+const YELLOW = "#FFD84D";
 
 export const DailyChallenges: React.FC<DailyChallengesProps> = ({
     onClose,
@@ -46,125 +58,163 @@ export const DailyChallenges: React.FC<DailyChallengesProps> = ({
     if (!isVisible) return null;
 
     return (
-        <div className="absolute inset-0 bg-black/70 flex items-center justify-center pointer-events-auto p-4 z-50">
-            <div className="brutal-panel p-6 w-full max-w-2xl mx-4 max-h-[95vh] overflow-hidden flex flex-col">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 w-10 h-10 bg-brutal-red border-2 border-black shadow-brutal-xs flex items-center justify-center text-white brutal-press z-20"
-                    >
-                        ✕
-                    </button>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
+            <div className="flex min-h-full items-center justify-center p-4">
+                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                <section className="relative w-full max-w-2xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex max-h-[90vh] flex-col rounded-[14px] border-2 border-tutor-yellow px-5 py-5 sm:px-7">
+                        {/* Close Button */}
+                        <button
+                            onClick={onClose}
+                            type="button"
+                            aria-label="Close daily challenges"
+                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
 
-                    {/* Header */}
-                    <h2 className="text-3xl font-brutal uppercase text-gray-900 mb-6 text-center">
-                        📅 Daily Challenges
-                    </h2>
+                        {/* Header */}
+                        <div className="mb-4 text-center">
+                            <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                                Daily Challenges
+                            </h2>
+                            <div className="mt-1.5 flex items-center justify-center gap-2">
+                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <Star
+                                    className="h-4 w-4 text-tutor-yellow"
+                                    fill={YELLOW}
+                                />
+                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                            </div>
+                            <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
+                                <CalendarDays className="h-4 w-4" />
+                                Fresh quests, every day!
+                            </p>
+                        </div>
 
-                    {/* Challenges List */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4">
-                        {challenges.map((challenge) => {
-                            const progressPercent =
-                                (challenge.progress / challenge.requirement) *
-                                100;
+                        {/* Challenges List */}
+                        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto custom-scrollbar pb-1">
+                            {challenges.map((challenge) => {
+                                const progressPercent =
+                                    (challenge.progress /
+                                        challenge.requirement) *
+                                    100;
 
-                            return (
-                                <div
-                                    key={challenge.id}
-                                    className={`rounded-none border-[3px] border-black shadow-brutal-sm p-4 ${
-                                        challenge.completed
-                                            ? "bg-brutal-green"
-                                            : "bg-white"
-                                    }`}
-                                >
-                                    {/* Challenge Header */}
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-bold text-gray-800 flex items-center space-x-2">
-                                                <span>
-                                                    {challenge.completed
-                                                        ? "✅"
-                                                        : "🎯"}
-                                                </span>
-                                                <span>{challenge.title}</span>
-                                            </h3>
-                                            <p className="text-sm text-gray-600 mt-1">
-                                                {challenge.description}
-                                            </p>
-                                        </div>
-                                        <div className="text-xs text-gray-600">
-                                            ⏰{" "}
-                                            {getTimeRemaining(
-                                                challenge.expiresAt
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Progress Bar */}
-                                    <div className="mb-3">
-                                        <div className="flex justify-between text-xs text-gray-600 mb-1">
-                                            <span>
-                                                Progress: {challenge.progress}/
-                                                {challenge.requirement}
-                                            </span>
-                                            <span>
-                                                {Math.round(progressPercent)}%
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-white h-3 border-2 border-black">
-                                            <div
-                                                className={`h-full rounded-none transition-all duration-300 ${
-                                                    challenge.completed
-                                                        ? "bg-brutal-green"
-                                                        : "bg-brutal-blue"
+                                return (
+                                    <div
+                                        key={challenge.id}
+                                        className={`rounded-xl border-[3px] border-tutor-navy p-4 shadow-[3px_3px_0_0_#071B3A] ${
+                                            challenge.completed
+                                                ? "bg-tutor-green/15"
+                                                : "bg-tutor-cream"
+                                        }`}
+                                    >
+                                        {/* Challenge Header */}
+                                        <div className="mb-2 flex items-start justify-between gap-3">
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="flex items-center gap-2 font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-base">
+                                                    <span
+                                                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy shadow-[2px_2px_0_0_#071B3A] ${
+                                                            challenge.completed
+                                                                ? "bg-tutor-green text-tutor-cream"
+                                                                : "bg-tutor-orange text-tutor-cream"
+                                                        }`}
+                                                    >
+                                                        {challenge.completed ? (
+                                                            <Check className="h-4 w-4" />
+                                                        ) : (
+                                                            <Target className="h-4 w-4" />
+                                                        )}
+                                                    </span>
+                                                    {challenge.title}
+                                                </h3>
+                                                <p className="mt-1 font-playful text-sm text-tutor-navy/70">
+                                                    {challenge.description}
+                                                </p>
+                                            </div>
+                                            <span
+                                                className={`inline-flex shrink-0 items-center gap-1 rounded-md border-2 border-tutor-navy px-2 py-1 font-playful text-xs font-bold ${
+                                                    getTimeRemaining(
+                                                        challenge.expiresAt
+                                                    ) === "Expired"
+                                                        ? "bg-tutor-red text-tutor-cream"
+                                                        : "bg-tutor-yellow text-tutor-navy"
                                                 }`}
-                                                style={{
-                                                    width: `${Math.min(
-                                                        progressPercent,
-                                                        100
-                                                    )}%`,
-                                                }}
-                                            ></div>
+                                            >
+                                                <Clock className="h-3 w-3" />
+                                                {getTimeRemaining(
+                                                    challenge.expiresAt
+                                                )}
+                                            </span>
                                         </div>
-                                    </div>
 
-                                    {/* Rewards */}
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3 text-sm">
-                                            <div className="flex items-center space-x-1">
-                                                <span>💰</span>
-                                                <span className="font-bold text-gray-900">
-                                                    +{challenge.coinReward}
+                                        {/* Progress Bar */}
+                                        <div className="mb-3">
+                                            <div className="mb-1 flex justify-between font-playful text-xs font-semibold text-tutor-navy/70">
+                                                <span>
+                                                    Progress:{" "}
+                                                    {challenge.progress}/
+                                                    {challenge.requirement}
+                                                </span>
+                                                <span>
+                                                    {Math.round(
+                                                        progressPercent
+                                                    )}
+                                                    %
                                                 </span>
                                             </div>
-                                            <div className="flex items-center space-x-1">
-                                                <span>⭐</span>
-                                                <span className="font-bold text-gray-900">
+                                            <div className="h-3 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-tutor-cream">
+                                                <div
+                                                    className={`h-full transition-all duration-300 ${
+                                                        challenge.completed
+                                                            ? "bg-tutor-green"
+                                                            : "bg-tutor-blue"
+                                                    }`}
+                                                    style={{
+                                                        width: `${Math.min(
+                                                            progressPercent,
+                                                            100
+                                                        )}%`,
+                                                    }}
+                                                ></div>
+                                            </div>
+                                        </div>
+
+                                        {/* Rewards */}
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <span className="inline-flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-green/10 px-2 py-1 font-playful text-xs font-bold text-tutor-navy">
+                                                    <Coins className="h-3.5 w-3.5 text-tutor-green" />
+                                                    +{challenge.coinReward}
+                                                </span>
+                                                <span className="inline-flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-yellow px-2 py-1 font-playful text-xs font-bold text-tutor-navy">
+                                                    <Sparkles className="h-3.5 w-3.5 text-tutor-orange" />
                                                     +{challenge.pointsReward}
                                                 </span>
                                             </div>
+                                            {challenge.completed && (
+                                                <span className="inline-flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-green px-2 py-1 font-brutal text-xs uppercase tracking-wide text-tutor-cream">
+                                                    <Check className="h-3.5 w-3.5" />
+                                                    Completed
+                                                </span>
+                                            )}
                                         </div>
-                                        {challenge.completed && (
-                                            <div className="text-green-700 font-bold text-sm">
-                                                COMPLETED ✅
-                                            </div>
-                                        )}
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                );
+                            })}
+                        </div>
 
-                    {/* Footer */}
-                    <div className="mt-4 p-3 rounded-none border-[3px] border-black bg-brutal-yellow shadow-brutal-sm">
-                        <div className="text-center text-sm text-gray-800">
-                            <p className="font-bold mb-1">
+                        {/* Footer */}
+                        <div className="mt-4 rounded-xl border-[3px] border-tutor-navy bg-tutor-yellow p-4 text-center shadow-[3px_3px_0_0_#071B3A]">
+                            <p className="font-brutal text-sm uppercase tracking-wide text-tutor-navy">
                                 🎯 Complete challenges to earn bonus rewards!
                             </p>
-                            <p className="text-xs text-gray-600">
+                            <p className="mt-1 font-playful text-xs text-tutor-navy/70">
                                 Challenges reset every day at midnight
                             </p>
                         </div>
                     </div>
+                </section>
             </div>
         </div>
     );

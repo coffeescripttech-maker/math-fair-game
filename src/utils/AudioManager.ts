@@ -30,6 +30,9 @@ export class AudioManager {
         MainMenu: "menu-theme.mp3",
         BarangayMap: "menu-theme.mp3",
         CityMap: "menu-theme.mp3",
+        ProvinceMap: "menu-theme.mp3",
+        RegionMap: "menu-theme.mp3",
+        NationalMap: "menu-theme.mp3",
         Quiz: "quiz-theme.mp3",
         Mission: "mission-theme.mp3",
     };

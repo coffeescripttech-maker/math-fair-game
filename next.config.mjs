@@ -3,10 +3,8 @@ const nextConfig = {
     output: "export",
     distDir: "dist",
 
-    // Ignore TypeScript and ESLint errors during build
-    typescript: {
-        ignoreBuildErrors: true,
-    },
+    // TypeScript build errors are no longer ignored.
+    // ESLint is not installed in this project, so lint checks are skipped during builds.
     eslint: {
         ignoreDuringBuilds: true,
     },

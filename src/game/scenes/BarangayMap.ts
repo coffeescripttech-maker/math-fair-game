@@ -1,8 +1,10 @@
 import { GameObjects, Scene } from "phaser";
+import { OpenWorldMapScene } from "./OpenWorldMapScene";
 import { EventBus } from "../EventBus";
 import { GameStateManager } from "../../utils/GameStateManager";
 import SecretQuestService from "../../services/SecretQuestService";
 import CollisionService from "../../services/CollisionService";
+import { barangayMissionLocations, barangayCollectibleItems, barangayMissionMetadata } from "../config/mapData";
 
 /**
  * BarangayMap - Level 1 (Missions 1-10)
@@ -14,257 +16,123 @@ import CollisionService from "../../services/CollisionService";
  * Progression logic is handled in App.tsx when mission completion
  * triggers a level-up event.
  */
-export class BarangayMap extends Scene {
+export class BarangayMap extends OpenWorldMapScene {
     // 🎨 DEBUG MODE: Set to false to hide collision boundaries in production
-    private readonly DEBUG_SHOW_COLLISIONS: boolean = false;
 
-    player: Phaser.Physics.Arcade.Sprite;
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    wasd: any;
     map: Phaser.Tilemaps.Tilemap;
     tileset: Phaser.Tilemaps.Tileset;
     groundLayer: Phaser.Tilemaps.TilemapLayer;
     buildingsLayer: Phaser.Tilemaps.TilemapLayer;
     collisionLayer: Phaser.Tilemaps.TilemapLayer;
-    npcs: Phaser.Physics.Arcade.Group;
-    ui: GameObjects.Container;
     questLog: GameObjects.Text;
     coinsText: GameObjects.Text;
     badgesText: GameObjects.Text;
     mapButton: GameObjects.Text;
     isUIVisible: boolean = false;
-    interactionPrompt: GameObjects.Text;
-    nearbyNPC: any = null;
     // Unlimited open world - no tile restrictions
     tileSize: number = 32; // Keep for reference but not used for boundaries
     mapWidth: number = 1000; // Large world width (unlimited)
     mapHeight: number = 1000; // Large world height (unlimited)
     lastDirection: string = "front"; // Track last direction for idle sprites
 
-    // Mobile controls
-    virtualJoystick: any = null;
-    isMobile: boolean = false;
-    touchControls: any = null;
-
-    // Background image reference
-    backgroundImage: any = null;
-
-    // Mission indicators for real-time updates
-    missionIndicators: Map<number, any> = new Map();
-
-    // NPC glow effects for interaction feedback
-    npcGlowEffects: Map<number, any> = new Map();
-
-    // Location display above player head
-    locationDisplay: GameObjects.Text | null = null;
-
-    // Collectible items system
-    collectibles: Phaser.Physics.Arcade.Group | null = null;
     collectibleItems: Map<string, any> = new Map(); // Store collectible sprites by ID
 
-    // Minimap/Radar system
-    minimap: GameObjects.Container | null = null;
-    minimapBackground: GameObjects.Graphics | null = null;
-    minimapPlayerDot: GameObjects.Arc | null = null;
-    minimapNPCDots: GameObjects.Arc[] = [];
-    minimapCollectibleDots: GameObjects.Arc[] = [];
-
     // Collision system
-    collisionBodies: Phaser.Physics.Arcade.StaticGroup | null = null;
 
     // Mission locations with tile coordinates
-    missionLocations = [
-        {
-            x: 6,
-            y: 9,
-            name: "Court Diagonal",
-            npc: "Miguel",
-            missionId: 1,
-            percentX: 66, // Background-relative percentage X
-            percentY: 77, // Background-relative percentage
-        },
-        {
-            x: 12,
-            y: 6,
-            name: "Recipe Scaling",
-            npc: "Aling Maria",
-            missionId: 2,
-            percentX: 50, // Background-relative percentage X
-            percentY: 22, // Background-relative percentag
-        },
-        {
-            x: 18,
-            y: 12,
-            name: "Walking Distance",
-            npc: "Ben",
-            missionId: 3,
-            percentX: 8, // Background-relative percentage X
-            percentY: 27, // Background-relative percentag
-        },
-        {
-            x: 9,
-            y: 15,
-            name: "Temperature Switch",
-            npc: "Ana",
-            missionId: 4,
-            percentX: 89, // Background-relative percentage X
-            percentY: 14, // Background-relative percentag
-        },
-        {
-            x: 21,
-            y: 6,
-            name: "Garden Area",
-            npc: "Lola Rosa",
-            missionId: 5,
-            percentX: 11, // Background-relative percentage X
-            percentY: 13, // Background-relative percentag
-        },
-        {
-            x: 3,
-            y: 18,
-            name: "Original Price",
-            npc: "Mang Pedro",
-            missionId: 6,
-            percentX: 10, // Background-relative percentage X
-            percentY: 67, // Background-relative percentag
-        },
-        {
-            x: 15,
-            y: 18,
-            name: "Ladder Reach",
-            npc: "Kuya Noel",
-            missionId: 7,
-            percentX: 14, // Background-relative percentage X
-            percentY: 15, // Background-relative percentag
-        },
-        {
-            x: 25,
-            y: 12,
-            name: "Trip Time",
-            npc: "Teacher Cruz",
-            missionId: 8,
-            percentX: 72, // Background-relative percentage X
-            percentY: 22, // Background-relative percentage
-        },
-        {
-            x: 6,
-            y: 3,
-            name: "Wire Length",
-            npc: "Danny",
-            missionId: 9,
-            percentX: 72, // Background-relative percentage X
-            percentY: 42, // Background-relative percentage Y
-        },
-        {
-            x: 12,
-            y: 12,
-            name: "Barangay Quiz Prep",
-            npc: "Barangay Captain's Daughter",
-            missionId: 10,
-            percentX: 29, // Background-relative percentage X
-            percentY: 21, // Background-relative percentage
-        },
-    ];
+    missionLocations = barangayMissionLocations;
 
     // Collectible items for Barangay (Level 1)
-    collectibleItemsData = [
-        {
-            id: "barangay-coin-1",
-            type: "coin",
-            name: "Algebra Coin",
-            description: "A shiny coin for math mastery",
-            value: 5,
-            points: 10,
-            rarity: "common",
-            percentX: 40,
-            percentY: 31,
-            icon: "💰",
-        },
-        {
-            id: "barangay-coin-2",
-            type: "coin",
-            name: "Algebra Coin",
-            description: "A shiny coin for math mastery",
-            value: 5,
-            points: 10,
-            rarity: "common",
-            percentX: 56,
-            percentY: 39,
-            icon: "💰",
-        },
-        {
-            id: "barangay-coin-3",
-            type: "coin",
-            name: "Algebra Coin",
-            description: "A shiny coin for math mastery",
-            value: 5,
-            points: 10,
-            rarity: "common",
-            percentX: 40,
-            percentY: 48,
-            icon: "💰",
-        },
-        {
-            id: "barangay-badge-1",
-            type: "badge",
-            name: "Equation Master Badge",
-            description: "A special badge for solving equations",
-            value: 10,
-            points: 25,
-            rarity: "uncommon",
-            percentX: 35,
-            percentY: 65,
-            icon: "🏅",
-        },
-        {
-            id: "barangay-badge-2",
-            type: "badge",
-            name: "Variables Expert Badge",
-            description: "A special badge for variable mastery",
-            value: 10,
-            points: 25,
-            rarity: "uncommon",
-            percentX: 52,
-            percentY: 73,
-            icon: "🏅",
-        },
-        {
-            id: "barangay-treasure-1",
-            type: "treasure",
-            name: "Formula Crystal",
-            description: "A rare crystal containing algebraic formulas",
-            value: 25,
-            points: 50,
-            rarity: "rare",
-            percentX: 60,
-            percentY: 82,
-            icon: "💎",
-        },
-        {
-            id: "barangay-powerup-1",
-            type: "powerup",
-            name: "Math Boost",
-            description: "Boosts your calculation speed",
-            value: 15,
-            points: 30,
-            rarity: "uncommon",
-            percentX: 72,
-            percentY: 92,
-            icon: "⚡",
-        },
-        {
-            id: "barangay-powerup-2",
-            type: "powerup",
-            name: "Math Boost",
-            description: "Boosts your calculation speed",
-            value: 15,
-            points: 30,
-            rarity: "uncommon",
-            percentX: 92,
-            percentY: 73,
-            icon: "⚡",
-        },
-    ];
+    collectibleItemsData = barangayCollectibleItems;
+
+    getLocationDisplayColor(): string {
+        return "rgba(0, 0, 0, 0.85)";
+    }
+
+    getInteractionPromptColor(): string {
+        return "#FFFFFF";
+    }
+
+    getInteractionPromptStroke(): string {
+        return "#000000";
+    }
+
+    getMinimapTitle(): string {
+        return "MAP";
+    }
+
+    getMinimapTitleFontSize(): string {
+        return "12px";
+    }
+
+    getMinimapTitleColor(): string {
+        return "#FFFFFF";
+    }
+
+    getMinimapBorderColor(): number {
+        return 0x000000;
+    }
+
+    getMinimapBorderWidth(): number {
+        return 3;
+    }
+
+    getCameraLogName(): string {
+        return "Barangay Map";
+    }
+
+    getDefaultAreaName(): string {
+        return "Barangay";
+    }
+
+    getAreaName(relativeX: number, relativeY: number): string {
+        if (relativeX < 25 && relativeY < 25) {
+        return "Northwest District";
+        } else if (relativeX >= 75 && relativeY < 25) {
+        return "Northeast District";
+        } else if (relativeX < 25 && relativeY >= 75) {
+        return "Southwest District";
+        } else if (relativeX >= 75 && relativeY >= 75) {
+        return "Southeast District";
+        } else if (
+        relativeX >= 37.5 &&
+        relativeX < 62.5 &&
+        relativeY >= 37.5 &&
+        relativeY < 62.5
+        ) {
+        return "Central District";
+        } else if (
+        relativeX >= 25 &&
+        relativeX < 75 &&
+        relativeY < 25
+        ) {
+        return "North District";
+        } else if (
+        relativeX >= 25 &&
+        relativeX < 75 &&
+        relativeY >= 75
+        ) {
+        return "South District";
+        } else if (
+        relativeX < 25 &&
+        relativeY >= 25 &&
+        relativeY < 75
+        ) {
+        return "West District";
+        } else if (
+        relativeX >= 75 &&
+        relativeY >= 25 &&
+        relativeY < 75
+        ) {
+        return "East District";
+        } else {
+        return "Barangay";
+        }
+    }
+
+    onLocationCalculated(relativeX: number, relativeY: number): void {
+        this.checkSecretLocation(relativeX, relativeY);
+    }
 
     constructor() {
         super("BarangayMap");
@@ -288,141 +156,7 @@ export class BarangayMap extends Scene {
         // Create UI
         this.createUI();
 
-        // Create location display above player head
-        this.createLocationDisplay();
-
-        // Remove ALL camera bounds for truly unlimited movement
-        // Player can move infinitely in all directions
-        this.cameras.main.setBounds(
-            -Infinity, // Unlimited movement to the left
-            -Infinity, // Unlimited movement up
-            Infinity, // Unlimited movement to the right
-            Infinity // Unlimited movement down
-        );
-
-        // Ensure camera follows player
-        this.cameras.main.startFollow(this.player);
-        this.cameras.main.setZoom(1);
-
-        // Force camera to center on player initially
-        this.cameras.main.centerOn(this.player.x, this.player.y);
-
-        // Ensure camera follows after a short delay
-        this.time.delayedCall(100, () => {
-            this.cameras.main.startFollow(this.player);
-            this.optimizeCameraForOpenWorld(); // Optimize for open world style
-            console.log("Camera follow restarted after delay");
-            console.log("=== OPEN WORLD CAMERA SETUP ===");
-            console.log("Player position:", this.player.x, this.player.y);
-            console.log(
-                "Camera position:",
-                this.cameras.main.x,
-                this.cameras.main.y
-            );
-            console.log("Camera following:", this.cameras.main.follow);
-            console.log("Map bounds:", this.cameras.main.getBounds());
-            console.log("===============================");
-        });
-
-        // Mobile-specific camera settings for open world style
-        if (this.isMobile) {
-            // Open world camera settings - smooth following with small deadzone
-            this.cameras.main.setLerp(0.08, 0.08); // Smooth camera scrolling
-            this.cameras.main.setDeadzone(20, 20); // Small deadzone for responsive scrolling
-            console.log("Open world camera settings applied for mobile");
-        } else {
-            // Desktop open world camera settings
-            this.cameras.main.setLerp(0.1, 0.1); // Smooth camera scrolling
-            this.cameras.main.setDeadzone(40, 40); // Medium deadzone for desktop
-            console.log("Open world camera settings applied for desktop");
-        }
-
-        console.log("Camera setup complete with INFINITE unlimited bounds:");
-        console.log("- Bounds:", this.cameras.main.getBounds());
-        console.log("- Following player:", this.cameras.main.follow);
-        console.log("- Player position:", this.player.x, this.player.y);
-        console.log(
-            "- Camera position:",
-            this.cameras.main.x,
-            this.cameras.main.y
-        );
-        console.log(
-            "- INFINITE OPEN WORLD - player can move infinitely in ALL directions!"
-        );
-
-        // Debug camera and scene info
-        console.log("=== CAMERA DEBUG INFO ===");
-        console.log(
-            "Camera position:",
-            this.cameras.main.x,
-            this.cameras.main.y
-        );
-        console.log("Camera bounds:", this.cameras.main.getBounds());
-        console.log("Camera zoom:", this.cameras.main.zoom);
-        console.log("Player position:", this.player.x, this.player.y);
-        console.log(
-            "Map size:",
-            this.mapWidth * this.tileSize,
-            "x",
-            this.mapHeight * this.tileSize
-        );
-        console.log("Scene visible:", this.scene.isVisible());
-        console.log("Scene active:", this.scene.isActive());
-        console.log("=========================");
-
-        // Detect mobile device - use multiple methods for better detection
-        this.isMobile =
-            this.sys.game.device.input.touch ||
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                navigator.userAgent
-            ) ||
-            window.innerWidth <= 768;
-        console.log("Mobile device detected:", this.isMobile);
-        console.log("Touch support:", this.sys.game.device.input.touch);
-        console.log("User agent:", navigator.userAgent);
-        console.log("Window width:", window.innerWidth);
-        console.log(
-            "Screen dimensions:",
-            this.cameras.main.width,
-            "x",
-            this.cameras.main.height
-        );
-
-        // Set up input
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.wasd = this.input.keyboard.addKeys("W,S,A,D");
-
-        // Set up interaction key
-        this.input.keyboard.on("keydown-SPACE", () =>
-            this.interactWithNearbyNPC()
-        );
-
-        // Create location display after player is created (with delay to ensure player exists)
-        this.time.delayedCall(200, () => {
-            if (this.player && !this.locationDisplay) {
-                this.createLocationDisplay();
-            }
-        });
-
-        // Create minimap after everything is loaded
-        this.time.delayedCall(400, () => {
-            this.createMinimap();
-        });
-
-        // Listen for mobile interaction events from React
-        this.game.events.on("mobile-interact", () => {
-            this.interactWithNearbyNPC();
-        });
-
-        // Mobile controls are now handled by React overlay
-        console.log("Mobile device detected:", this.isMobile);
-        console.log("Mobile controls handled by React overlay");
-
-        // Add resize handler for screen size and orientation changes
-        this.scale.on("resize", this.handleResize, this);
-        this.scale.on("orientationchange", this.handleResize, this);
-
-        EventBus.emit("current-scene-ready", this);
+        this.setupCameraAndDelayedUI();
     }
 
     // Method to update NPC indicators in real-time
@@ -511,79 +245,15 @@ export class BarangayMap extends Scene {
 
     // Method to ensure camera follows player
     ensureCameraFollowing() {
-        if (this.player && this.cameras.main.follow !== this.player) {
+        if (this.player && (this.cameras.main as any).follow !== this.player) {
             console.log("Restarting camera follow...");
             this.cameras.main.startFollow(this.player);
         }
     }
 
     // Open world camera scrolling optimization
-    optimizeCameraForOpenWorld() {
-        if (this.player) {
-            // Remove ALL camera bounds for truly unlimited movement
-            // Player can move infinitely in all directions
-            this.cameras.main.setBounds(
-                -Infinity, // Unlimited movement to the left
-                -Infinity, // Unlimited movement up
-                Infinity, // Unlimited movement to the right
-                Infinity // Unlimited movement down
-            );
-
-            // Smooth camera following for open world exploration
-            this.cameras.main.setLerp(0.08, 0.08);
-            this.cameras.main.setDeadzone(25, 25);
-
-            console.log("Open world camera optimized with INFINITE bounds");
-            console.log("Player position:", this.player.x, this.player.y);
-            console.log("Camera bounds:", this.cameras.main.getBounds());
-        }
-    }
-
     // Handle background scaling for orientation changes
-    updateBackgroundForOrientation() {
-        // Find the background image and update its scale
-        const children = this.children.list;
-        for (let child of children) {
-            if (child.texture && child.texture.key === "barangay-bg-root") {
-                const gameWidth = this.scale.width;
-                const gameHeight = this.scale.height;
 
-                // Scale background to cover the entire Phaser game canvas
-                const scaleToCoverWidth = gameWidth / child.width;
-                const scaleToCoverHeight = gameHeight / child.height;
-
-                // Use the larger scale to ensure the image covers the entire game canvas
-                const scaleX = Math.max(scaleToCoverWidth, scaleToCoverHeight);
-                const scaleY = scaleX; // Keep aspect ratio
-
-                child.setScale(scaleX, scaleY);
-                child.setPosition(gameWidth / 2, gameHeight / 2);
-
-                console.log(
-                    "Background rescaled to cover entire Phaser game canvas:"
-                );
-                console.log(
-                    "Game canvas dimensions:",
-                    gameWidth,
-                    "x",
-                    gameHeight
-                );
-                console.log(
-                    "Image dimensions:",
-                    child.width,
-                    "x",
-                    child.height
-                );
-                console.log(
-                    "Scale factors:",
-                    scaleToCoverWidth,
-                    scaleToCoverHeight
-                );
-                console.log("Final scale:", scaleX, scaleY);
-                break;
-            }
-        }
-    }
 
     createBackground() {
         console.log("Creating background...");
@@ -599,7 +269,7 @@ export class BarangayMap extends Scene {
         // If textures don't exist, load them directly
         if (!this.textures.exists("barangay-bg-root")) {
             console.log("Textures not loaded, loading them now...");
-            this.load.image("barangay-bg-root", "barangay-background.png");
+            this.load.image("barangay-bg-root", "assets/barangay-background.png");
             this.load.start();
 
             this.load.once("complete", () => {
@@ -634,8 +304,8 @@ export class BarangayMap extends Scene {
             );
             console.log(
                 "barangay-bg-root texture width/height:",
-                this.textures.get("barangay-bg-root").source.width,
-                this.textures.get("barangay-bg-root").source.height
+                this.textures.get("barangay-bg-root").getSourceImage().width,
+                this.textures.get("barangay-bg-root").getSourceImage().height
             );
 
             try {
@@ -867,7 +537,7 @@ export class BarangayMap extends Scene {
         const grassGraphics = this.add.graphics();
         grassGraphics.fillStyle(0x90ee90);
         grassGraphics.fillRect(0, 0, 32, 32);
-        grassGraphics.strokeRect(0, 0, 32, 32, 0x7cfc00, 1);
+        grassGraphics.strokeRect(0, 0, 32, 32);
         grassGraphics.generateTexture("grass", 32, 32);
         grassGraphics.destroy();
 
@@ -875,7 +545,7 @@ export class BarangayMap extends Scene {
         const pathGraphics = this.add.graphics();
         pathGraphics.fillStyle(0xd2b48c);
         pathGraphics.fillRect(0, 0, 32, 32);
-        pathGraphics.strokeRect(0, 0, 32, 32, 0x8b4513, 1);
+        pathGraphics.strokeRect(0, 0, 32, 32);
         pathGraphics.generateTexture("path", 32, 32);
         pathGraphics.destroy();
 
@@ -883,7 +553,7 @@ export class BarangayMap extends Scene {
         const waterGraphics = this.add.graphics();
         waterGraphics.fillStyle(0x87ceeb);
         waterGraphics.fillRect(0, 0, 32, 32);
-        waterGraphics.strokeRect(0, 0, 32, 32, 0x4682b4, 1);
+        waterGraphics.strokeRect(0, 0, 32, 32);
         waterGraphics.generateTexture("water", 32, 32);
         waterGraphics.destroy();
 
@@ -891,7 +561,7 @@ export class BarangayMap extends Scene {
         const treeGraphics = this.add.graphics();
         treeGraphics.fillStyle(0x228b22);
         treeGraphics.fillRect(0, 0, 32, 32);
-        treeGraphics.strokeRect(0, 0, 32, 32, 0x006400, 2);
+        treeGraphics.strokeRect(0, 0, 32, 32);
         treeGraphics.generateTexture("tree", 32, 32);
         treeGraphics.destroy();
 
@@ -904,7 +574,7 @@ export class BarangayMap extends Scene {
         const barangayHallGraphics = this.add.graphics();
         barangayHallGraphics.fillStyle(0x4169e1);
         barangayHallGraphics.fillRect(0, 0, 32, 32);
-        barangayHallGraphics.strokeRect(0, 0, 32, 32, 0x1e3a8a, 2);
+        barangayHallGraphics.strokeRect(0, 0, 32, 32);
         // Add building details
         barangayHallGraphics.fillStyle(0xffffff);
         barangayHallGraphics.fillRect(4, 8, 24, 16);
@@ -917,7 +587,7 @@ export class BarangayMap extends Scene {
         const healthCenterGraphics = this.add.graphics();
         healthCenterGraphics.fillStyle(0xff6b6b);
         healthCenterGraphics.fillRect(0, 0, 32, 32);
-        healthCenterGraphics.strokeRect(0, 0, 32, 32, 0xdc2626, 2);
+        healthCenterGraphics.strokeRect(0, 0, 32, 32);
         // Add cross symbol
         healthCenterGraphics.fillStyle(0xffffff);
         healthCenterGraphics.fillRect(14, 8, 4, 16);
@@ -929,7 +599,7 @@ export class BarangayMap extends Scene {
         const libraryGraphics = this.add.graphics();
         libraryGraphics.fillStyle(0x8b4513);
         libraryGraphics.fillRect(0, 0, 32, 32);
-        libraryGraphics.strokeRect(0, 0, 32, 32, 0x654321, 2);
+        libraryGraphics.strokeRect(0, 0, 32, 32);
         // Add book details
         libraryGraphics.fillStyle(0xffd700);
         libraryGraphics.fillRect(6, 8, 4, 16);
@@ -943,7 +613,7 @@ export class BarangayMap extends Scene {
         const marketGraphics = this.add.graphics();
         marketGraphics.fillStyle(0xffa500);
         marketGraphics.fillRect(0, 0, 32, 32);
-        marketGraphics.strokeRect(0, 0, 32, 32, 0xff8c00, 2);
+        marketGraphics.strokeRect(0, 0, 32, 32);
         // Add market details
         marketGraphics.fillStyle(0xffffff);
         marketGraphics.fillRect(4, 12, 24, 8);
@@ -959,7 +629,7 @@ export class BarangayMap extends Scene {
         const parkGraphics = this.add.graphics();
         parkGraphics.fillStyle(0x228b22);
         parkGraphics.fillRect(0, 0, 32, 32);
-        parkGraphics.strokeRect(0, 0, 32, 32, 0x006400, 2);
+        parkGraphics.strokeRect(0, 0, 32, 32);
         // Add tree details
         parkGraphics.fillStyle(0x8b4513);
         parkGraphics.fillRect(14, 16, 4, 12);
@@ -972,7 +642,7 @@ export class BarangayMap extends Scene {
         const courtGraphics = this.add.graphics();
         courtGraphics.fillStyle(0x708090);
         courtGraphics.fillRect(0, 0, 32, 32);
-        courtGraphics.strokeRect(0, 0, 32, 32, 0x2f4f4f, 2);
+        courtGraphics.strokeRect(0, 0, 32, 32);
         // Add court lines
         courtGraphics.fillStyle(0xffffff);
         courtGraphics.fillRect(2, 2, 28, 2);
@@ -987,7 +657,7 @@ export class BarangayMap extends Scene {
         const kuboGraphics = this.add.graphics();
         kuboGraphics.fillStyle(0x8b4513);
         kuboGraphics.fillRect(0, 0, 32, 32);
-        kuboGraphics.strokeRect(0, 0, 32, 32, 0x654321, 2);
+        kuboGraphics.strokeRect(0, 0, 32, 32);
         // Add roof
         kuboGraphics.fillStyle(0xdc143c);
         kuboGraphics.fillTriangle(16, 4, 4, 16, 28, 16);
@@ -1000,7 +670,7 @@ export class BarangayMap extends Scene {
         const storeGraphics = this.add.graphics();
         storeGraphics.fillStyle(0xffd700);
         storeGraphics.fillRect(0, 0, 32, 32);
-        storeGraphics.strokeRect(0, 0, 32, 32, 0xff8c00, 2);
+        storeGraphics.strokeRect(0, 0, 32, 32);
         // Add store details
         storeGraphics.fillStyle(0xffffff);
         storeGraphics.fillRect(4, 8, 24, 16);
@@ -1016,7 +686,7 @@ export class BarangayMap extends Scene {
         const residentialGraphics = this.add.graphics();
         residentialGraphics.fillStyle(0x87ceeb);
         residentialGraphics.fillRect(0, 0, 32, 32);
-        residentialGraphics.strokeRect(0, 0, 32, 32, 0x4682b4, 2);
+        residentialGraphics.strokeRect(0, 0, 32, 32);
         // Add house details
         residentialGraphics.fillStyle(0xffffff);
         residentialGraphics.fillRect(6, 12, 8, 12);
@@ -1031,7 +701,7 @@ export class BarangayMap extends Scene {
         const basuraGraphics = this.add.graphics();
         basuraGraphics.fillStyle(0x696969);
         basuraGraphics.fillRect(0, 0, 32, 32);
-        basuraGraphics.strokeRect(0, 0, 32, 32, 0x2f4f4f, 2);
+        basuraGraphics.strokeRect(0, 0, 32, 32);
         // Add trash can details
         basuraGraphics.fillStyle(0xffffff);
         basuraGraphics.fillRect(12, 8, 8, 16);
@@ -1101,7 +771,7 @@ export class BarangayMap extends Scene {
                 // Add collision for buildings and trees
                 if (isCollision) {
                     this.physics.add.existing(tile, true);
-                    tile.body.setSize(this.tileSize, this.tileSize);
+                    if (tile.body) { (tile.body as Phaser.Physics.Arcade.StaticBody).setSize(this.tileSize, this.tileSize); }
                 }
             }
         }
@@ -1344,7 +1014,7 @@ export class BarangayMap extends Scene {
         // this.player.setTint(playerColor);
 
         // Add collision with buildings and trees
-        this.physics.add.collider(this.player, this.physics.world.staticBodies);
+        this.physics.add.collider(this.player, this.physics.world.staticBodies as any);
 
         // Check if student sprite textures are loaded before creating animations
         if (this.textures.exists("student-front-1")) {
@@ -1381,118 +1051,6 @@ export class BarangayMap extends Scene {
                 }
             });
         }
-    }
-
-    createPlayerAnimations() {
-        console.log("Creating player animations...");
-
-        // Check if all required textures exist
-        const requiredTextures = [
-            "student-front-1",
-            "student-front-2",
-            "student-front-3",
-            "student-front-4",
-            "student-back-1",
-            "student-back-2",
-            "student-back-3",
-            "student-back-4",
-            "student-left-1",
-            "student-left-2",
-            "student-left-3",
-            "student-left-4",
-            "student-right-1",
-            "student-right-2",
-            "student-right-3",
-            "student-right-4",
-        ];
-
-        for (const texture of requiredTextures) {
-            if (!this.textures.exists(texture)) {
-                console.error(`Required texture ${texture} not found!`);
-                return;
-            }
-        }
-
-        console.log("All required textures found, creating animations...");
-
-        // Front animations
-        this.anims.create({
-            key: "student-front-walk",
-            frames: [
-                { key: "student-front-1" },
-                { key: "student-front-2" },
-                { key: "student-front-3" },
-                { key: "student-front-4" },
-            ],
-            frameRate: 8,
-            repeat: -1,
-        });
-
-        // Back animations
-        this.anims.create({
-            key: "student-back-walk",
-            frames: [
-                { key: "student-back-1" },
-                { key: "student-back-2" },
-                { key: "student-back-3" },
-                { key: "student-back-4" },
-            ],
-            frameRate: 8,
-            repeat: -1,
-        });
-
-        // Left animations
-        this.anims.create({
-            key: "student-left-walk",
-            frames: [
-                { key: "student-left-1" },
-                { key: "student-left-2" },
-                { key: "student-left-3" },
-                { key: "student-left-4" },
-            ],
-            frameRate: 8,
-            repeat: -1,
-        });
-
-        // Right animations
-        this.anims.create({
-            key: "student-right-walk",
-            frames: [
-                { key: "student-right-1" },
-                { key: "student-right-2" },
-                { key: "student-right-3" },
-                { key: "student-right-4" },
-            ],
-            frameRate: 8,
-            repeat: -1,
-        });
-
-        // Idle animations (single frame)
-        this.anims.create({
-            key: "student-front-idle",
-            frames: [{ key: "student-front-1" }],
-            frameRate: 1,
-        });
-
-        this.anims.create({
-            key: "student-back-idle",
-            frames: [{ key: "student-back-1" }],
-            frameRate: 1,
-        });
-
-        this.anims.create({
-            key: "student-left-idle",
-            frames: [{ key: "student-left-1" }],
-            frameRate: 1,
-        });
-
-        this.anims.create({
-            key: "student-right-idle",
-            frames: [{ key: "student-right-1" }],
-            frameRate: 1,
-        });
-
-        console.log("Player animations created successfully!");
     }
 
     createNPCs() {
@@ -1595,19 +1153,19 @@ export class BarangayMap extends Scene {
             npc.setInteractive();
 
             // Set up collision body for NPC - make it static from the start
-            npc.body.setSize(npc.width * 0.8, npc.height * 0.8); // Slightly smaller collision box
-            npc.body.setOffset(npc.width * 0.1, npc.height * 0.1); // Center the collision box
-            npc.body.setImmovable(true); // Make NPCs static so they don't move when player collides
-            npc.body.setGravity(0, 0); // Remove gravity
-            npc.body.setVelocity(0, 0); // Stop any movement
-            npc.body.setAngularVelocity(0); // Stop any rotation
+            (npc as any).body.setSize(npc.width * 0.8, npc.height * 0.8); // Slightly smaller collision box
+            (npc as any).body.setOffset(npc.width * 0.1, npc.height * 0.1); // Center the collision box
+            (npc as any).body.setImmovable(true); // Make NPCs static so they don't move when player collides
+            (npc as any).body.setGravity(0, 0); // Remove gravity
+            (npc as any).body.setVelocity(0, 0); // Stop any movement
+            (npc as any).body.setAngularVelocity(0); // Stop any rotation
 
             console.log(`NPC ${location.npc} collision body set up:`, {
-                width: npc.body.width,
-                height: npc.body.height,
-                offsetX: npc.body.offset.x,
-                offsetY: npc.body.offset.y,
-                immovable: npc.body.immovable,
+                width: (npc as any).body.width,
+                height: (npc as any).body.height,
+                offsetX: (npc as any).body.offset.x,
+                offsetY: (npc as any).body.offset.y,
+                immovable: (npc as any).body.immovable,
             });
 
             // Add NPC name with better styling - adjusted offset for larger NPC
@@ -1724,17 +1282,17 @@ export class BarangayMap extends Scene {
         // Add collision between player and NPCs with custom callback to prevent movement
         this.physics.add.collider(this.player, this.npcs, (player, npc) => {
             // Ensure NPC doesn't move when collided
-            npc.body.setVelocity(0, 0);
-            npc.body.setAngularVelocity(0);
-            npc.body.setImmovable(true); // Force immovable again
+            (npc as any).body.setVelocity(0, 0);
+            (npc as any).body.setAngularVelocity(0);
+            (npc as any).body.setImmovable(true); // Force immovable again
 
             // Also stop the player's movement when colliding with NPC
-            player.body.setVelocity(0, 0);
-            player.body.setAngularVelocity(0);
+            (player as any).body.setVelocity(0, 0);
+            (player as any).body.setAngularVelocity(0);
 
             console.log(
                 `Collision detected with ${
-                    npc.getData("missionData")?.npc || "NPC"
+                    (npc as any).getData("missionData")?.npc || "NPC"
                 }, both player and NPC stopped`
             );
         });
@@ -1793,7 +1351,7 @@ export class BarangayMap extends Scene {
             collectible.setData("itemData", item);
 
             // Add to collectibles group
-            this.collectibles.add(collectible);
+            this.collectibles!.add(collectible);
 
             // Store reference
             this.collectibleItems.set(item.id, collectible);
@@ -1945,141 +1503,11 @@ export class BarangayMap extends Scene {
         }
     }
 
-    createCollectionParticles(x: number, y: number, rarity: string) {
-        // Particle color based on rarity
-        const particleColor =
-            rarity === "legendary"
-                ? 0xffd700 // Gold
-                : rarity === "rare"
-                ? 0xff00ff // Purple
-                : rarity === "uncommon"
-                ? 0x00ffff // Cyan
-                : 0xffff00; // Yellow
 
-        // Create multiple sparkle particles
-        for (let i = 0; i < 20; i++) {
-            const angle = (Math.PI * 2 * i) / 20;
-            const distance = 30 + Math.random() * 20;
-            const targetX = x + Math.cos(angle) * distance;
-            const targetY = y + Math.sin(angle) * distance;
 
-            const particle = this.add.circle(x, y, 3, particleColor, 1);
-            particle.setDepth(300);
 
-            this.tweens.add({
-                targets: particle,
-                x: targetX,
-                y: targetY,
-                alpha: 0,
-                scale: 0,
-                duration: 500 + Math.random() * 300,
-                ease: "Power2",
-                onComplete: () => {
-                    particle.destroy();
-                },
-            });
-        }
 
-        // Create star burst effect
-        for (let i = 0; i < 5; i++) {
-            const star = this.add.text(x, y, "⭐", {
-                fontSize: "24px",
-            });
-            star.setOrigin(0.5);
-            star.setDepth(300);
 
-            const angle = (Math.PI * 2 * i) / 5;
-            const distance = 40;
-            const targetX = x + Math.cos(angle) * distance;
-            const targetY = y + Math.sin(angle) * distance;
-
-            this.tweens.add({
-                targets: star,
-                x: targetX,
-                y: targetY,
-                alpha: 0,
-                rotation: Math.PI * 2,
-                scale: { from: 1, to: 0.5 },
-                duration: 600,
-                ease: "Power2",
-                onComplete: () => {
-                    star.destroy();
-                },
-            });
-        }
-    }
-
-    playCollectionSound(rarity: string) {
-        // Play sound based on rarity - using HTML5 Audio API
-        const soundFrequency =
-            rarity === "legendary"
-                ? [440, 554, 659, 880] // High pitched for legendary
-                : rarity === "rare"
-                ? [392, 494, 587] // Mid-high for rare
-                : rarity === "uncommon"
-                ? [349, 440, 523] // Mid for uncommon
-                : [330, 392, 440]; // Lower for common
-
-        // Create AudioContext for sound generation
-        if (
-            typeof AudioContext !== "undefined" ||
-            typeof (window as any).webkitAudioContext !== "undefined"
-        ) {
-            try {
-                const AudioContextClass =
-                    AudioContext || (window as any).webkitAudioContext;
-                const audioContext = new AudioContextClass();
-
-                soundFrequency.forEach((freq, index) => {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-
-                    oscillator.frequency.value = freq;
-                    oscillator.type = "sine";
-
-                    const startTime = audioContext.currentTime + index * 0.1;
-                    const duration = 0.15;
-
-                    gainNode.gain.setValueAtTime(0.3, startTime);
-                    gainNode.gain.exponentialRampToValueAtTime(
-                        0.01,
-                        startTime + duration
-                    );
-
-                    oscillator.start(startTime);
-                    oscillator.stop(startTime + duration);
-                });
-            } catch (error) {
-                console.log("Audio playback not available:", error);
-            }
-        }
-    }
-
-    showFloatingText(x: number, y: number, text: string) {
-        const floatingText = this.add.text(x, y, text, {
-            fontFamily: "Arial Black",
-            fontSize: "24px",
-            color: "#FFD700",
-            stroke: "#000000",
-            strokeThickness: 4,
-        });
-        floatingText.setOrigin(0.5);
-        floatingText.setDepth(300);
-
-        this.tweens.add({
-            targets: floatingText,
-            y: y - 60,
-            alpha: 0,
-            duration: 1000,
-            ease: "Power2",
-            onComplete: () => {
-                floatingText.destroy();
-            },
-        });
-    }
 
     checkCollectionAchievement() {
         const gameStateManager = GameStateManager.getInstance();
@@ -2294,231 +1722,7 @@ export class BarangayMap extends Scene {
         };
     }
 
-    handleResize() {
-        // Safety check: ensure camera is initialized
-        if (!this.cameras || !this.cameras.main) {
-            console.log("Camera not yet initialized, skipping resize");
-            return;
-        }
 
-        console.log("Screen resized, updating camera and background...");
-        console.log(
-            "New screen dimensions:",
-            this.cameras.main.width,
-            "x",
-            this.cameras.main.height
-        );
-
-        // Update camera settings for new screen size
-        this.optimizeCameraForOpenWorld();
-
-        // Update background scaling for new screen size
-        this.updateBackgroundForOrientation();
-
-        // Re-detect mobile device for new screen size
-        this.isMobile =
-            this.sys.game.device.input.touch ||
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                navigator.userAgent
-            ) ||
-            window.innerWidth <= 768;
-
-        console.log("Mobile device detected after resize:", this.isMobile);
-        console.log("Camera and background updated for new screen size");
-    }
-
-    createUI() {
-        // Only create the interaction prompt since other UI is handled by React
-        // Position relative to player (will be updated in update loop)
-        this.interactionPrompt = this.add
-            .text(
-                this.player.x + 80, // Right side of player
-                this.player.y,
-                this.isMobile ? "Tap to interact" : "Tap to interact",
-                {
-                    fontFamily: "Arial Black",
-                    fontSize: 14,
-                    color: "#FFFFFF",
-                    stroke: "#000000",
-                    strokeThickness: 3,
-                    align: "center",
-                    backgroundColor: "#000000",
-                    padding: { x: 8, y: 4 },
-                }
-            )
-            .setOrigin(0.5)
-            .setDepth(1000)
-            .setScrollFactor(1) // Follow camera with world
-            .setVisible(false);
-    }
-
-    createLocationDisplay() {
-        // Create location display above player head
-        this.locationDisplay = this.add
-            .text(
-                this.player.x,
-                this.player.y - 60, // Position above player head
-                "Location: (0, 0)",
-                {
-                    fontFamily: "Arial Black",
-                    fontSize: this.isMobile ? 12 : 14,
-                    color: "#FFFFFF",
-                    stroke: "#000000",
-                    strokeThickness: 2,
-                    align: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.85)",
-                    padding: { x: 8, y: 4 },
-                    shadow: {
-                        offsetX: 1,
-                        offsetY: 1,
-                        color: "#000000",
-                        blur: 2,
-                        fill: true,
-                    },
-                }
-            )
-            .setOrigin(0.5)
-            .setDepth(500) // Above player but below UI elements
-            .setScrollFactor(1) // Follow camera (moves with world)
-            .setVisible(true);
-
-        console.log("Location display created above player head");
-    }
-
-    createMinimap() {
-        // Create minimap in bottom-left corner
-        const minimapSize = this.isMobile ? 100 : 150;
-        const minimapX = this.isMobile ? 70 : 90;
-        const minimapY = this.cameras.main.height - (this.isMobile ? 120 : 170);
-
-        // Create minimap container
-        this.minimap = this.add.container(minimapX, minimapY);
-        this.minimap.setScrollFactor(0); // Fixed on screen
-        this.minimap.setDepth(1500);
-
-        // Create minimap background
-        const minimapBg = this.add.graphics();
-        minimapBg.fillStyle(0x000000, 0.6);
-        minimapBg.fillRoundedRect(0, 0, minimapSize, minimapSize, 8);
-        minimapBg.lineStyle(3, 0x000000, 1);
-        minimapBg.strokeRoundedRect(0, 0, minimapSize, minimapSize, 8);
-        this.minimap.add(minimapBg);
-
-        // Add minimap title
-        const minimapTitle = this.add.text(minimapSize / 2, -15, "MAP", {
-            fontFamily: "Arial Black",
-            fontSize: "12px",
-            color: "#FFFFFF",
-            stroke: "#000000",
-            strokeThickness: 2,
-        });
-        minimapTitle.setOrigin(0.5);
-        this.minimap.add(minimapTitle);
-
-        // Create player dot (green)
-        this.minimapPlayerDot = this.add.circle(
-            minimapSize / 2,
-            minimapSize / 2,
-            4,
-            0x00ff00,
-            1
-        );
-        this.minimap.add(this.minimapPlayerDot);
-
-        // Add NPC dots (blue)
-        this.missionLocations.forEach((location) => {
-            const npcX = (location.percentX / 100) * minimapSize;
-            const npcY = (location.percentY / 100) * minimapSize;
-
-            const npcDot = this.add.circle(npcX, npcY, 2, 0x4169e1, 0.8);
-            this.minimap.add(npcDot);
-            this.minimapNPCDots.push(npcDot);
-        });
-
-        // Add collectible dots (yellow/gold based on rarity)
-        this.collectibleItemsData.forEach((item) => {
-            const itemX = (item.percentX / 100) * minimapSize;
-            const itemY = (item.percentY / 100) * minimapSize;
-
-            const dotColor =
-                item.rarity === "legendary"
-                    ? 0xffd700 // Gold
-                    : item.rarity === "rare"
-                    ? 0xff00ff // Purple
-                    : item.rarity === "uncommon"
-                    ? 0x00ffff // Cyan
-                    : 0xffff00; // Yellow
-
-            const collectibleDot = this.add.circle(
-                itemX,
-                itemY,
-                2,
-                dotColor,
-                1
-            );
-            collectibleDot.setData("itemId", item.id);
-            this.minimap.add(collectibleDot);
-            this.minimapCollectibleDots.push(collectibleDot);
-
-            // Add pulsing animation to collectible dots
-            this.tweens.add({
-                targets: collectibleDot,
-                alpha: { from: 0.5, to: 1 },
-                scale: { from: 0.8, to: 1.2 },
-                duration: 800,
-                ease: "Sine.easeInOut",
-                yoyo: true,
-                repeat: -1,
-            });
-        });
-
-        console.log("Minimap created with collectible locations");
-    }
-
-    updateMinimap() {
-        if (
-            !this.minimap ||
-            !this.minimapPlayerDot ||
-            !this.player ||
-            !this.backgroundImage
-        )
-            return;
-
-        const minimapSize = this.isMobile ? 100 : 150;
-
-        // Calculate player position as percentage
-        const bgWidth = this.backgroundImage.displayWidth;
-        const bgHeight = this.backgroundImage.displayHeight;
-        const bgX = this.backgroundImage.x;
-        const bgY = this.backgroundImage.y;
-
-        const playerRelativeX = this.player.x - (bgX - bgWidth / 2);
-        const playerRelativeY = this.player.y - (bgY - bgHeight / 2);
-
-        const percentX = Math.max(
-            0,
-            Math.min(100, (playerRelativeX / bgWidth) * 100)
-        );
-        const percentY = Math.max(
-            0,
-            Math.min(100, (playerRelativeY / bgHeight) * 100)
-        );
-
-        // Update player dot position on minimap
-        this.minimapPlayerDot.setPosition(
-            (percentX / 100) * minimapSize,
-            (percentY / 100) * minimapSize
-        );
-
-        // Update collectible dots - hide if collected
-        const gameStateManager = GameStateManager.getInstance();
-        this.minimapCollectibleDots.forEach((dot) => {
-            const itemId = dot.getData("itemId");
-            if (itemId && gameStateManager.isItemCollected(itemId)) {
-                dot.setVisible(false);
-            }
-        });
-    }
 
     repositionPlayerRelativeToBackground() {
         if (this.player && this.backgroundImage) {
@@ -2538,150 +1742,7 @@ export class BarangayMap extends Scene {
     }
 
     // Convert percentage coordinates to world coordinates relative to background image
-    percentageToWorldCoordinates(percentX: number, percentY: number) {
-        if (!this.backgroundImage) {
-            // Fallback to tile-based coordinates
-            return {
-                x: (percentX / 100) * (this.mapWidth * this.tileSize),
-                y: (percentY / 100) * (this.mapHeight * this.tileSize),
-            };
-        }
 
-        const bgWidth = this.backgroundImage.displayWidth;
-        const bgHeight = this.backgroundImage.displayHeight;
-        const bgX = this.backgroundImage.x;
-        const bgY = this.backgroundImage.y;
-
-        // Calculate world coordinates from percentage
-        const worldX = bgX + (percentX - 50) * (bgWidth / 100);
-        const worldY = bgY + (percentY - 50) * (bgHeight / 100);
-
-        return { x: worldX, y: worldY };
-    }
-
-    repositionNPCsRelativeToBackground() {
-        if (!this.npcs || !this.backgroundImage) return;
-
-        this.npcs.children.entries.forEach((npc: any, index: number) => {
-            const missionData = npc.getData("missionData");
-            if (
-                missionData &&
-                missionData.percentX !== undefined &&
-                missionData.percentY !== undefined
-            ) {
-                // Reposition NPC using percentage coordinates
-                const coords = this.percentageToWorldCoordinates(
-                    missionData.percentX,
-                    missionData.percentY
-                );
-                npc.setPosition(coords.x, coords.y);
-
-                // Update original position data
-                npc.setData("originalPosition", { x: coords.x, y: coords.y });
-
-                console.log(
-                    `Repositioned NPC ${missionData.npc} to (${missionData.percentX}%, ${missionData.percentY}%) = (${coords.x}, ${coords.y})`
-                );
-            }
-        });
-    }
-
-    updateLocationDisplay() {
-        if (this.locationDisplay && this.player) {
-            // Calculate position relative to background image
-            let relativeX = 0,
-                relativeY = 0;
-            let areaName = "Barangay";
-
-            if (this.backgroundImage) {
-                // Calculate percentage position relative to background image
-                const bgWidth = this.backgroundImage.displayWidth;
-                const bgHeight = this.backgroundImage.displayHeight;
-                const bgX = this.backgroundImage.x;
-                const bgY = this.backgroundImage.y;
-
-                // Calculate relative position within background image
-                const playerRelativeX = this.player.x - (bgX - bgWidth / 2);
-                const playerRelativeY = this.player.y - (bgY - bgHeight / 2);
-
-                // Convert to percentage (0-100%)
-                relativeX = Math.round((playerRelativeX / bgWidth) * 100);
-                relativeY = Math.round((playerRelativeY / bgHeight) * 100);
-
-                // Clamp values to 0-100%
-                relativeX = Math.max(0, Math.min(100, relativeX));
-                relativeY = Math.max(0, Math.min(100, relativeY));
-
-                // Check for secret locations
-                this.checkSecretLocation(relativeX, relativeY);
-
-                // Determine area based on percentage position
-                if (relativeX < 25 && relativeY < 25) {
-                    areaName = "Northwest District";
-                } else if (relativeX >= 75 && relativeY < 25) {
-                    areaName = "Northeast District";
-                } else if (relativeX < 25 && relativeY >= 75) {
-                    areaName = "Southwest District";
-                } else if (relativeX >= 75 && relativeY >= 75) {
-                    areaName = "Southeast District";
-                } else if (
-                    relativeX >= 37.5 &&
-                    relativeX < 62.5 &&
-                    relativeY >= 37.5 &&
-                    relativeY < 62.5
-                ) {
-                    areaName = "Central District";
-                } else if (
-                    relativeX >= 25 &&
-                    relativeX < 75 &&
-                    relativeY < 25
-                ) {
-                    areaName = "North District";
-                } else if (
-                    relativeX >= 25 &&
-                    relativeX < 75 &&
-                    relativeY >= 75
-                ) {
-                    areaName = "South District";
-                } else if (
-                    relativeX < 25 &&
-                    relativeY >= 25 &&
-                    relativeY < 75
-                ) {
-                    areaName = "West District";
-                } else if (
-                    relativeX >= 75 &&
-                    relativeY >= 25 &&
-                    relativeY < 75
-                ) {
-                    areaName = "East District";
-                } else {
-                    areaName = "Barangay";
-                }
-
-                console.log(
-                    `Player position: ${relativeX}%, ${relativeY}% - Area: ${areaName}`
-                );
-            } else {
-                // Fallback to tile-based coordinates if background not available
-                const mapX = Math.round(this.player.x / this.tileSize);
-                const mapY = Math.round(this.player.y / this.tileSize);
-                relativeX = mapX;
-                relativeY = mapY;
-            }
-
-            // Update display text with percentage coordinates and area name
-            const displayText = `${areaName}\n(${relativeX}%, ${relativeY}%)`;
-            this.locationDisplay.setText(displayText);
-
-            // Position above player head
-            this.locationDisplay.setPosition(this.player.x, this.player.y - 60);
-
-            // Update font size based on screen size
-            const fontSize = this.isMobile ? 10 : 12;
-            this.locationDisplay.setStyle({ fontSize });
-        }
-    }
 
     checkSecretLocation(percentX: number, percentY: number) {
         const secretQuestService = SecretQuestService.getInstance();
@@ -2713,291 +1774,8 @@ export class BarangayMap extends Scene {
         }
     }
 
-    update() {
-        // Check if player exists before proceeding
-        if (!this.player) {
-            return;
-        }
-
-        // Player movement - reduced speed for more natural walking
-        const speed = 120; // Slower, more realistic walking speed
-        let isMoving = false;
-        let currentDirection = "";
-        let velocityX = 0;
-        let velocityY = 0;
-
-        // Handle keyboard input (desktop)
-        if (!this.isMobile) {
-            if (this.cursors.left.isDown || this.wasd.A.isDown) {
-                velocityX = -speed;
-                isMoving = true;
-                currentDirection = "left";
-                this.lastDirection = "left";
-            } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
-                velocityX = speed;
-                isMoving = true;
-                currentDirection = "right";
-                this.lastDirection = "right";
-            }
-
-            if (this.cursors.up.isDown || this.wasd.W.isDown) {
-                velocityY = -speed;
-                isMoving = true;
-                currentDirection = "back";
-                this.lastDirection = "back";
-            } else if (this.cursors.down.isDown || this.wasd.S.isDown) {
-                velocityY = speed;
-                isMoving = true;
-                currentDirection = "front";
-                this.lastDirection = "front";
-            }
-        } else {
-            // Handle React joystick input
-            const joystickDirection = this.registry.get(
-                "joystickDirection"
-            ) || { x: 0, y: 0 };
-
-            if (joystickDirection.x !== 0 || joystickDirection.y !== 0) {
-                velocityX = joystickDirection.x * speed;
-                velocityY = joystickDirection.y * speed;
-
-                isMoving = true;
-
-                // Determine direction based on movement
-                if (Math.abs(velocityX) > Math.abs(velocityY)) {
-                    currentDirection = velocityX > 0 ? "right" : "left";
-                } else {
-                    currentDirection = velocityY > 0 ? "front" : "back";
-                }
-
-                this.lastDirection = currentDirection;
-            }
-        }
-
-        // Apply velocity with improved collision detection
-        if (isMoving) {
-            const newX = this.player.x + velocityX * 0.016; // Approximate new position (60fps)
-            const newY = this.player.y + velocityY * 0.016;
-
-            // Check if moving away from NPCs or towards them
-            const isMovingAway = this.isPlayerMovingAwayFromNPCs(newX, newY);
-
-            if (isMovingAway || this.canPlayerMoveTo(newX, newY)) {
-                this.player.setVelocity(velocityX, velocityY);
-            } else {
-                // Stop player if they would hit an NPC
-                this.player.setVelocity(0, 0);
-                console.log("Player movement blocked by NPC collision");
-            }
-        } else {
-            this.player.setVelocity(0, 0);
-        }
-
-        // Ensure camera is following player (debug occasionally)
-        if (Math.random() < 0.01) {
-            // Occasional debug
-            const playerScreenX = this.cameras.main.getWorldPoint(
-                this.player.x,
-                this.player.y
-            ).x;
-            const playerScreenY = this.cameras.main.getWorldPoint(
-                this.player.x,
-                this.player.y
-            ).y;
-            const screenCenterX = this.cameras.main.width / 2;
-            const screenCenterY = this.cameras.main.height / 2;
-
-            console.log("=== OPEN WORLD CAMERA SCROLLING ===");
-            console.log("Player world position:", this.player.x, this.player.y);
-            console.log(
-                "Player screen position:",
-                playerScreenX,
-                playerScreenY
-            );
-            console.log("Screen center:", screenCenterX, screenCenterY);
-            console.log(
-                "Camera offset from center:",
-                Math.abs(playerScreenX - screenCenterX),
-                Math.abs(playerScreenY - screenCenterY)
-            );
-            console.log("Camera following:", this.cameras.main.follow);
-            console.log("Map bounds:", this.cameras.main.getBounds());
-            console.log("Camera lerp:", this.cameras.main.lerp);
-            console.log("Camera deadzone:", this.cameras.main.deadzone);
-            console.log("===================================");
-        }
-
-        // Handle sprite direction and animations
-        if (isMoving) {
-            // Set the correct sprite texture for the direction
-            const spriteKey = `student-${currentDirection}-1`;
-            if (this.textures.exists(spriteKey)) {
-                this.player.setTexture(spriteKey);
-            }
-
-            // Play walk animation if it exists
-            if (this.anims && this.anims.exists) {
-                const walkAnimKey = `student-${currentDirection}-walk`;
-                if (this.anims.exists(walkAnimKey)) {
-                    this.player.play(walkAnimKey, true);
-                }
-            }
-        } else {
-            // Stop movement and set idle sprite
-            this.player.setVelocity(0, 0);
-
-            // Set idle sprite for last direction
-            const idleSpriteKey = `student-${this.lastDirection}-1`;
-            if (this.textures.exists(idleSpriteKey)) {
-                this.player.setTexture(idleSpriteKey);
-            }
-
-            // Play idle animation if it exists
-            if (this.anims && this.anims.exists) {
-                const idleAnimKey = `student-${this.lastDirection}-idle`;
-                if (this.anims.exists(idleAnimKey)) {
-                    this.player.play(idleAnimKey, true);
-                }
-            }
-        }
-
-        // Check for nearby NPCs
-        this.checkForNearbyNPCs();
-
-        // Update location display above player head
-        this.updateLocationDisplay();
-
-        // Update minimap
-        this.updateMinimap();
-
-        // Debug: Show interaction prompt status occasionally
-        if (Math.random() < 0.02) {
-            // 2% chance every frame
-            console.log("=== INTERACTION DEBUG ===");
-            console.log(
-                "Player position:",
-                this.player.x.toFixed(1),
-                this.player.y.toFixed(1)
-            );
-            console.log(
-                "Nearby NPC:",
-                this.nearbyNPC
-                    ? this.nearbyNPC.getData("missionData")?.npc
-                    : "None"
-            );
-            console.log(
-                "Interaction prompt visible:",
-                this.interactionPrompt.visible
-            );
-            console.log("=========================");
-        }
-
-        // Ensure NPCs stay in their original positions (prevent movement)
-        this.enforceNPCPositions();
-
-        // Ensure camera is following player (fallback)
-        this.ensureCameraFollowing();
-    }
-
-    enforceNPCPositions() {
-        // Ensure all NPCs stay in their original positions
-        this.npcs.children.entries.forEach((npc: any) => {
-            // Stop any movement
-            npc.body.setVelocity(0, 0);
-            npc.body.setAngularVelocity(0);
-            npc.body.setImmovable(true);
-
-            // Reset to original position if they've moved
-            const originalPosition = npc.getData("originalPosition");
-            const missionData = npc.getData("missionData");
-
-            if (originalPosition) {
-                // Only reset position if they've moved significantly
-                const distance = Phaser.Math.Distance.Between(
-                    npc.x,
-                    npc.y,
-                    originalPosition.x,
-                    originalPosition.y
-                );
-                if (distance > 5) {
-                    npc.setPosition(originalPosition.x, originalPosition.y);
-                    console.log(
-                        `Reset NPC ${
-                            missionData?.npc || "Unknown"
-                        } to original position`
-                    );
-                }
-            }
-        });
-    }
-
-    isPlayerMovingAwayFromNPCs(newX: number, newY: number) {
-        // Check if player is moving away from any nearby NPCs
-        const currentDistance = this.getDistanceToNearestNPC();
-        const newDistance = this.getDistanceToNearestNPC(newX, newY);
-
-        // If moving away (increasing distance), allow movement
-        return newDistance > currentDistance;
-    }
-
-    getDistanceToNearestNPC(x?: number, y?: number) {
-        const playerX = x !== undefined ? x : this.player.x;
-        const playerY = y !== undefined ? y : this.player.y;
-
-        let nearestDistance = Infinity;
-
-        for (let npc of this.npcs.children.entries) {
-            const distance = Phaser.Math.Distance.Between(
-                playerX,
-                playerY,
-                npc.x,
-                npc.y
-            );
-            if (distance < nearestDistance) {
-                nearestDistance = distance;
-            }
-        }
-
-        return nearestDistance;
-    }
-
-    canPlayerMoveTo(x: number, y: number) {
-        // Check if player can move to the given position without hitting an NPC
-        const playerWidth = this.player.width * this.player.scaleX;
-        const playerHeight = this.player.height * this.player.scaleY;
-
-        for (let npc of this.npcs.children.entries) {
-            const npcWidth = npc.width * npc.scaleX;
-            const npcHeight = npc.height * npc.scaleY;
-
-            // Check if player's bounding box would overlap with NPC's bounding box
-            const playerLeft = x - playerWidth / 2;
-            const playerRight = x + playerWidth / 2;
-            const playerTop = y - playerHeight / 2;
-            const playerBottom = y + playerHeight / 2;
-
-            const npcLeft = npc.x - npcWidth / 2;
-            const npcRight = npc.x + npcWidth / 2;
-            const npcTop = npc.y - npcHeight / 2;
-            const npcBottom = npc.y + npcHeight / 2;
-
-            // Check for overlap with minimal padding to allow interaction
-            const padding = 0.5; // Minimal padding to allow getting very close for interaction
-            if (
-                playerLeft < npcRight + padding &&
-                playerRight > npcLeft - padding &&
-                playerTop < npcBottom + padding &&
-                playerBottom > npcTop - padding
-            ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     checkForNearbyNPCs() {
-        let nearestNPC = null;
+        let nearestNPC: Phaser.Physics.Arcade.Sprite | null = null;
         let nearestDistance = 100; // Interaction range
         let nearestMissionId = null;
 
@@ -3012,7 +1790,7 @@ export class BarangayMap extends Scene {
             if (distance < nearestDistance) {
                 nearestDistance = distance;
                 nearestNPC = npc;
-                nearestMissionId = npc.getData("missionData")?.missionId;
+                nearestMissionId = (npc as any).getData("missionData")?.missionId;
             }
         });
 
@@ -3046,7 +1824,7 @@ export class BarangayMap extends Scene {
 
             console.log(
                 `Interaction prompt shown for ${
-                    nearestNPC.getData("missionData")?.npc || "NPC"
+                    (nearestNPC as any).getData("missionData")?.npc || "NPC"
                 } at distance ${nearestDistance.toFixed(1)} - Glow activated`
             );
         } else {
@@ -3060,265 +1838,89 @@ export class BarangayMap extends Scene {
         }
     }
 
-    interactWithNearbyNPC() {
-        if (this.nearbyNPC) {
-            const missionData = this.nearbyNPC.getData("missionData");
-            this.interactWithNPC(missionData);
-        }
+
+
+    getMissionMetadata() {
+        return barangayMissionMetadata;
     }
 
-    interactWithNPC(location: any) {
-        const gameStateManager = GameStateManager.getInstance();
-
-        // Check if mission is already completed
-        if (gameStateManager.isMissionCompleted(location.missionId)) {
-            EventBus.emit("show-notification", {
-                type: "success",
-                title: "Mission Already Completed! ✅",
-                message: `${location.npc}: "Thank you for completing this mission! You've earned your badge and helped our community. Keep up the great work, citizen!"`,
-                icon: "🎖️",
-                actions: [
-                    {
-                        label: "Continue Exploring",
-                        action: () => {}, // Will be handled by the notification component
-                        style: "primary",
-                    },
-                ],
-            });
-            return;
-        }
-
-        // Check if mission is accessible
-        if (!gameStateManager.canAccessMission(location.missionId)) {
-            const availableMissions = gameStateManager.getAvailableMissions();
-            const availableList =
-                availableMissions.length > 0
-                    ? availableMissions.join(", ")
-                    : "Complete Mission 1 first";
-
-            EventBus.emit("show-notification", {
-                type: "info",
-                title: "Mission Prerequisites Required 🔒",
-                message: `${location.npc}: "Hello there! I'd love to give you this mission, but you need to complete some other tasks first. Available missions: ${availableList}. Come back after you've gained more experience!"`,
-                icon: "📋",
-                actions: [
-                    {
-                        label: "Check Available Missions",
-                        action: () => {
-                            // Emit event to open Quest Log
-                            EventBus.emit("open-quest-log");
-                        },
-                        style: "secondary",
-                    },
-                ],
-            });
-            return;
-        }
-
-        // Emit event to React to show MissionSystem
-        EventBus.emit("show-mission", {
-            missionId: location.missionId,
-            npcName: location.npc,
-            missionName: location.name,
-            // Add mission data based on missionId
-            mission: this.getMissionData(location.missionId),
-        });
-    }
-
-    getMissionData(missionId: number) {
-        // Return mission data based on missionId
-        // This should match the data structure expected by the React MissionSystem component
-        const missions = {
-            1: {
-                id: "1",
-                title: "Court Diagonal",
-                description:
-                    "Miguel is struggling with square roots. Help him find the diagonal of the barangay basketball court using the Pythagorean theorem.",
-                quizOverview:
-                    "This quiz focuses on radicals through the Pythagorean theorem. You'll find the diagonal of a rectangle by taking the square root of the sum of squared sides.",
-                realLifeTrivia: [
-                    "Basketball: Coaches use diagonal distances to plan drills and court layouts",
-                    "Construction: Carpenters use the Pythagorean theorem to make sure corners are square",
-                    "Walking shortcuts: The diagonal path across a park is shorter than walking around the edges",
-                    "TV screens: Screen sizes are measured diagonally using square roots",
-                ],
-                npc: "Miguel",
-                location: "Barangay Basketball Court",
-                reward: "10 coins + Radical Beginner Badge",
-            },
-            2: {
-                id: "2",
-                title: "Recipe Scaling",
-                description:
-                    "Aling Maria needs to adjust a recipe for a different number of guests. Teach her how inverse functions help reverse a scaling formula.",
-                quizOverview:
-                    "This quiz focuses on inverse functions through recipe scaling. You'll convert between serving sizes and ingredient amounts using inverse relationships.",
-                realLifeTrivia: [
-                    "Cooking: Scale recipes up or down for different group sizes",
-                    "Budgeting: Reverse a total cost to find the original price before tax",
-                    "Medicine: Calculate the right dosage based on patient weight",
-                    "Printing: Resize documents proportionally for different paper sizes",
-                ],
-                npc: "Aling Maria",
-                location: "Barangay Sari-Sari Store",
-                reward: "15 coins + Scaling Expert Badge",
-            },
-            3: {
-                id: "3",
-                title: "Walking Distance",
-                description:
-                    "Ben wants to know the shortest walking distance between two points on the barangay map. Use the distance formula to help him.",
-                quizOverview:
-                    "This quiz focuses on radicals through the distance formula. You'll find straight-line distances on a coordinate grid by simplifying square roots.",
-                realLifeTrivia: [
-                    "Navigation: GPS uses distance formulas to calculate shortest routes",
-                    "Sports: Runners measure diagonal distances for training routes",
-                    "Construction: Surveyors calculate land distances using coordinates",
-                    "Games: Video games use distance formulas for movement and collision",
-                ],
-                npc: "Ben",
-                location: "Barangay Street",
-                reward: "12 coins + Distance Solver Badge",
-            },
-            4: {
-                id: "4",
-                title: "Temperature Switch",
-                description:
-                    "Ana needs to convert temperature readings for her science project. Show her how inverse functions connect Celsius and Fahrenheit.",
-                quizOverview:
-                    "This quiz focuses on inverse functions through temperature conversion. You'll convert between Celsius and Fahrenheit using inverse formulas.",
-                realLifeTrivia: [
-                    "Weather: Different countries use different temperature scales",
-                    "Cooking: Oven temperatures may be in Celsius or Fahrenheit",
-                    "Health: Body temperature readings need correct unit conversion",
-                    "Travel: Understanding temperature scales helps when visiting other countries",
-                ],
-                npc: "Ana",
-                location: "Barangay School",
-                reward: "18 coins + Conversion Master Badge",
-            },
-            5: {
-                id: "5",
-                title: "Garden Area",
-                description:
-                    "Lola Rosa wants to find the side length of her square garden given its area. Teach her how square roots solve this.",
-                quizOverview:
-                    "This quiz focuses on radicals by finding side lengths from area. You'll use square roots and cube roots to reverse area and volume formulas.",
-                realLifeTrivia: [
-                    "Gardening: Find the side length of a plot when you know the total area",
-                    "Farming: Calculate fence lengths from field dimensions",
-                    "Construction: Determine material needs from area measurements",
-                    "Packaging: Find box dimensions from volume requirements",
-                ],
-                npc: "Lola Rosa",
-                location: "Barangay Garden",
-                reward: "20 coins + Root Expert Badge",
-            },
-            6: {
-                id: "6",
-                title: "Original Price",
-                description:
-                    "Mang Pedro's store has a sale, but he forgot the original price. Use inverse percentage to find it.",
-                quizOverview:
-                    "This quiz focuses on inverse functions through reverse percentage problems. You'll find the original amount before a discount or tax was applied.",
-                realLifeTrivia: [
-                    "Shopping: Check if a sale price is really a good deal by finding the original price",
-                    "Business: Reverse-calculate costs from marked-up selling prices",
-                    "Taxes: Find pre-tax amounts from total bills",
-                    "Tips: Calculate the original meal cost from a final restaurant bill",
-                ],
-                npc: "Mang Pedro",
-                location: "Barangay Store",
-                reward: "25 coins + Price Detective Badge",
-            },
-            7: {
-                id: "7",
-                title: "Ladder Reach",
-                description:
-                    "Kuya Noel needs to know how high a ladder reaches when leaned against a wall. Use the Pythagorean theorem.",
-                quizOverview:
-                    "This quiz focuses on radicals through right-triangle problems. You'll find missing sides using the Pythagorean theorem and square roots.",
-                realLifeTrivia: [
-                    "Construction: Ladder safety depends on correct height calculations",
-                    "Rescue: Firefighters calculate ladder reach using right triangles",
-                    "Home repair: Safely position ladders using the Pythagorean theorem",
-                    "Sports: Find the length of a ramp or slope using square roots",
-                ],
-                npc: "Kuya Noel",
-                location: "Barangay Chapel",
-                reward: "22 coins + Ladder Math Badge",
-            },
-            8: {
-                id: "8",
-                title: "Trip Time",
-                description:
-                    "Teacher Cruz's class is planning a field trip. Help them use inverse functions to find travel time from distance and speed.",
-                quizOverview:
-                    "This quiz focuses on inverse functions through the distance-rate-time formula. You'll solve for time, distance, or speed by rearranging the formula.",
-                realLifeTrivia: [
-                    "Travel: Plan arrival times using distance and speed",
-                    "Logistics: Delivery companies calculate travel time for routes",
-                    "Sports: Find average speed from race distance and time",
-                    "Commuting: Estimate how long your trip will take",
-                ],
-                npc: "Teacher Cruz",
-                location: "Barangay School",
-                reward: "30 coins + Trip Planner Badge",
-            },
-            9: {
-                id: "9",
-                title: "Wire Length",
-                description:
-                    "Danny needs to cut a diagonal brace wire for a gate. Use the Pythagorean theorem to find the exact length.",
-                quizOverview:
-                    "This quiz focuses on radicals through diagonal measurement. You'll calculate diagonal lengths of rectangles and simplify radical answers.",
-                realLifeTrivia: [
-                    "Construction: Diagonal braces make gates and fences stronger",
-                    "Electrical: Wire lengths are calculated using right triangles",
-                    "Crafts: Diagonal cuts need accurate measurements",
-                    "Engineering: Supports and trusses rely on diagonal measurements",
-                ],
-                npc: "Danny",
-                location: "Barangay Home",
-                reward: "28 coins + Wire Cutter Badge",
-            },
-            10: {
-                id: "10",
-                title: "Barangay Quiz Prep",
-                description:
-                    "The barangay captain's daughter is organizing a quiz bee. Help her review radicals and inverse functions for the community.",
-                quizOverview:
-                    "This mixed quiz reviews radicals and inverse functions from Level 1. You'll solve Pythagorean theorem, distance, scaling, and conversion problems.",
-                realLifeTrivia: [
-                    "Community events: Math quiz bees build confidence in students",
-                    "Review: Mixing different problem types strengthens understanding",
-                    "Teamwork: Helping others learn math reinforces your own skills",
-                    "Progress: Completing this quiz prepares you for city-level tutoring",
-                ],
-                npc: "Barangay Captain's Daughter",
-                location: "Barangay Hall",
-                reward: "35 coins + Barangay Tutor Badge",
-            },
+    getMissionFallback(missionId: number) {
+        return {
+            id: missionId.toString(),
+            title: "Unknown Mission",
+            description: "A mission to help the community.",
+            quizOverview:
+                "Complete this quiz to test your algebra skills and help the community.",
+            realLifeTrivia: [
+                "Math is used in everyday life from shopping to budgeting",
+                "Understanding algebra helps you make better decisions",
+                "Problem-solving skills transfer to real-world situations",
+            ],
+            npc: "Community Member",
+            location: "Barangay",
+            reward: "5 coins",
         };
-
-        return (
-            missions[missionId as keyof typeof missions] || {
-                id: missionId.toString(),
-                title: "Unknown Mission",
-                description: "A mission to help the community.",
-                quizOverview:
-                    "Complete this quiz to test your algebra skills and help the community.",
-                realLifeTrivia: [
-                    "Math is used in everyday life from shopping to budgeting",
-                    "Understanding algebra helps you make better decisions",
-                    "Problem-solving skills transfer to real-world situations",
-                ],
-                npc: "Community Member",
-                location: "Barangay",
-                reward: "5 coins",
-            }
-        );
     }
+
+    protected getMissionFlavor() {
+        return {
+            completedTitle: "Mission Already Completed! ✅",
+            completedIcon: "🎖️",
+            completedMessage: (npc: string) => `${npc}: "Thank you for completing this mission! You've earned your badge and helped our community. Keep up the great work, citizen!"`,
+            completedActionLabel: "Continue Exploring",
+            prereqTitle: "Mission Prerequisites Required 🔒",
+            prereqIcon: "📋",
+            prereqActionLabel: "Check Available Missions",
+            prereqFallbackList: "Complete Mission 1 first",
+            prereqMessage: (npc: string, availableList: string) => `${npc}: "Hello there! I'd love to give you this mission, but you need to complete some other tasks first. Available missions: ${availableList}. Come back after you've gained more experience!"`,
+        };
+    }
+
+    protected getWorldBackgroundConfig() {
+        return {
+            label: "barangay",
+            textureKey: "barangay-bg-root",
+            imagePath: "assets/barangay-background.png",
+            fallbackThemeName: "teal",
+            fallbackColor: 0x20b2aa,
+            fallbackGridColor: 0x20b2aa,
+            fallbackGridSpacing: 80,
+        };
+    }
+
+    protected getCollisionDataKey() {
+        return "BarangayMap";
+    }
+
+    protected getTreasureHunterBadge() {
+        return "Barangay";
+    }
+
+    protected getNPCTheme() {
+        return {
+            noun: "Barangay",
+            officialAdjective: "barangay",
+            level: 1,
+            className: "BarangayMap",
+            nameFill: "#FFFFFF",
+            nameStroke: "#000000",
+            nameShadowColor: "#000000",
+            addressFill: "#FFFFFF",
+            glowColor: 0xffffff,
+            imageMap: {},
+            imageFileMap: {},
+        };
+    }
+
+
+
+
+
+
+
+
+
+
 
     showMessage(text: string) {
         const messageBox = this.add.rectangle(
@@ -3501,4 +2103,3 @@ export class BarangayMap extends Scene {
         }
     }
 }
-

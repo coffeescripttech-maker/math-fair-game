@@ -12,12 +12,24 @@ import React, { useState, useEffect } from "react";
 import LeaderboardService from "../services/LeaderboardService";
 import { LeaderboardEntry, LeaderboardType } from "../types/leaderboard";
 import { GameStateManager } from "../utils/GameStateManager";
-import { TrendingUpDown, Trophy, Zap, Diamond, X, RefreshCw, Globe, AlertTriangle } from "lucide-react";
+import {
+    Trophy,
+    X,
+    RefreshCw,
+    Globe,
+    AlertTriangle,
+    Star,
+    CalendarDays,
+    Zap,
+    Gem,
+} from "lucide-react";
 
 interface LeaderboardProps {
     onClose: () => void;
     isVisible: boolean;
 }
+
+const YELLOW = "#FFD84D";
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({
     onClose,
@@ -120,11 +132,30 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
         }
     };
 
-        const getRankIcon = (rank: number): React.ReactNode => {
-        if (rank === 1) return <Trophy className="w-5 h-5 text-brutal-yellow" />;
-        if (rank === 2) return <Trophy className="w-5 h-5 text-gray-400" />;
-        if (rank === 3) return <Trophy className="w-5 h-5 text-brutal-red" />;
-        return <span className="w-5 h-5 flex items-center justify-center font-bold text-gray-700">{rank}</span>;
+    const getRankIcon = (rank: number): React.ReactNode => {
+        if (rank === 1)
+            return (
+                <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-tutor-navy bg-tutor-yellow text-tutor-navy">
+                    <Trophy className="h-4 w-4" />
+                </span>
+            );
+        if (rank === 2)
+            return (
+                <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-tutor-navy bg-[#E5E7EB] text-tutor-navy">
+                    <Trophy className="h-4 w-4" />
+                </span>
+            );
+        if (rank === 3)
+            return (
+                <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-tutor-navy bg-tutor-orange text-tutor-cream">
+                    <Trophy className="h-4 w-4" />
+                </span>
+            );
+        return (
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-tutor-navy bg-tutor-cream font-brutal text-xs text-tutor-navy">
+                {rank}
+            </span>
+        );
     };
 
     const isCurrentPlayer = (entry: LeaderboardEntry): boolean => {
@@ -132,234 +163,304 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
         return progress?.playerName === entry.player_name;
     };
 
+    const TABS: ReadonlyArray<{
+        type: LeaderboardType;
+        label: string;
+        accent: string;
+        icon: React.ReactNode;
+    }> = [
+        {
+            type: LeaderboardType.OVERALL,
+            label: "Overall",
+            accent: "bg-tutor-blue",
+            icon: <Trophy className="h-3.5 w-3.5" />,
+        },
+        {
+            type: LeaderboardType.DAILY,
+            label: "Daily",
+            accent: "bg-tutor-orange",
+            icon: <CalendarDays className="h-3.5 w-3.5" />,
+        },
+        {
+            type: LeaderboardType.SPEED,
+            label: "Speed",
+            accent: "bg-tutor-red",
+            icon: <Zap className="h-3.5 w-3.5" />,
+        },
+        {
+            type: LeaderboardType.COLLECTORS,
+            label: "Collectors",
+            accent: "bg-tutor-purple",
+            icon: <Gem className="h-3.5 w-3.5" />,
+        },
+    ];
+
     if (!isVisible) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center pointer-events-auto p-4 z-50">
-            <div className="brutal-panel p-6 w-full max-w-3xl mx-4 max-h-[95vh] overflow-hidden flex flex-col">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 w-10 h-10 bg-brutal-red border-2 border-black shadow-brutal-xs flex items-center justify-center text-white brutal-press z-20"
-                    >
-                                                <X className="w-5 h-5" />
-                    </button>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
+            <div className="flex min-h-full items-center justify-center p-4">
+                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                <section className="relative w-full max-w-3xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex max-h-[90vh] flex-col rounded-[14px] border-2 border-tutor-yellow px-5 py-5 sm:px-7">
+                        {/* Close Button */}
+                        <button
+                            onClick={onClose}
+                            type="button"
+                            aria-label="Close leaderboard"
+                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
 
-                    {/* Header */}
-                    <h2 className="text-2xl font-brutal uppercase text-gray-900 mb-4 text-center">
-                        🏆 Leaderboard
-                    </h2>
+                        {/* Header */}
+                        <div className="mb-4 text-center">
+                            <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                                Leaderboard
+                            </h2>
+                            <div className="mt-1.5 flex items-center justify-center gap-2">
+                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <Star
+                                    className="h-4 w-4 text-tutor-yellow"
+                                    fill={YELLOW}
+                                />
+                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                            </div>
+                            <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
+                                <Trophy className="h-4 w-4" />
+                                Global rankings
+                            </p>
+                        </div>
 
-                    {/* Player's Rank Display */}
-                    {playerRank && (
-                        <div className="mb-4 p-3 rounded-none border-[3px] border-black bg-brutal-yellow shadow-brutal-sm">
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-700 font-semibold">
+                        {/* Player's Rank Display */}
+                        {playerRank && (
+                            <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border-2 border-tutor-navy bg-tutor-yellow px-4 py-3 shadow-[3px_3px_0_0_#071B3A]">
+                                <span className="font-playful text-sm font-bold text-tutor-navy">
                                     Your Rank:
                                 </span>
-                                <span className="text-2xl font-bold text-amber-600">
-                                    {getRankIcon(playerRank)} #{playerRank}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Tabs */}
-                    <div className="flex space-x-2 mb-4 overflow-x-auto">
-                        {[
-                            {
-                                type: LeaderboardType.OVERALL,
-                                icon: <Trophy className="w-4 h-4" />,
-                                label: "Overall",
-                            },
-                            {
-                                type: LeaderboardType.DAILY,
-                                icon: "📅",
-                                label: "Daily",
-                            },
-                            {
-                                type: LeaderboardType.SPEED,
-                                icon: "⚡",
-                                label: "Speed",
-                            },
-                            {
-                                type: LeaderboardType.COLLECTORS,
-                                icon: "💎",
-                                label: "Collectors",
-                            },
-                        ].map((tab) => (
-                            <button
-                                key={tab.type}
-                                onClick={() => setSelectedTab(tab.type)}
-                                className={`px-3 py-2 rounded-none border-2 border-black transition-all duration-150 font-bold uppercase text-xs sm:text-sm ${
-                                    selectedTab === tab.type
-                                        ? "bg-black text-white shadow-brutal-xs"
-                                        : "bg-white text-gray-700 hover:bg-brutal-bg"
-                                }`}
-                            >
-                                <span className="mr-1">{tab.icon}</span>
-                                <span>{tab.label}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Leaderboard Content */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar">
-                        {error ? (
-                            <div className="text-center py-12">
-                                <div className="text-4xl mb-4">⚠️</div>
-                                <p className="text-red-700 font-bold mb-2">
-                                    {error}
-                                </p>
-                                <p className="text-amber-600 text-sm">
-                                    Check the console for more details or refer
-                                    to LEADERBOARD_SETUP_GUIDE.md
-                                </p>
-                            </div>
-                        ) : loading ? (
-                            <div className="text-center py-12">
-                                <div className="text-4xl mb-4 animate-bounce">
-                                    ⏳
+                                <div className="flex items-center gap-2">
+                                    {getRankIcon(playerRank)}
+                                    <span className="font-brutal text-xl text-tutor-navy">
+                                        #{playerRank}
+                                    </span>
                                 </div>
-                                <p className="text-amber-700 font-bold">
-                                    Loading leaderboard...
-                                </p>
-                            </div>
-                        ) : leaderboardData.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="text-4xl mb-4">📜</div>
-                                <p className="text-amber-700 font-bold mb-2">
-                                    No entries yet!
-                                </p>
-                                <p className="text-amber-600 text-sm">
-                                    Be the first to appear on the leaderboard.
-                                    Complete missions to submit your score!
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full min-w-[500px]">
-                                    <thead className="sticky top-0 bg-brutal-yellow border-b-[3px] border-black">
-                                        <tr className="text-gray-700 font-bold text-xs sm:text-sm">
-                                            <th className="p-2 text-center">
-                                                Rank
-                                            </th>
-                                            <th className="p-2 text-left">
-                                                Player
-                                            </th>
-                                            <th className="p-2 text-center">
-                                                Score
-                                            </th>
-                                            <th className="p-2 text-center">
-                                                Badges
-                                            </th>
-                                            {selectedTab ===
-                                                LeaderboardType.SPEED && (
-                                                <th className="p-2 text-center">
-                                                    Fastest
-                                                </th>
-                                            )}
-                                            {selectedTab ===
-                                                LeaderboardType.COLLECTORS && (
-                                                <th className="p-2 text-center">
-                                                    Items
-                                                </th>
-                                            )}
-                                            {selectedTab ===
-                                                LeaderboardType.OVERALL && (
-                                                <th className="p-2 text-center hidden sm:table-cell">
-                                                    Level
-                                                </th>
-                                            )}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {leaderboardData.map((entry, index) => {
-                                            const rank = index + 1;
-                                            const isPlayer =
-                                                isCurrentPlayer(entry);
-
-                                            return (
-                                                <tr
-                                                    key={entry.id || index}
-                                                    className={`border-b-2 border-black transition-all duration-150 hover:bg-brutal-bg text-xs sm:text-sm ${
-                                                        isPlayer
-                                                            ? "bg-brutal-blue font-bold"
-                                                            : "bg-white"
-                                                    }`}
-                                                >
-                                                    <td className="p-2 text-center text-lg sm:text-xl">
-                                                        {getRankIcon(rank)}
-                                                    </td>
-                                                    <td className="p-2 text-gray-800">
-                                                        {isPlayer && (
-                                                            <span className="mr-1">
-                                                                ⭐
-                                                            </span>
-                                                        )}
-                                                        {entry.player_name}
-                                                        {isPlayer && (
-                                                            <span className="ml-1">
-                                                                ⭐
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-2 text-center text-gray-700 font-semibold">
-                                                        {entry.total_score.toLocaleString()}
-                                                    </td>
-                                                    <td className="p-2 text-center">
-                                                        <span className="inline-block px-2 py-1 bg-brutal-yellow text-black border-2 border-black rounded-none text-xs font-bold">
-                                                            <Trophy className="w-3 h-3 mr-1" /> {entry.badges}
-                                                        </span>
-                                                    </td>
-                                                    {selectedTab ===
-                                                        LeaderboardType.SPEED && (
-                                                        <td className="p-2 text-center text-green-700 font-bold">
-                                                            <TrendingUpDown className="w-3 h-3 mr-1" /> {entry.fastest_quiz_time?.toFixed(1) || "-"}s
-                                                            {entry.fastest_quiz_time?.toFixed(
-                                                                1
-                                                            ) || "-"}
-                                                            s
-                                                        </td>
-                                                    )}
-                                                    {selectedTab ===
-                                                        LeaderboardType.COLLECTORS && (
-                                                        <td className="p-2 text-center text-purple-700 font-bold">
-                                                            <Diamond className="w-3 h-3 mr-1" /> {entry.total_collectibles || 0}
-                                                            {entry.total_collectibles ||
-                                                                0}
-                                                        </td>
-                                                    )}
-                                                    {selectedTab ===
-                                                        LeaderboardType.OVERALL && (
-                                                        <td className="p-2 text-center hidden sm:table-cell">
-                                                            <span className="inline-block px-2 py-1 bg-white text-black border-2 border-black rounded-none text-xs font-bold">
-                                                                L{entry.level}
-                                                            </span>
-                                                        </td>
-                                                    )}
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
                             </div>
                         )}
-                    </div>
 
-                    {/* Footer */}
-                    <div className="mt-4 text-center text-xs text-gray-500">
-                        {leaderboardService.isEnabled() ? (
-                            <>
-                                                            <><RefreshCw className="w-4 h-4 mr-1" /> Updates every 30 seconds • <Globe className="w-4 h-4 mx-1" /> Global Rankings</>
-                            </>
-                        ) : (
-                            <>
-                                <><AlertTriangle className="w-4 h-4 mr-1" /> Leaderboard not configured • See LEADERBOARD_SETUP_GUIDE.md</>
-                            </>
-                        )}
+                        {/* Tabs */}
+                        <div className="mb-4 flex flex-wrap gap-2">
+                            {TABS.map((tab) => {
+                                const active = selectedTab === tab.type;
+                                return (
+                                    <button
+                                        key={tab.type}
+                                        type="button"
+                                        onClick={() =>
+                                            setSelectedTab(tab.type)
+                                        }
+                                        className={`flex items-center gap-2 rounded-xl border-[3px] px-3 py-2 font-brutal text-xs uppercase tracking-wide transition-all duration-150 sm:text-sm ${
+                                            active
+                                                ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
+                                                : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                        }`}
+                                    >
+                                        <span
+                                            className={`flex h-6 w-6 items-center justify-center rounded-md border-2 ${
+                                                active
+                                                    ? "border-tutor-navy bg-tutor-yellow text-tutor-navy"
+                                                    : `border-tutor-navy text-tutor-cream ${tab.accent}`
+                                            }`}
+                                        >
+                                            {tab.icon}
+                                        </span>
+                                        <span>{tab.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Leaderboard Content */}
+                        <div className="min-h-0 flex-1 overflow-y-auto custom-scrollbar">
+                            {error ? (
+                                <div className="py-12 text-center">
+                                    <span className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-tutor-navy bg-tutor-red text-3xl shadow-[3px_3px_0_0_#071B3A]">
+                                        ⚠️
+                                    </span>
+                                    <p className="mb-2 font-playful font-bold text-tutor-red">
+                                        {error}
+                                    </p>
+                                    <p className="font-playful text-sm text-tutor-navy/60">
+                                        Check the console for more details or
+                                        refer to LEADERBOARD_SETUP_GUIDE.md
+                                    </p>
+                                </div>
+                            ) : loading ? (
+                                <div className="py-12 text-center">
+                                    <span className="mb-4 inline-flex h-14 w-14 animate-bounce items-center justify-center rounded-2xl border-2 border-tutor-navy bg-tutor-yellow text-3xl shadow-[3px_3px_0_0_#071B3A]">
+                                        ⏳
+                                    </span>
+                                    <p className="font-playful font-bold text-tutor-navy">
+                                        Loading leaderboard...
+                                    </p>
+                                </div>
+                            ) : leaderboardData.length === 0 ? (
+                                <div className="py-12 text-center">
+                                    <span className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-tutor-navy bg-tutor-cream text-3xl shadow-[3px_3px_0_0_#071B3A]">
+                                        📜
+                                    </span>
+                                    <p className="mb-2 font-playful font-bold text-tutor-navy">
+                                        No entries yet!
+                                    </p>
+                                    <p className="font-playful text-sm text-tutor-navy/60">
+                                        Be the first to appear on the
+                                        leaderboard. Complete missions to
+                                        submit your score!
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="overflow-x-auto pb-1">
+                                    <table className="w-full min-w-[500px] border-2 border-tutor-navy shadow-[3px_3px_0_0_#071B3A]">
+                                        <thead className="sticky top-0 bg-tutor-navy">
+                                            <tr className="font-brutal text-[11px] uppercase tracking-wide text-tutor-cream sm:text-xs">
+                                                <th className="p-2.5 text-center">
+                                                    Rank
+                                                </th>
+                                                <th className="p-2.5 text-left">
+                                                    Player
+                                                </th>
+                                                <th className="p-2.5 text-center">
+                                                    Score
+                                                </th>
+                                                <th className="p-2.5 text-center">
+                                                    Badges
+                                                </th>
+                                                {selectedTab ===
+                                                    LeaderboardType.SPEED && (
+                                                    <th className="p-2.5 text-center">
+                                                        Fastest
+                                                    </th>
+                                                )}
+                                                {selectedTab ===
+                                                    LeaderboardType.COLLECTORS && (
+                                                    <th className="p-2.5 text-center">
+                                                        Items
+                                                    </th>
+                                                )}
+                                                {selectedTab ===
+                                                    LeaderboardType.OVERALL && (
+                                                    <th className="hidden p-2.5 text-center sm:table-cell">
+                                                        Level
+                                                    </th>
+                                                )}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {leaderboardData.map(
+                                                (entry, index) => {
+                                                    const rank = index + 1;
+                                                    const isPlayer =
+                                                        isCurrentPlayer(entry);
+
+                                                    return (
+                                                        <tr
+                                                            key={
+                                                                entry.id ||
+                                                                index
+                                                            }
+                                                            className={`border-t-2 border-tutor-navy/15 font-playful text-xs transition-colors duration-150 sm:text-sm ${
+                                                                isPlayer
+                                                                    ? "bg-tutor-yellow font-bold"
+                                                                    : "bg-tutor-cream hover:bg-[#F3EBDD]"
+                                                            }`}
+                                                        >
+                                                            <td className="p-2.5 text-center">
+                                                                {getRankIcon(
+                                                                    rank
+                                                                )}
+                                                            </td>
+                                                            <td className="p-2.5 text-tutor-navy">
+                                                                {isPlayer && (
+                                                                    <span className="mr-1">
+                                                                        ⭐
+                                                                    </span>
+                                                                )}
+                                                                {
+                                                                    entry.player_name
+                                                                }
+                                                                {isPlayer && (
+                                                                    <span className="ml-1">
+                                                                        ⭐
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                            <td className="p-2.5 text-center font-semibold text-tutor-navy">
+                                                                {entry.total_score.toLocaleString()}
+                                                            </td>
+                                                            <td className="p-2.5 text-center">
+                                                                <span className="inline-flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 font-brutal text-xs text-tutor-navy">
+                                                                    <Trophy className="h-3 w-3" />
+                                                                    {entry.badges}
+                                                                </span>
+                                                            </td>
+                                                            {selectedTab ===
+                                                                LeaderboardType.SPEED && (
+                                                                <td className="p-2.5 text-center font-bold text-tutor-green">
+                                                                    <Zap className="mr-1 inline h-3 w-3" />
+                                                                    {entry.fastest_quiz_time?.toFixed(
+                                                                        1
+                                                                    ) || "-"}
+                                                                    s
+                                                                </td>
+                                                            )}
+                                                            {selectedTab ===
+                                                                LeaderboardType.COLLECTORS && (
+                                                                <td className="p-2.5 text-center font-bold text-tutor-purple">
+                                                                    <Gem className="mr-1 inline h-3 w-3" />
+                                                                    {entry.total_collectibles ||
+                                                                        0}
+                                                                </td>
+                                                            )}
+                                                            {selectedTab ===
+                                                                LeaderboardType.OVERALL && (
+                                                                <td className="hidden p-2.5 text-center sm:table-cell">
+                                                                    <span className="inline-block rounded-md border-2 border-tutor-navy bg-tutor-cream px-2 py-0.5 font-brutal text-xs text-tutor-navy">
+                                                                        L
+                                                                        {
+                                                                            entry.level
+                                                                        }
+                                                                    </span>
+                                                                </td>
+                                                            )}
+                                                        </tr>
+                                                    );
+                                                }
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-4 flex items-center justify-center gap-1 text-center font-playful text-xs text-tutor-navy/60">
+                            {leaderboardService.isEnabled() ? (
+                                <>
+                                    <RefreshCw className="h-3.5 w-3.5" />
+                                    Updates every 30 seconds •{" "}
+                                    <Globe className="h-3.5 w-3.5" />
+                                    Global Rankings
+                                </>
+                            ) : (
+                                <>
+                                    <AlertTriangle className="h-3.5 w-3.5" />
+                                    Leaderboard not configured • See
+                                    LEADERBOARD_SETUP_GUIDE.md
+                                </>
+                            )}
+                        </div>
                     </div>
+                </section>
             </div>
         </div>
     );
 };
-

@@ -64,7 +64,7 @@ export class SecretQuestService {
             {
                 id: "secret-pathfinder-1",
                 name: "Hidden Paths",
-                description: "Discover all 5 hidden locations across both maps",
+                description: "Discover all 5 hidden locations across all five maps",
                 type: SecretQuestType.EXPLORATION,
                 reward: {
                     title: PlayerTitle.PATHFINDER,
@@ -88,7 +88,7 @@ export class SecretQuestService {
                 id: "secret-treasure-hunter-1",
                 name: "Master Collector",
                 description:
-                    "Collect ALL collectibles in both Barangay and City maps",
+                    "Collect ALL collectibles across all five maps",
                 type: SecretQuestType.COLLECTION,
                 reward: {
                     title: PlayerTitle.TREASURE_HUNTER,
@@ -97,7 +97,7 @@ export class SecretQuestService {
                 },
                 condition: {
                     type: "collect_all",
-                    count: 18, // 8 barangay + 10 city
+                    count: 48, // 8 barangay + 10 city + 10 province + 10 region + 10 national
                 },
                 hint: "💎 Every treasure tells a story...",
                 hidden: true,
@@ -133,7 +133,7 @@ export class SecretQuestService {
                 id: "secret-speedrun-1",
                 name: "Lightning Campaign",
                 description:
-                    "Complete all 20 missions in under 2 hours playtime",
+                    "Complete all 50 missions in under 2 hours playtime",
                 type: SecretQuestType.SPEED,
                 reward: {
                     title: PlayerTitle.SPEEDRUNNER,
@@ -574,7 +574,7 @@ export class SecretQuestService {
 
         // Check treasure hunter (all collectibles)
         const totalCollected = progress.totalItemsCollected || 0;
-        if (totalCollected >= 18) {
+        if (totalCollected >= 48) {
             this.completeSecretQuest("secret-treasure-hunter-1");
         }
 
@@ -584,17 +584,17 @@ export class SecretQuestService {
 
         // Check perfect citizen (100% completion)
         if (
-            progress.completedMissions.length === 20 &&
+            progress.completedMissions.length === 50 &&
             progress.totalQuestions > 0 &&
             progress.correctAnswers === progress.totalQuestions &&
-            totalCollected >= 18
+            totalCollected >= 48
         ) {
             this.completeSecretQuest("secret-perfect-1");
         }
 
         // Check speedrunner (complete all in <2 hours)
         if (
-            progress.completedMissions.length === 20 &&
+            progress.completedMissions.length === 50 &&
             progress.playtime < 120
         ) {
             // 120 minutes = 2 hours

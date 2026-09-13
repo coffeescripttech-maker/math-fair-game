@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from "react";
+import {
+    X,
+    Timer,
+    ClipboardList,
+    CheckCircle2,
+    XCircle,
+    ArrowRight,
+    Lightbulb,
+    BookOpen,
+} from "lucide-react";
 
 interface QuizQuestion {
     question: string;
@@ -39,19 +49,6 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
     const [timeRemaining, setTimeRemaining] = useState(QUIZ_TIME_LIMIT);
     const [isTimerRunning, setIsTimerRunning] = useState(true);
     const [timeBonus, setTimeBonus] = useState(0);
-
-    // Level-based colors
-    const levelColors = level === 1 ? {
-        primary: "level1-primary",
-        secondary: "level1-secondary",
-        light: "level1-light",
-        gradient: "from-level1-primary to-level1-secondary",
-    } : {
-        primary: "level2-primary",
-        secondary: "level2-secondary",
-        light: "level2-light",
-        gradient: "from-level2-primary to-level2-accent",
-    };
 
     // Countdown timer effect
     useEffect(() => {
@@ -118,268 +115,406 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
         }
     };
 
-    const getTimerColor = () => {
-        if (timeRemaining <= 10) return "text-error animate-pulse";
-        if (timeRemaining <= 20) return "text-warning";
-        if (timeRemaining <= 30) return "text-math-orange";
-        return "text-success";
-    };
-
+    // Timer band colors: solid tutor tones (cream text) except yellow (navy)
     const getTimerBgColor = () => {
-        if (timeRemaining <= 10) return "bg-brutal-red";
-        if (timeRemaining <= 20) return "bg-brutal-orange";
-        if (timeRemaining <= 30) return "bg-brutal-yellow";
-        return "bg-brutal-green";
+        if (timeRemaining <= 10) return "bg-tutor-red";
+        if (timeRemaining <= 20) return "bg-tutor-orange";
+        if (timeRemaining <= 30) return "bg-tutor-yellow";
+        return "bg-tutor-green";
     };
 
-    const getProgressBarColor = () => {
-        if (timeRemaining <= 10) return "bg-error";
-        if (timeRemaining <= 20) return "bg-warning";
-        if (timeRemaining <= 30) return "bg-math-orange";
-        return "bg-success";
+    const getTimerTextColor = () => {
+        if (timeRemaining <= 30) return "text-tutor-navy";
+        return "text-tutor-cream";
+    };
+
+    const getTimerMessage = () => {
+        if (timeRemaining <= 10) return "⚠️ HURRY!";
+        if (timeRemaining <= 20) return "⏰ Time Running Out!";
+        return "💪 You Got This!";
     };
 
     const timePercentage = (timeRemaining / QUIZ_TIME_LIMIT) * 100;
 
+    const isLevelOne = level === 1;
+    // Level tint for the question card: yellow (level 1) vs blue (level 2+)
+    const questionCardTint = isLevelOne
+        ? "bg-tutor-yellow"
+        : "bg-tutor-blue";
+
     return (
-        <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
-            <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl mx-2 sm:mx-4 max-h-[95vh] overflow-y-auto custom-scrollbar">
-                {/* Neobrutalist Quiz Container (level-tinted outer frame) */}
-                <div className={`${level === 1 ? "bg-brutal-orange" : "bg-brutal-blue"} rounded-none p-1.5 shadow-brutal-xl border-4 border-black`}>
-                    <div className="bg-brutal-bg rounded-none p-4 sm:p-6">
-                        {/* Header */}
-                        <div className="flex justify-between items-center mb-4">
-                            <div className="flex items-center space-x-3">
-                                <div className="bg-black rounded-none px-4 py-2 border-2 border-black shadow-brutal-xs">
-                                    <span className="text-white font-bold text-sm font-heading">
-                                        MISSION #{missionId}
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
+            <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
+                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl">
+                    <section className="relative animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
+                        <div className="space-y-4 rounded-[14px] border-2 border-tutor-yellow px-4 py-4 sm:space-y-5 sm:px-6 sm:py-5">
+                            {/* Header */}
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-orange text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
+                                        <ClipboardList className="h-4 w-4" />
+                                    </span>
+                                    <h2 className="truncate font-brutal text-base uppercase tracking-wide text-tutor-navy sm:text-xl">
+                                        Math Challenge
+                                    </h2>
+                                    <span className="hidden shrink-0 rounded-lg border-2 border-tutor-navy bg-tutor-navy px-2 py-1 font-playful text-xs font-bold uppercase text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:inline-block">
+                                        Mission #{missionId}
+                                    </span>
+                                    <span
+                                        className={`hidden shrink-0 rounded-lg border-2 border-tutor-navy px-2 py-1 font-playful text-xs font-bold uppercase shadow-[2px_2px_0_0_#071B3A] sm:inline-block ${
+                                            isLevelOne
+                                                ? "bg-tutor-yellow text-tutor-navy"
+                                                : "bg-tutor-blue text-tutor-cream"
+                                        }`}
+                                    >
+                                        Level {level}
                                     </span>
                                 </div>
-                                <h2 className="text-xl sm:text-2xl font-heading font-black text-gray-900">
-                                    📝 MATH CHALLENGE
-                                </h2>
+                                <button
+                                    onClick={onClose}
+                                    type="button"
+                                    aria-label="Close quiz"
+                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] sm:h-10 sm:w-10"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
                             </div>
-                            <button
-                                onClick={onClose}
-                                className="w-10 h-10 bg-brutal-red border-2 border-black shadow-brutal-xs flex items-center justify-center text-white brutal-press"
-                            >
-                                ✕
-                            </button>
-                        </div>
 
-                        {/* Timer Display */}
-                        {!showResult && (
-                            <div className={`mb-4 p-4 rounded-none border-[3px] border-black ${getTimerBgColor()} transition-all duration-300 shadow-brutal-sm`}>
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-3xl">⏱️</span>
-                                        <span className={`text-3xl font-bold font-math ${getTimerColor()}`}>
-                                            {timeRemaining}s
+                            {/* Timer Display */}
+                            {!showResult && (
+                                <div
+                                    className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] transition-all duration-300 sm:p-4 ${getTimerBgColor()}`}
+                                >
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <span
+                                                className={`flex h-9 w-9 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-cream/90 ${getTimerTextColor()}`}
+                                            >
+                                                <Timer
+                                                    className={`h-4 w-4 ${
+                                                        timeRemaining <= 10
+                                                            ? "animate-pulse"
+                                                            : ""
+                                                    }`}
+                                                />
+                                            </span>
+                                            <span
+                                                className={`font-brutal text-xl sm:text-3xl ${getTimerTextColor()}`}
+                                            >
+                                                {timeRemaining}s
+                                            </span>
+                                        </div>
+                                        <span
+                                            className={`rounded-full border-2 border-tutor-navy px-2.5 py-1 text-center font-playful text-xs font-bold uppercase sm:text-sm ${getTimerTextColor()}`}
+                                        >
+                                            {getTimerMessage()}
                                         </span>
                                     </div>
-                                    <div className="text-sm font-semibold text-gray-700">
-                                        {timeRemaining <= 10 ? "⚠️ HURRY!" : timeRemaining <= 20 ? "⏰ Time Running Out!" : "💪 You Got This!"}
+                                    <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-tutor-cream/90 sm:h-3">
+                                        <div
+                                            className="h-full bg-tutor-navy transition-all duration-1000 ease-linear"
+                                            style={{
+                                                width: `${timePercentage}%`,
+                                            }}
+                                        />
                                     </div>
                                 </div>
-                                <div className="w-full bg-white h-3 border-2 border-black overflow-hidden">
-                                    <div
-                                        className={`h-full ${getProgressBarColor()} transition-all duration-1000 ease-linear`}
-                                        style={{ width: `${timePercentage}%` }}
-                                    />
-                                </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Question Card */}
-                        <div className="mb-6">
-                            <div className={`${level === 1 ? "bg-brutal-yellow" : "bg-brutal-blue"} border-[3px] border-black rounded-none p-6 shadow-brutal-sm`}>
-                                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center space-x-2">
-                                    <span className="text-2xl">❓</span>
-                                    <span>Question:</span>
+                            {/* Question Card */}
+                            <div
+                                className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] sm:p-4 ${questionCardTint}`}
+                            >
+                                <h3
+                                    className={`mb-1.5 flex items-center gap-2 font-brutal text-xs uppercase tracking-wide sm:text-sm ${
+                                        isLevelOne
+                                            ? "text-tutor-navy"
+                                            : "text-tutor-cream"
+                                    }`}
+                                >
+                                    <span className="text-base sm:text-lg">
+                                        ❓
+                                    </span>
+                                    Question:
                                 </h3>
-                                <p className="text-gray-700 leading-relaxed text-base sm:text-lg font-body">
+                                <p
+                                    className={`font-playful text-sm leading-relaxed sm:text-base ${
+                                        isLevelOne
+                                            ? "text-tutor-navy"
+                                            : "text-tutor-cream"
+                                    }`}
+                                >
                                     {question.question}
                                 </p>
                             </div>
-                        </div>
 
-                        {/* Help Section (Hints & Formula) */}
-                        {!showResult && (question.hints || question.formula) && (
-                            <div className="mb-4 space-y-2">
-                                {question.formula && (
-                                    <button
-                                        onClick={() => setShowFormula(!showFormula)}
-                                        className="w-full bg-white hover:bg-brutal-bg border-[3px] border-black shadow-brutal-sm rounded-none p-3 transition-all duration-150 flex items-center justify-between brutal-press"
-                                    >
-                                        <span className="flex items-center space-x-2 font-semibold text-info">
-                                            <span className="text-xl">📐</span>
-                                            <span>Show Formula</span>
-                                        </span>
-                                        <span className="text-info">{showFormula ? "▼" : "▶"}</span>
-                                    </button>
-                                )}
-                                {showFormula && question.formula && (
-                                    <div className="bg-white border-[3px] border-black rounded-none p-4 animate-slide-down shadow-brutal-sm">
-                                        <code className="text-info font-math text-lg block text-center">
-                                            {question.formula}
-                                        </code>
-                                    </div>
-                                )}
-                                {question.hints && question.hints.length > 0 && (
-                                    <button
-                                        onClick={handleShowHint}
-                                        disabled={currentHintLevel >= question.hints.length - 1 && showHints}
-                                        className="w-full bg-white hover:bg-brutal-bg border-[3px] border-black shadow-brutal-sm rounded-none p-3 transition-all duration-150 flex items-center justify-between disabled:opacity-50 brutal-press"
-                                    >
-                                        <span className="flex items-center space-x-2 font-semibold text-warning">
-                                            <span className="text-xl">💡</span>
-                                            <span>Get a Hint</span>
-                                        </span>
-                                        <span className="text-xs text-warning">
-                                            ({currentHintLevel + 1}/{question.hints.length})
-                                        </span>
-                                    </button>
-                                )}
-                                {showHints && question.hints && (
-                                    <div className="space-y-2 animate-slide-down">
-                                        {question.hints.slice(0, currentHintLevel + 1).map((hint, idx) => (
-                                            <div key={idx} className="bg-brutal-yellow border-2 border-black rounded-none p-3">
-                                                <div className="flex items-start space-x-2">
-                                                    <span className="text-warning font-bold text-sm">Hint {idx + 1}:</span>
-                                                    <span className="text-gray-700 text-sm">{hint}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Options Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                            {question.options.map((option, index) => {
-                                let optionClass = "p-4 rounded-none border-[3px] border-black shadow-brutal-sm transition-all duration-150 cursor-pointer ";
-
-                                if (showResult) {
-                                    if (index === question.correctAnswer) {
-                                        optionClass += "bg-brutal-green text-black";
-                                    } else if (index === selectedOption && !isCorrect) {
-                                        optionClass += "bg-brutal-red text-white";
-                                    } else {
-                                        optionClass += "bg-white text-gray-500 opacity-60";
-                                    }
-                                } else {
-                                    optionClass += selectedOption === index
-                                        ? "bg-brutal-blue text-black"
-                                        : "bg-white hover:shadow-brutal hover:-translate-x-0.5 hover:-translate-y-0.5";
-                                }
-
-                                return (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleOptionSelect(index)}
-                                        disabled={showResult}
-                                        className={optionClass}
-                                    >
-                                        <div className="flex items-center">
-                                            <div className={`w-8 h-8 rounded-none border-2 border-black mr-3 flex items-center justify-center font-bold flex-shrink-0 transition-all duration-150 ${
-                                                showResult
-                                                    ? index === question.correctAnswer
-                                                        ? "bg-brutal-green text-black"
-                                                        : index === selectedOption && !isCorrect
-                                                        ? "bg-brutal-red text-white"
-                                                        : "bg-gray-300 text-gray-500"
-                                                    : selectedOption === index
-                                                    ? "bg-black text-white"
-                                                    : "bg-white text-black"
-                                            }`}>
-                                                {String.fromCharCode(65 + index)}
-                                            </div>
-                                            <span className={`font-medium text-base transition-all duration-200 ${
-                                                selectedOption === index && !showResult ? "text-black font-bold" : "text-gray-800"
-                                            }`}>{option}</span>
+                            {/* Help Section (Hints & Formula) */}
+                            {!showResult && (question.hints || question.formula) && (
+                                <div className="space-y-2">
+                                    {question.formula && (
+                                        <button
+                                            onClick={() =>
+                                                setShowFormula(!showFormula)
+                                            }
+                                            type="button"
+                                            className="flex w-full items-center justify-between rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] sm:p-3"
+                                        >
+                                            <span className="flex items-center gap-2 font-playful text-sm font-bold text-tutor-navy">
+                                                <span className="flex h-7 w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
+                                                    <BookOpen className="h-3.5 w-3.5" />
+                                                </span>
+                                                Show Formula
+                                            </span>
+                                            <span className="font-playful text-sm font-bold text-tutor-navy">
+                                                {showFormula ? "▲" : "▼"}
+                                            </span>
+                                        </button>
+                                    )}
+                                    {showFormula && question.formula && (
+                                        <div className="animate-slide-down rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-3 shadow-[2px_2px_0_0_#071B3A]">
+                                            <code className="block text-center font-math text-lg text-tutor-navy">
+                                                {question.formula}
+                                            </code>
                                         </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
+                                    )}
+                                    {question.hints && question.hints.length > 0 && (
+                                        <button
+                                            onClick={handleShowHint}
+                                            type="button"
+                                            disabled={
+                                                currentHintLevel >=
+                                                    question.hints.length -
+                                                        1 && showHints
+                                            }
+                                            className="flex w-full items-center justify-between rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] disabled:cursor-not-allowed disabled:opacity-50 sm:p-3"
+                                        >
+                                            <span className="flex items-center gap-2 font-playful text-sm font-bold text-tutor-navy">
+                                                <span className="flex h-7 w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-orange text-tutor-cream">
+                                                    <Lightbulb className="h-3.5 w-3.5" />
+                                                </span>
+                                                Get a Hint
+                                            </span>
+                                            <span className="font-playful text-xs font-bold text-tutor-navy">
+                                                {currentHintLevel + 1}/
+                                                {question.hints.length}
+                                            </span>
+                                        </button>
+                                    )}
+                                    {showHints && question.hints && (
+                                        <div className="space-y-2 animate-slide-down">
+                                            {question.hints
+                                                .slice(0, currentHintLevel + 1)
+                                                .map((hint, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className="flex items-start gap-2 rounded-lg border-2 border-tutor-navy bg-tutor-yellow p-2.5"
+                                                    >
+                                                        <span className="shrink-0 font-brutal text-xs uppercase text-tutor-navy">
+                                                            Hint {idx + 1}:
+                                                        </span>
+                                                        <span className="font-playful text-sm text-tutor-navy">
+                                                            {hint}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
-                        {/* Result Section with Step-by-Step Solution */}
-                        {showResult && (
-                            <div className={`rounded-none mb-4 border-[3px] border-black p-6 shadow-brutal ${
-                                isCorrect ? "bg-green-100" : "bg-red-100"
-                            }`}>
-                                <div className="flex items-center mb-4">
-                                    <div className={`text-4xl mr-3 ${isCorrect ? "text-success" : "text-error"}`}>
-                                        {isCorrect ? "🎉" : "❌"}
+                            {/* Options Grid */}
+                            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
+                                {question.options.map((option, index) => {
+                                    const isSelected = selectedOption === index;
+                                    let optionClass =
+                                        "w-full rounded-xl border-[3px] border-tutor-navy p-2.5 text-left transition-all duration-150 sm:p-3 ";
+
+                                    if (showResult) {
+                                        if (
+                                            index === question.correctAnswer
+                                        ) {
+                                            optionClass +=
+                                                "bg-tutor-green text-tutor-cream shadow-[3px_3px_0_0_#071B3A]";
+                                        } else if (isSelected && !isCorrect) {
+                                            optionClass +=
+                                                "bg-tutor-red text-tutor-cream";
+                                        } else {
+                                            optionClass +=
+                                                "bg-tutor-cream text-tutor-navy opacity-60";
+                                        }
+                                    } else {
+                                        optionClass += isSelected
+                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,4px_4px_0_0_#071B3A]"
+                                            : "bg-tutor-cream text-tutor-navy hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A]";
+                                    }
+
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() =>
+                                                handleOptionSelect(index)
+                                            }
+                                            disabled={showResult}
+                                            type="button"
+                                            className={optionClass}
+                                        >
+                                            <div className="flex items-center">
+                                                <span
+                                                    className={`mr-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy font-brutal text-sm ${
+                                                        showResult
+                                                            ? index ===
+                                                              question.correctAnswer
+                                                                ? "bg-tutor-cream text-tutor-green"
+                                                                : isSelected &&
+                                                                  !isCorrect
+                                                                ? "bg-tutor-cream text-tutor-red"
+                                                                : "bg-[#E5DCC9] text-tutor-navy/50"
+                                                            : isSelected
+                                                            ? "bg-tutor-yellow text-tutor-navy"
+                                                            : "bg-[#F3EBDD] text-tutor-navy"
+                                                    }`}
+                                                >
+                                                    {String.fromCharCode(
+                                                        65 + index
+                                                    )}
+                                                </span>
+                                                <span
+                                                    className={`font-playful text-sm font-medium sm:text-base ${
+                                                        isSelected && !showResult
+                                                            ? "text-tutor-cream"
+                                                            : showResult &&
+                                                              index ===
+                                                                  question.correctAnswer
+                                                            ? "text-tutor-cream"
+                                                            : "text-tutor-navy"
+                                                    }`}
+                                                >
+                                                    {option}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Result Section with Step-by-Step Solution */}
+                            {showResult && (
+                                <div
+                                    className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] sm:p-4 ${
+                                        isCorrect
+                                            ? "bg-tutor-green"
+                                            : "bg-tutor-red"
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        {isCorrect ? (
+                                            <CheckCircle2 className="h-9 w-9 shrink-0 text-tutor-cream" />
+                                        ) : (
+                                            <XCircle className="h-9 w-9 shrink-0 text-tutor-cream" />
+                                        )}
+                                        <div className="min-w-0">
+                                            <h4 className="font-brutal text-base uppercase tracking-wide text-tutor-cream sm:text-lg">
+                                                {isCorrect
+                                                    ? "Excellent!"
+                                                    : "Not Quite!"}
+                                            </h4>
+                                            <p className="font-playful text-sm text-tutor-cream/90">
+                                                {isCorrect
+                                                    ? timeBonus > 0
+                                                        ? `Amazing! Speed bonus: +${timeBonus} points!`
+                                                        : "Great job solving the problem!"
+                                                    : "Let's learn from this together!"}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className={`text-2xl font-bold ${isCorrect ? "text-green-800" : "text-red-800"}`}>
-                                            {isCorrect ? "Excellent!" : "Not Quite!"}
-                                        </h4>
-                                        <p className={`text-sm ${isCorrect ? "text-green-700" : "text-red-700"}`}>
-                                            {isCorrect
-                                                ? timeBonus > 0
-                                                    ? `Amazing! Speed bonus: +${timeBonus} points!`
-                                                    : "Great job solving the problem!"
-                                                : "Let's learn from this together!"}
+
+                                    <div className="mt-3 space-y-1">
+                                        <p className="font-playful text-xs text-tutor-cream/80">
+                                            ⏱️ Time Taken:{" "}
+                                            {Math.round(submissionTime)}s /{" "}
+                                            {QUIZ_TIME_LIMIT}s
+                                        </p>
+                                        {isCorrect && timeBonus > 0 && (
+                                            <p className="flex items-center gap-1 font-playful text-xs font-bold text-tutor-cream">
+                                                <span>⚡</span>
+                                                <span>
+                                                    Speed Bonus: +{timeBonus}{" "}
+                                                    points!
+                                                </span>
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Step-by-Step Solution */}
+                                    {question.steps && (
+                                        <div className="mt-3 rounded-xl border-2 border-tutor-navy bg-tutor-cream p-3 sm:p-4">
+                                            <h5 className="mb-2 flex items-center gap-2 font-brutal text-xs uppercase tracking-wide text-tutor-navy sm:text-sm">
+                                                <span className="text-base">
+                                                    📝
+                                                </span>
+                                                Step-by-Step Solution:
+                                            </h5>
+                                            <ol className="space-y-2">
+                                                {question.steps.map(
+                                                    (step, idx) => (
+                                                        <li
+                                                            key={idx}
+                                                            className="flex items-start gap-2"
+                                                        >
+                                                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-navy font-brutal text-xs text-tutor-cream">
+                                                                {idx + 1}
+                                                            </span>
+                                                            <span className="font-playful text-sm text-tutor-navy">
+                                                                {step}
+                                                            </span>
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ol>
+                                        </div>
+                                    )}
+
+                                    {/* Key Concept / Explanation */}
+                                    <div className="mt-3 rounded-xl border-2 border-tutor-navy bg-tutor-yellow p-3 sm:p-4">
+                                        <h5 className="mb-1 flex items-center gap-2 font-brutal text-xs uppercase tracking-wide text-tutor-navy sm:text-sm">
+                                            <span className="text-base">
+                                                💡
+                                            </span>
+                                            Key Concept:
+                                        </h5>
+                                        <p className="font-playful text-sm text-tutor-navy">
+                                            {question.explanation}
                                         </p>
                                     </div>
                                 </div>
-
-                                {/* Step-by-Step Solution */}
-                                {question.steps && (
-                                    <div className="bg-white rounded-none p-4 border-[3px] border-black mb-4 shadow-brutal-sm">
-                                        <h5 className="font-bold text-gray-800 mb-3 flex items-center space-x-2">
-                                            <span className="text-xl">📝</span>
-                                            <span>Step-by-Step Solution:</span>
-                                        </h5>
-                                        <ol className="space-y-2">
-                                            {question.steps.map((step, idx) => (
-                                                <li key={idx} className="flex items-start space-x-3">
-                                                    <span className="flex-shrink-0 w-6 h-6 rounded-none border-2 border-black bg-black text-white flex items-center justify-center text-xs font-bold">
-                                                        {idx + 1}
-                                                    </span>
-                                                    <span className="text-gray-700 font-body">{step}</span>
-                                                </li>
-                                            ))}
-                                        </ol>
-                                    </div>
-                                )}
-
-                                {/* Explanation */}
-                                <div className="bg-brutal-yellow p-4 rounded-none border-[3px] border-black">
-                                    <h5 className="font-bold text-amber-800 mb-2 flex items-center space-x-2">
-                                        <span className="text-xl">💡</span>
-                                        <span>Key Concept:</span>
-                                    </h5>
-                                    <p className="text-amber-700 font-body">{question.explanation}</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex justify-center space-x-4">
-                            {!showResult ? (
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={selectedOption === null}
-                                    className="bg-brutal-orange border-[3px] border-black text-white font-bold rounded-none shadow-brutal transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center space-x-2 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-1 active:translate-y-1 active:shadow-none"
-                                >
-                                    <span className="text-xl">📤</span>
-                                    <span>Submit Answer</span>
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={handleNext}
-                                    className="bg-brutal-orange border-[3px] border-black text-white font-bold rounded-none shadow-brutal transition-all duration-150 flex items-center space-x-2 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-1 active:translate-y-1 active:shadow-none"
-                                >
-                                    <span className="text-xl">➡️</span>
-                                    <span>Continue</span>
-                                </button>
                             )}
+
+                            {/* Action Buttons */}
+                            <div className="flex justify-center">
+                                {!showResult ? (
+                                    <button
+                                        onClick={handleSubmit}
+                                        type="button"
+                                        disabled={selectedOption === null}
+                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-5 py-3 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A] disabled:cursor-not-allowed disabled:bg-[#D8CFC0] disabled:text-tutor-navy/40 disabled:shadow-[3px_3px_0_0_#071B3A] disabled:hover:translate-y-0 disabled:hover:brightness-100"
+                                    >
+                                        <span className="text-base">📤</span>
+                                        Submit Answer
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleNext}
+                                        type="button"
+                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-5 py-3 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
+                                    >
+                                        Continue
+                                        <ArrowRight className="h-4 w-4" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>

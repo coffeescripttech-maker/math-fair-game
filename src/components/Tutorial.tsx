@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { X, ArrowLeft, ArrowRight, Check, Star } from "lucide-react";
 
 interface TutorialProps {
     onClose: () => void;
@@ -12,6 +13,48 @@ interface TutorialSection {
     icon: string;
     content: React.ReactNode;
 }
+
+const YELLOW = "#FFD84D";
+
+/** Colored info-card used across the tutorial content. */
+type Tone =
+    | "yellow"
+    | "blue"
+    | "green"
+    | "purple"
+    | "orange"
+    | "red"
+    | "cream";
+
+const TONE_CLASSES: Record<Tone, string> = {
+    yellow: "bg-tutor-yellow text-tutor-navy",
+    blue: "bg-tutor-blue text-tutor-cream",
+    green: "bg-tutor-green text-tutor-cream",
+    purple: "bg-tutor-purple text-tutor-cream",
+    orange: "bg-tutor-orange text-tutor-cream",
+    red: "bg-tutor-red text-tutor-cream",
+    cream: "bg-tutor-cream text-tutor-navy",
+};
+
+const InfoCard: React.FC<{
+    tone: Tone;
+    title?: React.ReactNode;
+    children: React.ReactNode;
+    className?: string;
+}> = ({ tone, title, children, className = "" }) => (
+    <div
+        className={`rounded-xl border-2 border-tutor-navy p-4 shadow-[3px_3px_0_0_#071B3A] ${TONE_CLASSES[tone]} ${className}`}
+    >
+        {title && (
+            <h4 className="mb-2 font-brutal text-sm uppercase leading-snug tracking-wide">
+                {title}
+            </h4>
+        )}
+        <div className="space-y-2 font-playful text-sm leading-relaxed">
+            {children}
+        </div>
+    </div>
+);
 
 export const Tutorial: React.FC<TutorialProps> = ({
     onClose,
@@ -37,40 +80,58 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "🎓",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         Welcome to Tutor Town! 🌟
                     </h3>
-                    <p className="text-gray-700 leading-relaxed">
-                        You're a new math tutor in town! Help students master radicals and inverse functions as you build your tutoring reputation.
+                    <p className="text-center font-playful text-sm leading-relaxed text-tutor-navy">
+                        You're a new math tutor in town! Help students master
+                        radicals and inverse functions as you build your
+                        tutoring reputation.
                     </p>
 
-                    <div className="bg-brutal-blue p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-2">
-                            📚 Your Mission:
-                        </h4>
-                        <ul className="space-y-2 text-gray-700">
-                            <li>✓ Complete 50 math challenges</li>
-                            <li>
-                                ✓ Progress from Barangay to National level
+                    <InfoCard tone="blue" title="📚 Your Mission:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Complete 50 math challenges
                             </li>
-                            <li>✓ Master radicals & inverse functions</li>
-                            <li>✓ Become a problem-solving expert!</li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Progress from Barangay to National level
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Master radicals & inverse functions
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Become a problem-solving expert!
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-yellow p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-2">
-                            🎯 What You'll Teach:
-                        </h4>
-                        <ul className="space-y-2 text-gray-700">
-                            <li>✓ Basic arithmetic to advanced algebra</li>
-                            <li>✓ How to simplify and solve radicals</li>
-                            <li>✓ How to find and use inverse functions</li>
-                            <li>✓ Critical thinking skills</li>
+                    <InfoCard tone="yellow" title="🎯 What You'll Teach:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Basic arithmetic to advanced algebra
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                How to simplify and solve radicals
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                How to find and use inverse functions
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Critical thinking skills
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <p className="text-center text-lg font-semibold text-blue-600">
+                    <p className="text-center font-playful text-base font-bold text-tutor-orange">
                         Ready to start your adventure? Let's go! 🚀
                     </p>
                 </div>
@@ -82,67 +143,48 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "🎮",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         How to Move Around 🎮
                     </h3>
 
-                    <div className="bg-brutal-purple p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            ⌨️ Keyboard Controls:
-                        </h4>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <span className="font-bold text-gray-800">
-                                    W or ↑
-                                </span>
-                                <p className="text-sm text-gray-600">
-                                    Move Up
-                                </p>
-                            </div>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <span className="font-bold text-gray-800">
-                                    S or ↓
-                                </span>
-                                <p className="text-sm text-gray-600">
-                                    Move Down
-                                </p>
-                            </div>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <span className="font-bold text-gray-800">
-                                    A or ←
-                                </span>
-                                <p className="text-sm text-gray-600">
-                                    Move Left
-                                </p>
-                            </div>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <span className="font-bold text-gray-800">
-                                    D or →
-                                </span>
-                                <p className="text-sm text-gray-600">
-                                    Move Right
-                                </p>
-                            </div>
+                    <InfoCard tone="purple" title="⌨️ Keyboard Controls:">
+                        <div className="grid grid-cols-2 gap-2">
+                            {[
+                                { key: "W or ↑", desc: "Move Up" },
+                                { key: "S or ↓", desc: "Move Down" },
+                                { key: "A or ←", desc: "Move Left" },
+                                { key: "D or →", desc: "Move Right" },
+                            ].map((control) => (
+                                <div
+                                    key={control.key}
+                                    className="rounded-lg border-2 border-tutor-navy bg-tutor-cream px-3 py-2 text-center"
+                                >
+                                    <p className="font-brutal text-sm text-tutor-navy">
+                                        {control.key}
+                                    </p>
+                                    <p className="font-playful text-xs text-tutor-navy/70">
+                                        {control.desc}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-green p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-2">
-                            🎥 Camera:
-                        </h4>
-                        <p className="text-gray-700">
+                    <InfoCard tone="green" title="🎥 Camera:">
+                        <p>
                             The camera automatically follows your character as
                             you explore the map. Feel free to walk around and
                             discover new areas!
                         </p>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-blue p-3 rounded-none border-2 border-black">
-                        <p className="text-sm text-gray-900">
-                            💡 <strong>Tip:</strong> Walk around to discover
-                            NPCs and collectibles scattered throughout the map!
+                    <InfoCard tone="blue" className="p-3">
+                        <p>
+                            💡 <strong className="font-bold">Tip:</strong> Walk
+                            around to discover NPCs and collectibles scattered
+                            throughout the map!
                         </p>
-                    </div>
+                    </InfoCard>
                 </div>
             ),
         },
@@ -152,60 +194,51 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "💬",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         Talking to NPCs 💬
                     </h3>
 
-                    <div className="bg-brutal-yellow p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            Finding Missions:
-                        </h4>
-                        <div className="space-y-3">
-                            <div className="flex items-start space-x-3">
-                                <span className="text-3xl">❗</span>
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Active Mission
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        NPCs with "!" have math challenges for
-                                        you
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start space-x-3">
-                                <span className="text-3xl">✅</span>
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Completed Mission
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        You've already helped this NPC
-                                    </p>
-                                </div>
+                    <InfoCard tone="yellow" title="Finding Missions:">
+                        <div className="flex items-start gap-3">
+                            <span className="text-2xl">❗</span>
+                            <div>
+                                <p className="font-bold">Active Mission</p>
+                                <p className="text-tutor-navy/70">
+                                    NPCs with "!" have math challenges for you
+                                </p>
                             </div>
                         </div>
-                    </div>
+                        <div className="flex items-start gap-3">
+                            <span className="text-2xl">✅</span>
+                            <div>
+                                <p className="font-bold">Completed Mission</p>
+                                <p className="text-tutor-navy/70">
+                                    You've already helped this NPC
+                                </p>
+                            </div>
+                        </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-blue p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            How to Interact:
-                        </h4>
-                        <ol className="space-y-2 text-gray-700 list-decimal list-inside">
+                    <InfoCard tone="blue" title="How to Interact:">
+                        <ol className="list-inside list-decimal space-y-1.5">
                             <li>Walk close to an NPC</li>
-                            <li>Press <strong>E</strong> key (or tap on mobile)</li>
+                            <li>
+                                Press <strong className="font-bold">E</strong>{" "}
+                                key (or tap on mobile)
+                            </li>
                             <li>Read their story and problem</li>
                             <li>Accept the challenge!</li>
                         </ol>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-purple p-3 rounded-none border-2 border-black">
-                        <p className="text-sm text-gray-900">
-                            🎯 <strong>Fun Fact:</strong> Each NPC represents a
-                            different profession and teaches unique math
-                            concepts!
+                    <InfoCard tone="purple" className="p-3">
+                        <p>
+                            🎯{" "}
+                            <strong className="font-bold">Fun Fact:</strong>{" "}
+                            Each NPC represents a different profession and
+                            teaches unique math concepts!
                         </p>
-                    </div>
+                    </InfoCard>
                 </div>
             ),
         },
@@ -215,53 +248,57 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "📝",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         Solving Math Problems 📝
                     </h3>
 
-                    <div className="bg-brutal-green p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            📋 Quiz Format:
-                        </h4>
-                        <ul className="space-y-2 text-gray-700">
-                            <li>✓ Multiple choice questions (4 options)</li>
-                            <li>✓ Only one correct answer</li>
-                            <li>✓ Take your time to think!</li>
-                            <li>✓ No time limit - focus on learning</li>
+                    <InfoCard tone="green" title="📋 Quiz Format:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Multiple choice questions (4 options)
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Only one correct answer
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Take your time to think!
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                No time limit - focus on learning
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-blue p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            🔍 Help Available:
-                        </h4>
+                    <InfoCard tone="blue" title="🔍 Help Available:">
                         <div className="space-y-2">
-                            <div className="bg-white p-2 rounded-lg">
+                            <div className="rounded-lg border-2 border-tutor-navy bg-tutor-cream px-3 py-2">
                                 <span className="font-bold">💡 Hints:</span>{" "}
                                 Click for problem-solving tips
                             </div>
-                            <div className="bg-white p-2 rounded-lg">
+                            <div className="rounded-lg border-2 border-tutor-navy bg-tutor-cream px-3 py-2">
                                 <span className="font-bold">📖 Formula:</span>{" "}
                                 See the mathematical formula
                             </div>
-                            <div className="bg-white p-2 rounded-lg">
+                            <div className="rounded-lg border-2 border-tutor-navy bg-tutor-cream px-3 py-2">
                                 <span className="font-bold">📝 Steps:</span>{" "}
                                 View step-by-step solution
                             </div>
                         </div>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-yellow p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-2">
-                            ✅ After Answering:
-                        </h4>
-                        <p className="text-gray-700">
-                            <strong>Correct:</strong> Earn coins and XP! 🎉
+                    <InfoCard tone="yellow" title="✅ After Answering:">
+                        <p>
+                            <strong className="font-bold">Correct:</strong>{" "}
+                            Earn coins and XP! 🎉
                             <br />
-                            <strong>Incorrect:</strong> See explanation and try
-                            again
+                            <strong className="font-bold">Incorrect:</strong>{" "}
+                            See explanation and try again
                         </p>
-                    </div>
+                    </InfoCard>
                 </div>
             ),
         },
@@ -271,66 +308,51 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "📈",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         Leveling Up 📈
                     </h3>
-                    <p className="text-center text-gray-600">
+                    <p className="text-center font-playful text-sm text-tutor-navy/70">
                         Your Tutoring Journey
                     </p>
 
                     <div className="space-y-3">
-                        <div className="bg-brutal-green p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-900">
-                                🏘️ Level 1: BARANGAY
-                            </h4>
-                            <p className="text-sm text-gray-700">
-                                Missions 1-10 • Community tutoring in the barangay
+                        <InfoCard tone="green" title="🏘️ Level 1: BARANGAY">
+                            <p className="text-tutor-cream/85">
+                                Missions 1-10 • Community tutoring in the
+                                barangay
                             </p>
-                        </div>
-
-                        <div className="bg-brutal-blue p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-900">
-                                🏙️ Level 2: CITY
-                            </h4>
-                            <p className="text-sm text-gray-700">
-                                Missions 11-20 • City tutoring for high school students
+                        </InfoCard>
+                        <InfoCard tone="blue" title="🏙️ Level 2: CITY">
+                            <p className="text-tutor-cream/85">
+                                Missions 11-20 • City tutoring for high school
+                                students
                             </p>
-                        </div>
-
-                        <div className="bg-brutal-purple p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-900">
-                                🏛️ Level 3: PROVINCE
-                            </h4>
-                            <p className="text-sm text-gray-700">
-                                Missions 21-30 • Provincial scholarship coaching
+                        </InfoCard>
+                        <InfoCard tone="purple" title="🏛️ Level 3: PROVINCE">
+                            <p className="text-tutor-cream/85">
+                                Missions 21-30 • Provincial scholarship
+                                coaching
                             </p>
-                        </div>
-
-                        <div className="bg-brutal-orange p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-orange-800">
-                                🌏 Level 4: REGION
-                            </h4>
-                            <p className="text-sm text-gray-700">
-                                Missions 31-40 • Regional math competition training
+                        </InfoCard>
+                        <InfoCard tone="orange" title="🌏 Level 4: REGION">
+                            <p className="text-tutor-cream/85">
+                                Missions 31-40 • Regional math competition
+                                training
                             </p>
-                        </div>
-
-                        <div className="bg-brutal-red p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-white">
-                                🇵🇭 Level 5: NATIONAL
-                            </h4>
-                            <p className="text-sm text-gray-700">
+                        </InfoCard>
+                        <InfoCard tone="red" title="🇵🇭 Level 5: NATIONAL">
+                            <p className="text-tutor-cream/85">
                                 Missions 41-50 • National Olympiad mentoring
                             </p>
-                        </div>
+                        </InfoCard>
                     </div>
 
-                    <div className="bg-brutal-blue p-3 rounded-none border-2 border-black">
-                        <p className="text-sm text-gray-900 text-center">
+                    <InfoCard tone="blue" className="p-3">
+                        <p className="text-center">
                             🎯 Complete all missions in a level to unlock the
                             next!
                         </p>
-                    </div>
+                    </InfoCard>
                 </div>
             ),
         },
@@ -340,52 +362,67 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "🎁",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         Collectibles & Rewards 🎁
                     </h3>
 
-                    <div className="bg-brutal-yellow p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            💰 Coins:
-                        </h4>
-                        <ul className="space-y-1 text-gray-700 text-sm">
-                            <li>✓ Earned by completing missions</li>
-                            <li>✓ Used to buy items in the shop</li>
-                            <li>✓ Bonus for perfect scores!</li>
+                    <InfoCard tone="yellow" title="💰 Coins:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Earned by completing missions
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Used to buy items in the shop
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Bonus for perfect scores!
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-purple p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            🏆 Badges:
-                        </h4>
-                        <ul className="space-y-1 text-gray-700 text-sm">
-                            <li>✓ Unlock achievements</li>
-                            <li>✓ Show your progress</li>
-                            <li>✓ Collect them all!</li>
+                    <InfoCard tone="purple" title="🏆 Badges:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Unlock achievements
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Show your progress
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Collect them all!
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-blue p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            🛒 Shop:
-                        </h4>
-                        <ul className="space-y-1 text-gray-700 text-sm">
-                            <li>✓ Buy power-ups and items</li>
-                            <li>✓ Customize your character</li>
-                            <li>✓ Unlock special features</li>
+                    <InfoCard tone="blue" title="🛒 Shop:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Buy power-ups and items
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Customize your character
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Unlock special features
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-green p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-3">
-                            🎯 Secret Quests:
-                        </h4>
-                        <p className="text-gray-700 text-sm">
+                    <InfoCard tone="green" title="🎯 Secret Quests:">
+                        <p>
                             Hidden challenges throughout the map with extra
                             rewards for explorers!
                         </p>
-                    </div>
+                    </InfoCard>
                 </div>
             ),
         },
@@ -395,56 +432,37 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "🗺️",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         Understanding the Interface 🗺️
                     </h3>
 
                     <div className="space-y-3">
-                        <div className="bg-brutal-blue p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-900">
-                                📍 Minimap (Top Right)
-                            </h4>
-                            <p className="text-sm text-gray-700">
+                        <InfoCard tone="blue" title="📍 Minimap (Top Right)">
+                            <p className="text-tutor-cream/85">
                                 Shows your location, NPCs, and collectibles
                                 nearby
                             </p>
-                        </div>
-
-                        <div className="bg-brutal-green p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-900">
-                                📊 Stats Display
-                            </h4>
-                            <p className="text-sm text-gray-700">
+                        </InfoCard>
+                        <InfoCard tone="green" title="📊 Stats Display">
+                            <p className="text-tutor-cream/85">
                                 💰 Coins • 🏆 Badges • 📈 Level Progress
                             </p>
-                        </div>
-
-                        <div className="bg-brutal-purple p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-900">
-                                🎒 Inventory
-                            </h4>
-                            <p className="text-sm text-gray-700">
+                        </InfoCard>
+                        <InfoCard tone="purple" title="🎒 Inventory">
+                            <p className="text-tutor-cream/85">
                                 View collected items and check your progress
                             </p>
-                        </div>
-
-                        <div className="bg-brutal-yellow p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-900">
-                                🏆 Leaderboard
-                            </h4>
-                            <p className="text-sm text-gray-700">
+                        </InfoCard>
+                        <InfoCard tone="yellow" title="🏆 Leaderboard">
+                            <p>
                                 Compare scores globally and track your ranking
                             </p>
-                        </div>
-
-                        <div className="bg-white p-3 rounded-none border-2 border-black">
-                            <h4 className="font-bold text-gray-800">
-                                ⚙️ Settings
-                            </h4>
-                            <p className="text-sm text-gray-700">
+                        </InfoCard>
+                        <InfoCard tone="cream" title="⚙️ Settings">
+                            <p>
                                 Adjust audio, graphics, controls, and tutorials
                             </p>
-                        </div>
+                        </InfoCard>
                     </div>
                 </div>
             ),
@@ -455,52 +473,79 @@ export const Tutorial: React.FC<TutorialProps> = ({
             icon: "💡",
             content: (
                 <div className="space-y-4">
-                    <h3 className="text-2xl font-brutal uppercase text-center text-gray-900">
+                    <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
                         Pro Tips 💡
                     </h3>
 
-                    <div className="bg-brutal-blue p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-2">
-                            📚 Math Tips:
-                        </h4>
-                        <ul className="space-y-1 text-sm text-gray-700">
-                            <li>✓ Read problems carefully</li>
-                            <li>✓ Use hints when stuck</li>
-                            <li>✓ Review step-by-step solutions</li>
-                            <li>✓ Practice similar problems</li>
+                    <InfoCard tone="blue" title="📚 Math Tips:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Read problems carefully
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Use hints when stuck
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Review step-by-step solutions
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Practice similar problems
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-green p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-2">
-                            🗺️ Exploration Tips:
-                        </h4>
-                        <ul className="space-y-1 text-sm text-gray-700">
-                            <li>✓ Talk to all NPCs</li>
-                            <li>✓ Explore every corner</li>
-                            <li>✓ Look for hidden collectibles</li>
-                            <li>✓ Complete secret quests</li>
+                    <InfoCard tone="green" title="🗺️ Exploration Tips:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Talk to all NPCs
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Explore every corner
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Look for hidden collectibles
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Complete secret quests
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-purple p-4 rounded-none border-2 border-black">
-                        <h4 className="font-bold text-gray-900 mb-2">
-                            ⚡ Efficiency Tips:
-                        </h4>
-                        <ul className="space-y-1 text-sm text-gray-700">
-                            <li>✓ Complete missions in order</li>
-                            <li>✓ Save coins for useful items</li>
-                            <li>✓ Review formulas regularly</li>
-                            <li>✓ Take breaks when needed</li>
+                    <InfoCard tone="purple" title="⚡ Efficiency Tips:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Complete missions in order
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Save coins for useful items
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Review formulas regularly
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Take breaks when needed
+                            </li>
                         </ul>
-                    </div>
+                    </InfoCard>
 
-                    <div className="bg-brutal-yellow p-4 rounded-none border-2 border-black text-center">
-                        <p className="text-gray-900 font-bold text-lg">
+                    <InfoCard tone="yellow">
+                        <p className="text-center font-brutal text-sm uppercase">
                             🌟 Remember: It's about learning, not just winning!
                             🌟
                         </p>
-                    </div>
+                    </InfoCard>
                 </div>
             ),
         },
@@ -542,114 +587,147 @@ export const Tutorial: React.FC<TutorialProps> = ({
     const progress = ((currentSection + 1) / tutorialSections.length) * 100;
 
     return (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center pointer-events-auto z-50 p-4">
-            <div className="brutal-panel max-w-3xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
-                {/* Header */}
-                <div className="bg-brutal-yellow p-6 relative border-b-[3px] border-black">
-                    <button
-                        onClick={handleSkip}
-                        className="absolute top-4 right-4 w-10 h-10 bg-brutal-red border-2 border-black shadow-brutal-xs flex items-center justify-center text-white brutal-press"
-                    >
-                        ✕
-                    </button>
-                    <div className="text-center">
-                        <div className="text-4xl mb-2">
-                            {currentTutorial.icon}
-                        </div>
-                        <h2 className="text-2xl font-brutal uppercase text-gray-900">How to Play</h2>
-                        <p className="text-sm font-bold uppercase text-gray-800 mt-1">
-                            {currentTutorial.title}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="bg-white h-2 border-b-2 border-black">
-                    <div
-                        className="bg-brutal-green h-full transition-all duration-300"
-                        style={{ width: `${progress}%` }}
-                    ></div>
-                </div>
-
-                {/* Section Navigation */}
-                <div className="bg-brutal-bg p-3 border-b-2 border-black overflow-x-auto">
-                    <div className="flex space-x-2 min-w-max">
-                        {tutorialSections.map((section, index) => (
-                            <button
-                                key={section.id}
-                                onClick={() => setCurrentSection(index)}
-                                className={`px-3 py-2 rounded-none border-2 border-black text-xs font-bold uppercase transition-all duration-150 whitespace-nowrap ${
-                                    currentSection === index
-                                        ? "bg-black text-white shadow-brutal-xs"
-                                        : "bg-white text-gray-700 hover:bg-brutal-yellow"
-                                }`}
-                            >
-                                <span className="mr-1">{section.icon}</span>
-                                <span className="hidden sm:inline">
-                                    {section.title}
-                                </span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Content Area */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    {currentTutorial.content}
-                </div>
-
-                {/* Footer */}
-                <div className="bg-brutal-bg p-4 border-t-2 border-black">
-                    {/* Don't Show Again Checkbox (only for auto-start) */}
-                    {autoStart && (
-                        <div className="mb-3 flex items-center justify-center">
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={dontShowAgain}
-                                    onChange={(e) =>
-                                        setDontShowAgain(e.target.checked)
-                                    }
-                                    className="form-checkbox h-4 w-4 text-blue-600"
-                                />
-                                <span className="text-sm text-gray-700">
-                                    Don't show this tutorial again
-                                </span>
-                            </label>
-                        </div>
-                    )}
-
-                    {/* Navigation Buttons */}
-                    <div className="flex justify-between items-center">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
+            <div className="flex min-h-full items-center justify-center p-4">
+                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                <section className="relative w-full max-w-3xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex max-h-[90vh] flex-col gap-4 rounded-[14px] border-2 border-tutor-yellow px-5 py-5 sm:px-7">
+                        {/* Close / Skip Button */}
                         <button
-                            onClick={handlePrevious}
-                            disabled={currentSection === 0}
-                            className="px-4 py-2 bg-white border-2 border-black text-gray-800 rounded-none font-bold uppercase transition-all duration-150 brutal-press disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleSkip}
+                            type="button"
+                            aria-label="Skip tutorial"
+                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
-                            ◀ Previous
+                            <X className="h-5 w-5" />
                         </button>
 
-                        <div className="text-sm font-brutal text-gray-900">
-                            {currentSection + 1} / {tutorialSections.length}
+                        {/* Header */}
+                        <div className="text-center">
+                            <div className="mx-auto mb-2.5 flex h-16 w-16 items-center justify-center rounded-2xl border-[3px] border-tutor-navy bg-tutor-yellow text-3xl shadow-[3px_3px_0_0_#071B3A]">
+                                {currentTutorial.icon}
+                            </div>
+                            <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                                How to Play
+                            </h2>
+                            <div className="mt-1.5 flex items-center justify-center gap-2">
+                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <Star
+                                    className="h-4 w-4 text-tutor-yellow"
+                                    fill={YELLOW}
+                                />
+                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                            </div>
+                            <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
+                                {currentTutorial.title}
+                            </p>
                         </div>
 
-                        {currentSection < tutorialSections.length - 1 ? (
-                            <button
-                                onClick={handleNext}
-                                className="px-4 py-2 bg-brutal-orange border-[3px] border-black text-white rounded-none font-bold uppercase shadow-brutal-xs brutal-press"
-                            >
-                                Next ▶
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleComplete}
-                                className="px-4 py-2 bg-brutal-green border-[3px] border-black text-black rounded-none font-bold uppercase shadow-brutal-xs brutal-press"
-                            >
-                                ✓ Got It!
-                            </button>
-                        )}
+                        {/* Progress Bar */}
+                        <div className="h-2.5 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-[#E5DCC9]">
+                            <div
+                                className="h-full rounded-full bg-tutor-green transition-all duration-300"
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+
+                        {/* Section Navigation */}
+                        <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                            {tutorialSections.map((section, index) => {
+                                const active = currentSection === index;
+                                return (
+                                    <button
+                                        key={section.id}
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentSection(index)
+                                        }
+                                        className={`flex shrink-0 items-center gap-1.5 rounded-lg border-[3px] whitespace-nowrap px-2.5 py-1.5 font-playful text-xs font-bold uppercase transition-all duration-150 ${
+                                            active
+                                                ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
+                                                : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100"
+                                        }`}
+                                    >
+                                        <span className="text-sm">
+                                            {section.icon}
+                                        </span>
+                                        <span className="hidden sm:inline">
+                                            {section.title}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto rounded-xl border-2 border-tutor-navy bg-[#F3EBDD] p-4 custom-scrollbar sm:p-5">
+                            {currentTutorial.content}
+                        </div>
+
+                        {/* Footer */}
+                        <div>
+                            {/* Don't Show Again Checkbox (only for auto-start) */}
+                            {autoStart && (
+                                <div className="mb-3 flex items-center justify-center">
+                                    <label className="flex cursor-pointer select-none items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={dontShowAgain}
+                                            onChange={(e) =>
+                                                setDontShowAgain(
+                                                    e.target.checked
+                                                )
+                                            }
+                                            className="h-5 w-5 cursor-pointer rounded accent-tutor-orange"
+                                        />
+                                        <span className="font-playful text-sm font-bold text-tutor-navy">
+                                            Don't show this tutorial again
+                                        </span>
+                                    </label>
+                                </div>
+                            )}
+
+                            {/* Navigation Buttons */}
+                            <div className="flex items-center justify-between gap-3">
+                                <button
+                                    onClick={handlePrevious}
+                                    type="button"
+                                    disabled={currentSection === 0}
+                                    className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-4 py-2.5 font-brutal text-xs uppercase tracking-wide text-tutor-navy shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0_0_#071B3A]"
+                                >
+                                    <ArrowLeft className="h-4 w-4" />
+                                    Previous
+                                </button>
+
+                                <div className="font-brutal text-sm text-tutor-navy">
+                                    {currentSection + 1} /{" "}
+                                    {tutorialSections.length}
+                                </div>
+
+                                {currentSection <
+                                tutorialSections.length - 1 ? (
+                                    <button
+                                        onClick={handleNext}
+                                        type="button"
+                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-4 py-2.5 font-brutal text-xs uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[5px_5px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                    >
+                                        Next
+                                        <ArrowRight className="h-4 w-4" />
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleComplete}
+                                        type="button"
+                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-green px-4 py-2.5 font-brutal text-xs uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[5px_5px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                    >
+                                        <Check className="h-4 w-4" />
+                                        Got It!
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     );

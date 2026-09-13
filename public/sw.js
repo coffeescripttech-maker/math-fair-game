@@ -1,8 +1,14 @@
-// Service Worker for CIVIKA PWA
-const CACHE_NAME = "civika-v1.0.0";
-const RUNTIME_CACHE = "civika-runtime-v1.0.0";
+// Service Worker for Tutor Town PWA
+const CACHE_VERSION = "v1.0.1";
+const CACHE_NAME = `tutor-town-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `tutor-town-runtime-${CACHE_VERSION}`;
 
-// Assets to cache immediately on install
+// Development hosts should bypass service worker caching
+const isDevelopment = () =>
+    self.location.hostname === "localhost" ||
+    self.location.hostname === "127.0.0.1";
+
+// Assets to cache immediately on install (production only)
 const PRECACHE_ASSETS = [
     "/",
     "/index.html",
@@ -16,12 +22,16 @@ const PRECACHE_ASSETS = [
 
 // Install event - cache critical assets
 self.addEventListener("install", (event) => {
-    console.log("🎮 CIVIKA Service Worker installing...");
+    console.log("🎮 Tutor Town Service Worker installing...");
 
     event.waitUntil(
         caches
             .open(CACHE_NAME)
             .then((cache) => {
+                if (isDevelopment()) {
+                    console.log("🔧 Development mode: skipping precache");
+                    return Promise.resolve();
+                }
                 console.log("📦 Caching app shell and critical assets");
                 return cache.addAll(PRECACHE_ASSETS);
             })
@@ -37,7 +47,7 @@ self.addEventListener("install", (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
-    console.log("🎮 CIVIKA Service Worker activating...");
+    console.log("🎮 Tutor Town Service Worker activating...");
 
     event.waitUntil(
         caches
@@ -46,9 +56,10 @@ self.addEventListener("activate", (event) => {
                 return Promise.all(
                     cacheNames
                         .filter((cacheName) => {
-                            // Delete old caches
+                            // Delete old caches that belong to this app
                             return (
-                                cacheName.startsWith("civika-") &&
+                                (cacheName.startsWith("tutor-town-") ||
+                                    cacheName.startsWith("civika-")) &&
                                 cacheName !== CACHE_NAME &&
                                 cacheName !== RUNTIME_CACHE
                             );
@@ -68,6 +79,11 @@ self.addEventListener("activate", (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener("fetch", (event) => {
+    // In development, let Next.js HMR handle everything
+    if (isDevelopment()) {
+        return;
+    }
+
     // Skip non-GET requests
     if (event.request.method !== "GET") return;
 

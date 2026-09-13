@@ -1,4 +1,12 @@
 import React, { useState, useEffect } from "react";
+import {
+    X,
+    Timer,
+    ClipboardList,
+    CheckCircle2,
+    XCircle,
+    ArrowRight,
+} from "lucide-react";
 
 interface QuizQuestion {
     question: string;
@@ -112,206 +120,211 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
         onClose();
     };
 
-    // Helper function to get timer color based on time remaining
-    const getTimerColor = () => {
-        if (timeRemaining <= 10) return "text-red-600 animate-pulse";
-        if (timeRemaining <= 20) return "text-orange-600";
-        if (timeRemaining <= 30) return "text-yellow-600";
-        return "text-green-600";
-    };
-
-    // Helper function to get timer background color (flat neobrutalist pastels)
+    // Helper function to get timer background color (tutor status colors)
     const getTimerBgColor = () => {
-        if (timeRemaining <= 10) return "bg-brutal-red";
-        if (timeRemaining <= 20) return "bg-brutal-orange";
-        if (timeRemaining <= 30) return "bg-brutal-yellow";
-        return "bg-brutal-green";
+        if (timeRemaining <= 10) return "bg-tutor-red";
+        if (timeRemaining <= 20) return "bg-tutor-orange";
+        if (timeRemaining <= 30) return "bg-tutor-yellow";
+        return "bg-tutor-green";
     };
 
-    // Helper function to get progress bar color
-    const getProgressBarColor = () => {
-        if (timeRemaining <= 10) return "bg-red-600";
-        if (timeRemaining <= 20) return "bg-orange-500";
-        if (timeRemaining <= 30) return "bg-yellow-500";
-        return "bg-green-500";
+    // Text color on top of the timer band (cream on solid, navy on yellow)
+    const getTimerTextColor = () => {
+        if (timeRemaining <= 30) return "text-tutor-navy";
+        return "text-tutor-cream";
+    };
+
+    // Helper function for the status message
+    const getTimerMessage = () => {
+        if (timeRemaining <= 10) return "⚠️ HURRY!";
+        if (timeRemaining <= 20) return "⏰ Time Running Out!";
+        if (timeRemaining <= 30) return "⏳ Keep Going!";
+        return "💪 You Got This!";
     };
 
     const timePercentage = (timeRemaining / QUIZ_TIME_LIMIT) * 100;
 
     return (
-        <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
-            <div className="w-full max-w-sm sm:max-w-lg lg:max-w-2xl mx-2 sm:mx-4 max-h-[95vh] overflow-y-auto">
-                {/* Neobrutalist Quiz System Container */}
-                <div className="brutal-panel p-3 sm:p-6 relative">
-                        {/* Timer Display - Prominent */}
-                        {!showResult && (
-                            <div
-                                className={`mb-4 p-3 sm:p-4 rounded-none border-[3px] border-black shadow-brutal-sm ${getTimerBgColor()} transition-all duration-300`}
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-2xl sm:text-3xl">
-                                            ⏱️
-                                        </span>
-                                        <span
-                                            className={`text-xl sm:text-3xl font-bold ${getTimerColor()} transition-colors duration-300`}
-                                        >
-                                            {timeRemaining}s
-                                        </span>
-                                    </div>
-                                    <div className="text-xs sm:text-sm font-semibold text-gray-800">
-                                        {timeRemaining <= 10
-                                            ? "⚠️ HURRY!"
-                                            : timeRemaining <= 20
-                                            ? "⏰ Time Running Out!"
-                                            : timeRemaining <= 30
-                                            ? "⏳ Keep Going!"
-                                            : "💪 You Got This!"}
-                                    </div>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
+            <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
+                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                <div className="w-full max-w-sm sm:max-w-lg lg:max-w-2xl">
+                    <section className="relative animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
+                        <div className="space-y-4 rounded-[14px] border-2 border-tutor-yellow px-4 py-4 sm:space-y-5 sm:px-5 sm:py-5">
+                            {/* Header */}
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-orange text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
+                                        <ClipboardList className="h-4 w-4" />
+                                    </span>
+                                    <h2 className="font-brutal text-base uppercase tracking-wide text-tutor-navy sm:text-xl">
+                                        Math Challenge
+                                    </h2>
                                 </div>
-                                {/* Progress Bar */}
-                                <div className="w-full bg-white h-2 sm:h-3 border-2 border-black overflow-hidden">
-                                    <div
-                                        className={`h-full ${getProgressBarColor()} transition-all duration-1000 ease-linear`}
-                                        style={{ width: `${timePercentage}%` }}
-                                    ></div>
-                                </div>
+                                <button
+                                    onClick={onClose}
+                                    type="button"
+                                    aria-label="Close quiz"
+                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] sm:h-10 sm:w-10"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
                             </div>
-                        )}
 
-                        {/* Header */}
-                        <div className="flex justify-between items-center mb-4 sm:mb-6">
-                            <h2 className="text-lg sm:text-2xl font-black text-gray-900">
-                                📝 MATH CHALLENGE
-                            </h2>
-                            <button
-                                onClick={onClose}
-                                className="w-8 h-8 sm:w-10 sm:h-10 bg-brutal-red border-2 border-black shadow-brutal-xs flex items-center justify-center text-white text-sm sm:text-base brutal-press"
-                            >
-                                ✕
-                            </button>
-                        </div>
+                            {/* Timer Display - Prominent */}
+                            {!showResult && (
+                                <div
+                                    className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] transition-all duration-300 sm:p-4 ${getTimerBgColor()}`}
+                                >
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <span
+                                                className={`flex h-9 w-9 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-cream/90 ${getTimerTextColor()}`}
+                                            >
+                                                <Timer
+                                                    className={`h-4 w-4 ${
+                                                        timeRemaining <= 10
+                                                            ? "animate-pulse"
+                                                            : ""
+                                                    }`}
+                                                />
+                                            </span>
+                                            <span
+                                                className={`font-brutal text-xl sm:text-3xl ${getTimerTextColor()}`}
+                                            >
+                                                {timeRemaining}s
+                                            </span>
+                                        </div>
+                                        <span
+                                            className={`rounded-full border-2 border-tutor-navy px-2.5 py-1 text-center font-playful text-xs font-bold uppercase sm:text-sm ${getTimerTextColor()}`}
+                                        >
+                                            {getTimerMessage()}
+                                        </span>
+                                    </div>
+                                    <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-tutor-cream/90 sm:h-3">
+                                        <div
+                                            className="h-full bg-tutor-navy transition-all duration-1000 ease-linear"
+                                            style={{
+                                                width: `${timePercentage}%`,
+                                            }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            )}
 
-                        {/* Question */}
-                        <div className="mb-4 sm:mb-6">
-                            <div className="rounded-none border-[3px] border-black p-3 sm:p-4 bg-brutal-yellow shadow-brutal-sm">
-                                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3 flex items-center space-x-1 sm:space-x-2">
-                                    <span>❓</span>
-                                    <span>Question:</span>
+                            {/* Question */}
+                            <div className="rounded-xl border-[3px] border-tutor-navy bg-tutor-yellow p-3 shadow-[3px_3px_0_0_#071B3A] sm:p-4">
+                                <h3 className="mb-1.5 flex items-center gap-2 font-brutal text-xs uppercase tracking-wide text-tutor-navy sm:text-sm">
+                                    <span className="text-base sm:text-lg">
+                                        ❓
+                                    </span>
+                                    Question:
                                 </h3>
-                                <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                                <p className="font-playful text-sm leading-relaxed text-tutor-navy sm:text-base">
                                     {question.question}
                                 </p>
                             </div>
-                        </div>
 
-                        {/* Options */}
-                        <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
-                            {question.options.map((option, index) => {
-                                let optionClass =
-                                    "p-2 sm:p-3 rounded-none border-[3px] border-black shadow-brutal-sm transition-all duration-150 cursor-pointer ";
+                            {/* Options */}
+                            <div className="space-y-2 sm:space-y-3">
+                                {question.options.map((option, index) => {
+                                    const isSelected = selectedOption === index;
+                                    let optionClass =
+                                        "w-full rounded-xl border-[3px] border-tutor-navy p-2.5 text-left transition-all duration-150 sm:p-3 ";
 
-                                if (showResult) {
-                                    if (index === question.correctAnswer) {
-                                        optionClass +=
-                                            "bg-brutal-green text-black";
-                                    } else if (
-                                        index === selectedOption &&
-                                        !isCorrect
-                                    ) {
-                                        optionClass +=
-                                            "bg-brutal-red text-white";
-                                    } else {
-                                        optionClass +=
-                                            "bg-white opacity-60";
-                                    }
-                                } else {
-                                    optionClass +=
-                                        selectedOption === index
-                                            ? "bg-brutal-blue text-black"
-                                            : "bg-white hover:shadow-brutal hover:-translate-x-0.5 hover:-translate-y-0.5";
-                                }
-
-                                return (
-                                    <button
-                                        key={index}
-                                        onClick={() =>
-                                            handleOptionSelect(index)
+                                    if (showResult) {
+                                        if (
+                                            index === question.correctAnswer
+                                        ) {
+                                            optionClass +=
+                                                "bg-tutor-green text-tutor-cream shadow-[3px_3px_0_0_#071B3A]";
+                                        } else if (isSelected && !isCorrect) {
+                                            optionClass +=
+                                                "bg-tutor-red text-tutor-cream";
+                                        } else {
+                                            optionClass +=
+                                                "bg-tutor-cream text-tutor-navy opacity-60";
                                         }
-                                        disabled={showResult}
-                                        className={`w-full text-left ${optionClass}`}
-                                    >
-                                        <div className="flex items-center">
-                                            <div
-                                                className={`w-5 h-5 sm:w-6 sm:h-6 rounded-none border-2 border-black mr-2 sm:mr-3 flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0 ${
-                                                    showResult
-                                                        ? index ===
-                                                          question.correctAnswer
-                                                            ? "bg-brutal-green text-black"
-                                                            : index ===
-                                                                  selectedOption &&
-                                                              !isCorrect
-                                                            ? "bg-brutal-red text-white"
-                                                            : "bg-gray-300 text-gray-600"
-                                                        : selectedOption ===
-                                                          index
-                                                        ? "bg-black text-white"
-                                                        : "bg-white text-black"
-                                                }`}
-                                            >
-                                                {String.fromCharCode(
-                                                    65 + index
-                                                )}
-                                            </div>
-                                            <span className="font-medium text-sm sm:text-base text-gray-800">
-                                                {option}
-                                            </span>
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
+                                    } else {
+                                        optionClass += isSelected
+                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,4px_4px_0_0_#071B3A]"
+                                            : "bg-tutor-cream text-tutor-navy hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A]";
+                                    }
 
-                        {/* Result */}
-                        {showResult && (
-                            <div
-                                className={`p-3 sm:p-4 rounded-none mb-3 sm:mb-4 border-[3px] border-black shadow-brutal-sm ${
-                                    isCorrect ? "bg-green-100" : "bg-red-100"
-                                }`}
-                            >
-                                <div className="flex items-center mb-2 sm:mb-3">
-                                    <div
-                                        className={`text-2xl sm:text-3xl mr-2 sm:mr-3 ${
-                                            isCorrect
-                                                ? "text-green-600"
-                                                : "text-red-600"
-                                        }`}
-                                    >
-                                        {isCorrect ? "🎉" : "❌"}
-                                    </div>
-                                    <div>
-                                        <h4
-                                            className={`text-lg sm:text-xl font-bold ${
-                                                isCorrect
-                                                    ? "text-green-800"
-                                                    : "text-red-800"
-                                            }`}
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() =>
+                                                handleOptionSelect(index)
+                                            }
+                                            disabled={showResult}
+                                            type="button"
+                                            className={optionClass}
                                         >
-                                            {isCorrect
-                                                ? "Correct!"
-                                                : "Incorrect!"}
-                                        </h4>
-                                        <div className="space-y-1">
-                                            <p
-                                                className={`text-sm sm:text-base ${
-                                                    isCorrect
-                                                        ? "text-green-700"
-                                                        : "text-red-700"
-                                                }`}
-                                            >
+                                            <div className="flex items-center">
+                                                <span
+                                                    className={`mr-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy font-brutal text-xs sm:h-7 sm:w-7 sm:text-sm ${
+                                                        showResult
+                                                            ? index ===
+                                                              question.correctAnswer
+                                                                ? "bg-tutor-cream text-tutor-green"
+                                                                : isSelected &&
+                                                                  !isCorrect
+                                                                ? "bg-tutor-cream text-tutor-red"
+                                                                : "bg-[#E5DCC9] text-tutor-navy/50"
+                                                            : isSelected
+                                                            ? "bg-tutor-yellow text-tutor-navy"
+                                                            : "bg-[#F3EBDD] text-tutor-navy"
+                                                    }`}
+                                                >
+                                                    {String.fromCharCode(
+                                                        65 + index
+                                                    )}
+                                                </span>
+                                                <span
+                                                    className={`font-playful text-sm font-medium sm:text-base ${
+                                                        isSelected && !showResult
+                                                            ? "text-tutor-cream"
+                                                            : showResult &&
+                                                              index ===
+                                                                  question.correctAnswer
+                                                            ? "text-tutor-cream"
+                                                            : "text-tutor-navy"
+                                                    }`}
+                                                >
+                                                    {option}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Result */}
+                            {showResult && (
+                                <div
+                                    className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] sm:p-4 ${
+                                        isCorrect
+                                            ? "bg-tutor-green"
+                                            : "bg-tutor-red"
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        {isCorrect ? (
+                                            <CheckCircle2 className="h-9 w-9 shrink-0 text-tutor-cream" />
+                                        ) : (
+                                            <XCircle className="h-9 w-9 shrink-0 text-tutor-cream" />
+                                        )}
+                                        <div className="min-w-0">
+                                            <h4 className="font-brutal text-base uppercase tracking-wide text-tutor-cream sm:text-lg">
+                                                {isCorrect
+                                                    ? "Correct!"
+                                                    : "Incorrect!"}
+                                            </h4>
+                                            <p className="font-playful text-sm text-tutor-cream/90">
                                                 {isCorrect
                                                     ? timeBonus > 0
-                                                        ? `Excellent! You earned bonus points for quick thinking! +${timeBonus} time bonus!`
+                                                        ? `Excellent! You earned +${timeBonus} bonus points for quick thinking!`
                                                         : "Great job! You earned points and coins!"
                                                     : timeRemaining === 0
                                                     ? "⏰ Time's up! The quiz failed due to timeout."
@@ -322,73 +335,71 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
                                                           ]
                                                       }`}
                                             </p>
-                                            <div className="flex flex-col space-y-1">
-                                                <p className="text-xs sm:text-sm text-gray-600">
-                                                    ⏱️ Time Taken:{" "}
-                                                    {Math.round(submissionTime)}
-                                                    s / {QUIZ_TIME_LIMIT}s
-                                                </p>
-                                                {isCorrect && timeBonus > 0 && (
-                                                    <p className="text-xs sm:text-sm text-green-600 font-bold flex items-center space-x-1">
-                                                        <span>⚡</span>
-                                                        <span>
-                                                            Speed Bonus: +
-                                                            {timeBonus} points!
-                                                        </span>
-                                                    </p>
-                                                )}
-                                                {isCorrect &&
-                                                    timeBonus === 0 &&
-                                                    timeRemaining > 0 && (
-                                                        <p className="text-xs sm:text-sm text-amber-600">
-                                                            💡 Tip: Answer
-                                                            faster (within 30s)
-                                                            for bonus points!
-                                                        </p>
-                                                    )}
-                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="bg-white p-2 sm:p-3 rounded-none border-2 border-black">
-                                    <h5 className="font-bold text-amber-800 mb-2 text-sm sm:text-base">
-                                        📚 Explanation:
-                                    </h5>
-                                    <p className="text-amber-700 text-sm sm:text-base">
-                                        {question.explanation}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex justify-center space-x-2 sm:space-x-4">
-                            {!showResult ? (
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={selectedOption === null}
-                                    className="game-button-frame px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                                >
-                                    <div className="flex items-center justify-center space-x-1 sm:space-x-2">
-                                        <span>📤</span>
-                                        <span>Submit Answer</span>
+                                    <div className="mt-3 space-y-1">
+                                        <p className="font-playful text-xs text-tutor-cream/80">
+                                            ⏱️ Time Taken:{" "}
+                                            {Math.round(submissionTime)}s /{" "}
+                                            {QUIZ_TIME_LIMIT}s
+                                        </p>
+                                        {isCorrect && timeBonus > 0 && (
+                                            <p className="flex items-center gap-1 font-playful text-xs font-bold text-tutor-cream">
+                                                <span>⚡</span>
+                                                <span>
+                                                    Speed Bonus: +{timeBonus}{" "}
+                                                    points!
+                                                </span>
+                                            </p>
+                                        )}
+                                        {isCorrect &&
+                                            timeBonus === 0 &&
+                                            timeRemaining > 0 && (
+                                                <p className="font-playful text-xs text-tutor-cream/80">
+                                                    💡 Tip: Answer faster
+                                                    (within 30s) for bonus
+                                                    points!
+                                                </p>
+                                            )}
                                     </div>
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={handleNext}
-                                    className="game-button-frame px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-bold"
-                                >
-                                    <div className="flex items-center justify-center space-x-1 sm:space-x-2">
-                                        <span>➡️</span>
-                                        <span>Continue</span>
+                                    <div className="mt-3 rounded-xl border-2 border-tutor-navy bg-tutor-cream p-3">
+                                        <h5 className="mb-1 font-brutal text-xs uppercase tracking-wide text-tutor-navy">
+                                            📚 Explanation:
+                                        </h5>
+                                        <p className="font-playful text-sm text-tutor-navy">
+                                            {question.explanation}
+                                        </p>
                                     </div>
-                                </button>
+                                </div>
                             )}
+
+                            {/* Action Buttons */}
+                            <div className="flex justify-center">
+                                {!showResult ? (
+                                    <button
+                                        onClick={handleSubmit}
+                                        type="button"
+                                        disabled={selectedOption === null}
+                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-5 py-3 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A] disabled:cursor-not-allowed disabled:bg-[#D8CFC0] disabled:text-tutor-navy/40 disabled:shadow-[3px_3px_0_0_#071B3A] disabled:hover:translate-y-0 disabled:hover:brightness-100"
+                                    >
+                                        <span className="text-base">📤</span>
+                                        Submit Answer
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleNext}
+                                        type="button"
+                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-5 py-3 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
+                                    >
+                                        Continue
+                                        <ArrowRight className="h-4 w-4" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
+                    </section>
                 </div>
             </div>
         </div>
     );
 };
-

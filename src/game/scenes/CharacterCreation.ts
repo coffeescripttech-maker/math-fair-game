@@ -8,7 +8,7 @@ export class CharacterCreation extends Scene {
     characterSprite: GameObjects.Sprite;
     nameInput: GameObjects.Text;
     selectedColor: number = 0x00ff00;
-    colorOptions: GameObjects.Rectangle[] = [];
+    colorOptions: GameObjects.Shape[] = [];
     confirmButton: GameObjects.Text;
     playerName: string = "";
 

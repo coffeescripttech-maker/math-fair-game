@@ -46,6 +46,7 @@ export interface QuizResult {
     isCorrect: boolean;
     timeSpent: number;
     points: number;
+    timeBonus?: number;
 }
 
 export interface CollectibleItem {
@@ -200,7 +201,224 @@ export class GameValidation {
             points: 750,
             prerequisite: [17, 18, 19], // Requires key math mastery areas
         },
+
+
+        // Level 3: Province Tutoring (21-30)
+        21: {
+            missionId: 21,
+            badge: "Scholar Starter",
+            coins: 85,
+            points: 800,
+            prerequisite: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        },
+        22: {
+            missionId: 22,
+            badge: "Equation Explorer",
+            coins: 90,
+            points: 850,
+            prerequisite: [21],
+        },
+        23: {
+            missionId: 23,
+            badge: "Radical Rookie",
+            coins: 95,
+            points: 900,
+            prerequisite: [22],
+        },
+        24: {
+            missionId: 24,
+            badge: "Inverse Initiate",
+            coins: 100,
+            points: 950,
+            prerequisite: [22, 23],
+        },
+        25: {
+            missionId: 25,
+            badge: "Tutor Trainee",
+            coins: 105,
+            points: 1000,
+            prerequisite: [23, 24],
+        },
+        26: {
+            missionId: 26,
+            badge: "Problem Solver",
+            coins: 110,
+            points: 1050,
+            prerequisite: [23, 24, 25],
+        },
+        27: {
+            missionId: 27,
+            badge: "Math Mentor",
+            coins: 115,
+            points: 1100,
+            prerequisite: [24, 25, 26],
+        },
+        28: {
+            missionId: 28,
+            badge: "Formula Finder",
+            coins: 120,
+            points: 1150,
+            prerequisite: [26, 27],
+        },
+        29: {
+            missionId: 29,
+            badge: "Quiz Qualified",
+            coins: 125,
+            points: 1200,
+            prerequisite: [27, 28],
+        },
+        30: {
+            missionId: 30,
+            badge: "Province Champion",
+            coins: 130,
+            points: 1250,
+            prerequisite: [27, 28, 29],
+        },
+        31: {
+            missionId: 31,
+            badge: "Regional Riser",
+            coins: 130,
+            points: 1250,
+            prerequisite: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        },
+        32: {
+            missionId: 32,
+            badge: "Signal Specialist",
+            coins: 135,
+            points: 1300,
+            prerequisite: [31],
+        },
+        33: {
+            missionId: 33,
+            badge: "Coordinate Captain",
+            coins: 140,
+            points: 1350,
+            prerequisite: [32],
+        },
+        34: {
+            missionId: 34,
+            badge: "Altitude Analyst",
+            coins: 145,
+            points: 1400,
+            prerequisite: [32, 33],
+        },
+        35: {
+            missionId: 35,
+            badge: "Root Researcher",
+            coins: 150,
+            points: 1450,
+            prerequisite: [33, 34],
+        },
+        36: {
+            missionId: 36,
+            badge: "Cipher Specialist",
+            coins: 155,
+            points: 1500,
+            prerequisite: [33, 34, 35],
+        },
+        37: {
+            missionId: 37,
+            badge: "Physics Tutor",
+            coins: 160,
+            points: 1550,
+            prerequisite: [34, 35, 36],
+        },
+        38: {
+            missionId: 38,
+            badge: "Finance Guide",
+            coins: 165,
+            points: 1600,
+            prerequisite: [36, 37],
+        },
+        39: {
+            missionId: 39,
+            badge: "Rationalizer",
+            coins: 170,
+            points: 1650,
+            prerequisite: [37, 38],
+        },
+        40: {
+            missionId: 40,
+            badge: "Regional Champion",
+            coins: 175,
+            points: 1700,
+            prerequisite: [37, 38, 39],
+        },
+        41: {
+            missionId: 41,
+            badge: "Olympiad Aspirant",
+            coins: 175,
+            points: 1800,
+            prerequisite: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+        },
+        42: {
+            missionId: 42,
+            badge: "Quadratic Inverse",
+            coins: 180,
+            points: 1850,
+            prerequisite: [41],
+        },
+        43: {
+            missionId: 43,
+            badge: "Rational Inverse",
+            coins: 185,
+            points: 1900,
+            prerequisite: [42],
+        },
+        44: {
+            missionId: 44,
+            badge: "Inequality Expert",
+            coins: 190,
+            points: 1950,
+            prerequisite: [42, 43],
+        },
+        45: {
+            missionId: 45,
+            badge: "Composition Pro",
+            coins: 195,
+            points: 2000,
+            prerequisite: [43, 44],
+        },
+        46: {
+            missionId: 46,
+            badge: "Physics Formula Master",
+            coins: 200,
+            points: 2050,
+            prerequisite: [43, 44, 45],
+        },
+        47: {
+            missionId: 47,
+            badge: "Coordinate Inverse",
+            coins: 205,
+            points: 2100,
+            prerequisite: [44, 45, 46],
+        },
+        48: {
+            missionId: 48,
+            badge: "Nested Radical Master",
+            coins: 210,
+            points: 2150,
+            prerequisite: [46, 47],
+        },
+        49: {
+            missionId: 49,
+            badge: "Sequence Inverse",
+            coins: 215,
+            points: 2200,
+            prerequisite: [47, 48],
+        },
+        50: {
+            missionId: 50,
+            badge: "Olympiad Mentor",
+            coins: 220,
+            points: 2250,
+            prerequisite: [47, 48, 49],
+        },
     };
+
+    public static getMissionReward(missionId: number): MissionReward | undefined {
+        return this.MISSION_REWARDS[missionId];
+    }
 
     private static readonly QUIZ_SCORING = {
         CORRECT_ANSWER: 50,
@@ -221,6 +439,14 @@ export class GameValidation {
         LEVEL_2_TO_3: {
             BADGES_REQUIRED: 20, // All Level 1 + Level 2 badges
             MIN_SCORE_PERCENTAGE: 75,
+        },
+        LEVEL_3_TO_4: {
+            BADGES_REQUIRED: 30, // All Level 1-3 badges
+            MIN_SCORE_PERCENTAGE: 80,
+        },
+        LEVEL_4_TO_5: {
+            BADGES_REQUIRED: 40, // All Level 1-4 badges
+            MIN_SCORE_PERCENTAGE: 85,
         },
     };
 
@@ -308,6 +534,7 @@ export class GameValidation {
             isCorrect,
             timeSpent,
             points,
+            timeBonus: isCorrect ? points - this.QUIZ_SCORING.CORRECT_ANSWER : 0,
         };
     }
 
@@ -400,7 +627,6 @@ export class GameValidation {
      */
     public static canProgressToNextLevel(progress: GameProgress): boolean {
         if (progress.level === 1) {
-            // Level 1 to Level 2 progression
             const hasRequiredBadges =
                 progress.badges.length >=
                 this.PROGRESSION_REQUIREMENTS.LEVEL_1_TO_2.BADGES_REQUIRED;
@@ -412,7 +638,6 @@ export class GameValidation {
 
             return hasRequiredBadges && hasMinScore;
         } else if (progress.level === 2) {
-            // Level 2 to Level 3 progression (future expansion)
             const hasRequiredBadges =
                 progress.badges.length >=
                 this.PROGRESSION_REQUIREMENTS.LEVEL_2_TO_3.BADGES_REQUIRED;
@@ -423,9 +648,31 @@ export class GameValidation {
                         .MIN_SCORE_PERCENTAGE;
 
             return hasRequiredBadges && hasMinScore;
+        } else if (progress.level === 3) {
+            const hasRequiredBadges =
+                progress.badges.length >=
+                this.PROGRESSION_REQUIREMENTS.LEVEL_3_TO_4.BADGES_REQUIRED;
+            const hasMinScore =
+                progress.totalQuestions > 0 &&
+                (progress.correctAnswers / progress.totalQuestions) * 100 >=
+                    this.PROGRESSION_REQUIREMENTS.LEVEL_3_TO_4
+                        .MIN_SCORE_PERCENTAGE;
+
+            return hasRequiredBadges && hasMinScore;
+        } else if (progress.level === 4) {
+            const hasRequiredBadges =
+                progress.badges.length >=
+                this.PROGRESSION_REQUIREMENTS.LEVEL_4_TO_5.BADGES_REQUIRED;
+            const hasMinScore =
+                progress.totalQuestions > 0 &&
+                (progress.correctAnswers / progress.totalQuestions) * 100 >=
+                    this.PROGRESSION_REQUIREMENTS.LEVEL_4_TO_5
+                        .MIN_SCORE_PERCENTAGE;
+
+            return hasRequiredBadges && hasMinScore;
         }
 
-        return false; // No progression beyond implemented levels
+        return false; // Level 5 is the final level
     }
 
     /**
