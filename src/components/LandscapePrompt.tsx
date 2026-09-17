@@ -56,7 +56,7 @@ export const LandscapePrompt: React.FC = () => {
                 {/* Tutor Town Logo */}
                 <div className="mb-6">
                     <img
-                        src="/logo.png"
+                        src="/logo.jpg"
                         alt="Tutor Town Logo"
                         className="w-20 h-20 mx-auto drop-shadow-2xl animate-pulse"
                     />

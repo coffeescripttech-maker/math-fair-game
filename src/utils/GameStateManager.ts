@@ -23,7 +23,10 @@ export class GameStateManager {
     /**
      * Initialize game state
      */
-    public initializeGame(playerName: string): GameProgress {
+    public initializeGame(
+        playerName: string,
+        gender?: "boy" | "girl"
+    ): GameProgress {
         // Try to load existing progress
         const savedProgress = GameValidation.loadProgress();
 
@@ -33,7 +36,7 @@ export class GameStateManager {
         } else {
             // Create new progress
             this.gameProgress =
-                GameValidation.initializeGameProgress(playerName);
+                GameValidation.initializeGameProgress(playerName, gender);
             this.saveProgress();
             console.log("Created new game progress:", this.gameProgress);
         }

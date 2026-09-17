@@ -36,7 +36,7 @@ export const PWAInstallPrompt: React.FC = () => {
 
         window.addEventListener(
             "beforeinstallprompt",
-            handleBeforeInstallPrompt
+            handleBeforeInstallPrompt,
         );
 
         // Listen for app installed event
@@ -50,7 +50,7 @@ export const PWAInstallPrompt: React.FC = () => {
         return () => {
             window.removeEventListener(
                 "beforeinstallprompt",
-                handleBeforeInstallPrompt
+                handleBeforeInstallPrompt,
             );
         };
     }, []);
@@ -108,7 +108,7 @@ export const PWAInstallPrompt: React.FC = () => {
 
                     <div className="flex items-center space-x-3 mb-3">
                         <img
-                            src="/logo.png"
+                            src="/logo.jpg"
                             alt="Tutor Town Logo"
                             className="w-8 h-8 drop-shadow-lg"
                         />

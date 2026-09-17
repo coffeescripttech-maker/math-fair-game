@@ -961,14 +961,17 @@ export class BarangayMap extends OpenWorldMapScene {
 
     createPlayer() {
         // Check if student sprite texture exists, otherwise use a fallback
-        const playerTexture = this.textures.exists("student-front-1")
-            ? "student-front-1"
-            : "player";
+        const frontKey = this.getPlayerTextureKey("front");
+        const playerTexture = this.textures.exists(frontKey)
+            ? frontKey
+            : this.isGirlPlayer() && this.textures.exists("student-front-1")
+              ? "student-front-1"
+              : "player";
 
         console.log("Creating player with texture:", playerTexture);
         console.log(
             "Student texture exists:",
-            this.textures.exists("student-front-1")
+            this.textures.exists(frontKey)
         );
 
         // Calculate player position relative to background image
@@ -1003,7 +1006,7 @@ export class BarangayMap extends OpenWorldMapScene {
         this.player = this.physics.add.sprite(playerX, playerY, playerTexture);
         // Remove world bounds collision for unlimited movement
         this.player.setCollideWorldBounds(false);
-        this.player.setScale(0.2); // Much smaller scale for student sprites
+        this.player.setScale(this.getPlayerScale()); // Match on-screen size for both genders
 
         console.log(
             "Player created with UNLIMITED movement - no world bounds collision"
@@ -1017,19 +1020,20 @@ export class BarangayMap extends OpenWorldMapScene {
         this.physics.add.collider(this.player, this.physics.world.staticBodies as any);
 
         // Check if student sprite textures are loaded before creating animations
-        if (this.textures.exists("student-front-1")) {
+        if (this.textures.exists(frontKey)) {
             console.log("Student sprites loaded, creating animations...");
             this.createPlayerAnimations();
 
             // Set initial idle animation after a short delay to ensure animations are ready
+            const idleAnimKey = this.getIdleAnimKey("front");
             this.time.delayedCall(100, () => {
                 console.log("Attempting to set initial idle animation...");
                 console.log(
                     "Animation exists:",
-                    this.anims.exists("student-front-idle")
+                    this.anims.exists(idleAnimKey)
                 );
-                if (this.anims.exists("student-front-idle")) {
-                    this.player.play("student-front-idle", true);
+                if (this.anims.exists(idleAnimKey)) {
+                    this.player.play(idleAnimKey, true);
                     console.log("Initial idle animation set successfully!");
                 } else {
                     console.log(
@@ -1043,7 +1047,7 @@ export class BarangayMap extends OpenWorldMapScene {
             );
             // Retry after a short delay
             this.time.delayedCall(500, () => {
-                if (this.textures.exists("student-front-1")) {
+                if (this.textures.exists(frontKey)) {
                     console.log(
                         "Student sprites now loaded, creating animations..."
                     );
@@ -1055,6 +1059,7 @@ export class BarangayMap extends OpenWorldMapScene {
 
     createNPCs() {
         this.npcs = this.physics.add.group();
+        this.reloadNPCPositionOverrides();
 
         // Debug: List all available textures
         console.log(
@@ -1062,18 +1067,19 @@ export class BarangayMap extends OpenWorldMapScene {
             Object.keys(this.textures.list)
         );
 
-        // Map NPC names to their corresponding image keys
+        // Map mission NPC names (from barangayMissionLocations) to their image keys.
         const npcImageMap = {
-            "Vendor Mang Pedro": "vendor-mang-pedro",
-            "Store Owner Aling Maria": "store-owner-aling-maria",
-            "Coach Miguel": "coach-miguel",
-            "Baker Tess": "baker-tess",
-            "Student Leader Ana": "student-leader-ana",
-            "Gardener Noel": "gardener-noel",
-            "Math Teacher Mrs. Cruz": "math-teacher-mrs-cruz",
-            "Shop Owner Danny": "shop-owner-danny",
-            "Parent Rosa": "parent-rosa",
-            "Banker Mr. Santos": "banker-mr-santos",
+            "Miguel": "coach-miguel",
+            "Aling Maria": "store-owner-aling-maria",
+            "Ben": "high-school-student",
+            "Ana": "student-leader-ana",
+            "Lola Rosa": "parent-rosa",
+            "Mang Pedro": "vendor-mang-pedro",
+            "Kuya Noel": "gardener-noel",
+            "Teacher Cruz": "math-teacher-mrs-cruz",
+            "Danny": "shop-owner-danny",
+            // Temporary stand-in until a dedicated "daughter" asset is generated.
+            "Barangay Captain's Daughter": "barangay-captain",
         };
 
         // Check if NPC images are loaded, if not load them directly
@@ -1107,19 +1113,30 @@ export class BarangayMap extends OpenWorldMapScene {
             // Use percentage coordinates if available, otherwise fallback to tile coordinates
             let worldX, worldY;
 
+            // NPC Position Editor override wins over the authored default.
+            const npcOverride = this.npcPositionOverrides?.get(
+                location.missionId
+            ) ?? null;
+            const npcPercentX = npcOverride
+                ? npcOverride.percentX
+                : location.percentX;
+            const npcPercentY = npcOverride
+                ? npcOverride.percentY
+                : location.percentY;
+
             if (
-                location.percentX !== undefined &&
-                location.percentY !== undefined
+                npcPercentX !== undefined &&
+                npcPercentY !== undefined
             ) {
                 // Use background-relative percentage coordinates
                 const coords = this.percentageToWorldCoordinates(
-                    location.percentX,
-                    location.percentY
+                    npcPercentX,
+                    npcPercentY
                 );
                 worldX = coords.x;
                 worldY = coords.y;
                 console.log(
-                    `NPC ${location.npc} positioned at (${location.percentX}%, ${location.percentY}%) = (${worldX}, ${worldY})`
+                    `NPC ${location.npc} positioned at (${npcPercentX}%, ${npcPercentY}%) = (${worldX}, ${worldY})`
                 );
             } else {
                 // Fallback to tile-based coordinates
@@ -1149,12 +1166,43 @@ export class BarangayMap extends OpenWorldMapScene {
             console.log(`Using image: ${finalImageKey} for ${location.npc}`);
 
             const npc = this.physics.add.sprite(worldX, worldY, finalImageKey);
-            npc.setScale(0.3); // Enlarged NPCs - uniform scale maintains proportions
+            // Size by target height, not a fixed scale: renders every NPC at a
+            // fixed on-screen height (a bit bigger than the player), whatever the
+            // source image's pixel resolution (exports vary 408-2000px+). A hard
+            // floor guarantees the NPC is always visible even if the player's
+            // displayHeight reads anomalously low.
+            const npcTargetHeight = Math.max(
+                this.player?.displayHeight || 0,
+                80
+            ) * 1.35;
+            npc.setScale(npcTargetHeight / npc.height);
             npc.setInteractive();
 
-            // Set up collision body for NPC - make it static from the start
-            (npc as any).body.setSize(npc.width * 0.8, npc.height * 0.8); // Slightly smaller collision box
-            (npc as any).body.setOffset(npc.width * 0.1, npc.height * 0.1); // Center the collision box
+            console.log(`Size check ${location.npc}:`, {
+                playerDisplayHeight: this.player?.displayHeight,
+                npcFrameHeight: npc.height,
+                targetHeight: npcTargetHeight,
+                scale: npcTargetHeight / npc.height,
+                finalDisplayHeight:
+                    npc.height * (npcTargetHeight / npc.height),
+            });
+
+            // Set up collision body for NPC - make it static from the start.
+            // Phaser arcade bodies = source pixels × sprite scale, so size the box
+            // from the frame size (not the scaled display size) and center it with a
+            // source-pixel offset. Sizing from the display size makes the box shrink
+            // by the sprite scale (~8px at 0.099x) and drift off-center, letting the
+            // player walk through the NPC.
+            const npcFrame = npc.frame;
+            (npc as any).body.setSize(
+                npcFrame.realWidth * 0.55,
+                npcFrame.realHeight * 0.7,
+                false
+            );
+            (npc as any).body.setOffset(
+                npcFrame.realWidth * 0.225,
+                npcFrame.realHeight * 0.15
+            ); // Center the collision box
             (npc as any).body.setImmovable(true); // Make NPCs static so they don't move when player collides
             (npc as any).body.setGravity(0, 0); // Remove gravity
             (npc as any).body.setVelocity(0, 0); // Stop any movement
@@ -1187,6 +1235,9 @@ export class BarangayMap extends OpenWorldMapScene {
                 })
                 .setOrigin(0.5)
                 .setDepth(100);
+
+            // Store name label ref for live repositioning (NPC Position Editor)
+            this.npcNameLabels.set(location.missionId, npcName);
 
             // Add mission indicator with validation-based styling
             const gameStateManager = GameStateManager.getInstance();
@@ -1265,8 +1316,15 @@ export class BarangayMap extends OpenWorldMapScene {
                 animationTween: null,
             });
 
-            // Store mission data and original position on NPC
-            npc.setData("missionData", location);
+            // Store mission data and original position on NPC. missionData is a
+            // per-NPC COPY so the shared mapData arrays are never mutated — it
+            // carries the resolved (override) percents so reposition helpers
+            // honor the editor's placements.
+            npc.setData("missionData", {
+                ...location,
+                percentX: npcPercentX,
+                percentY: npcPercentY,
+            });
             npc.setData("originalPosition", { x: worldX, y: worldY });
 
             this.npcs.add(npc);
@@ -1957,11 +2015,14 @@ export class BarangayMap extends OpenWorldMapScene {
         // Load collision data from collision editor
         const collisionService = CollisionService.getInstance();
 
-        // Try localStorage first, then JSON file
+        // Try localStorage first — editor-authored blocked spots only.
+        // (The stale public/barangaymap-collisions.json is NOT loaded until
+        // ENABLE_FILE_COLLISIONS above is flipped to true.)
         let collisionData = collisionService.loadCollisionData("BarangayMap");
 
-        if (!collisionData) {
-            // Try loading from public folder JSON file
+        if (!collisionData && this.ENABLE_FILE_COLLISIONS) {
+            // Optional: load "barangaymap-collisions.json" from public/ when
+            // authoring a shipped collision file for the map.
             collisionData = await collisionService.loadCollisionDataFromFile(
                 "BarangayMap"
             );

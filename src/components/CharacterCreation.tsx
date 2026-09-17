@@ -5,7 +5,6 @@ import {
     Check,
     GraduationCap,
     Mars,
-    Palette,
     Pencil,
     Star,
     User,
@@ -15,7 +14,11 @@ import {
 import { audioManager } from "../utils/AudioManager";
 
 interface CharacterCreationProps {
-    onCharacterCreated: (name: string, color: string) => void;
+    onCharacterCreated: (
+        name: string,
+        color: string,
+        gender: "boy" | "girl"
+    ) => void;
     /** Optional handler for returning to the main menu. */
     onBack?: () => void;
 }
@@ -54,19 +57,24 @@ const GENDER_OPTIONS = [
     },
 ];
 
-const colorOptions = [
-    { name: "Green", value: "#16B364", rotation: 0 },
-    { name: "Blue", value: "#216FD1", rotation: 240 },
-    { name: "Red", value: "#F04438", rotation: 0 },
-    { name: "Yellow", value: "#FFD84D", rotation: 60 },
-    { name: "Purple", value: "#7B3FD0", rotation: 270 },
-    { name: "Orange", value: "#F26522", rotation: 30 },
-];
+/**
+ * Favorite color is now auto-assigned from the chosen gender — the old manual
+ * "Choose your color" picker is gone. Each student already carries its own
+ * accent (boy → blue, girl → pink), so the preview frame / backdrop / glow
+ * reflect it automatically.
+ */
+const DEFAULT_COLOR = { name: "Green", value: "#16B364", rotation: 0 };
 
-const NAVY = "#071B3A";
+const GENDER_COLOR: Record<
+    StudentGender,
+    { name: string; value: string; rotation: number }
+> = {
+    boy: { name: "Blue", value: "#216FD1", rotation: 240 },
+    girl: { name: "Pink", value: "#e467c9", rotation: 0 },
+};
+
 const ORANGE = "#F26522";
 const YELLOW = "#FFD84D";
-const CREAM = "#FFF9ED";
 
 /** Gender glyph rendered on the preview ribbon. */
 const GenderGlyph: React.FC<{ id: StudentGender; className?: string }> = ({
@@ -100,11 +108,10 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
     onBack,
 }) => {
     const [playerName, setPlayerName] = useState("");
-    const [selectedColor, setSelectedColor] = useState(colorOptions[0].value);
     const [gender, setGender] = useState<StudentGender | null>(null);
 
-    const selectedColorMeta =
-        colorOptions.find((c) => c.value === selectedColor) ?? colorOptions[0];
+    // Color follows the chosen gender automatically (no manual picker).
+    const colorMeta = gender ? GENDER_COLOR[gender] : DEFAULT_COLOR;
     const genderMeta = GENDER_OPTIONS.find((g) => g.id === gender) ?? null;
 
     const nameReady = playerName.trim().length > 0;
@@ -116,17 +123,17 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
         setGender(next);
     };
 
-    const selectColor = (value: string) => {
-        audioManager.playEffect("button-click");
-        setSelectedColor(value);
-    };
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!canCreate) return;
         audioManager.playEffect("button-click");
-        // Existing action — unchanged backend contract (name + color).
-        onCharacterCreated(playerName.trim(), selectedColor);
+        // Pass the chosen gender so the in-game sprite reflects the selection.
+        // Favorite color is derived from the gender automatically.
+        onCharacterCreated(
+            playerName.trim(),
+            colorMeta.value,
+            gender as "boy" | "girl",
+        );
     };
 
     const handleBack = () => {
@@ -271,7 +278,9 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                                         alt={`${option.label} student avatar`}
                                                         className="h-[85%] w-[85%] object-contain"
                                                         style={{
-                                                            filter: `hue-rotate(${selectedColorMeta.rotation}deg)`,
+                                                            // Each card keeps its own gender color —
+                                                            // picking Boy must not recolor the Girl card.
+                                                            filter: `hue-rotate(${GENDER_COLOR[option.id].rotation}deg)`,
                                                         }}
                                                     />
                                                 </span>
@@ -301,14 +310,14 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                 {/* Top accent strip = favorite color */}
                                 <div
                                     className="h-2"
-                                    style={{ backgroundColor: selectedColor }}
+                                    style={{ backgroundColor: colorMeta.value }}
                                 />
                                 <div className="relative flex min-h-[210px] items-center justify-center px-5 pb-4 pt-8 sm:min-h-[225px] sm:px-6">
                                     {/* Soft color spotlight */}
                                     <div
                                         className="pointer-events-none absolute inset-0"
                                         style={{
-                                            background: `radial-gradient(circle at 50% 42%, ${selectedColor}33 0%, rgba(255,249,237,0) 72%)`,
+                                            background: `radial-gradient(circle at 50% 42%, ${colorMeta.value}33 0%, rgba(255,249,237,0) 72%)`,
                                         }}
                                     />
                                     {/* Dot grid */}
@@ -363,10 +372,10 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                         <span
                                             className="h-3.5 w-3.5 rounded-full border border-tutor-navy/60"
                                             style={{
-                                                backgroundColor: selectedColor,
+                                                backgroundColor: colorMeta.value,
                                             }}
                                         />
-                                        {selectedColorMeta.name} splash
+                                        {colorMeta.name} splash
                                     </div>
 
                                     {/* The avatar itself */}
@@ -376,7 +385,7 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                             alt="Character preview"
                                             className="h-32 w-auto max-w-[200px] object-contain drop-shadow-[3px_4px_0_rgba(7,27,58,0.25)] sm:h-36"
                                             style={{
-                                                filter: `hue-rotate(${selectedColorMeta.rotation}deg)`,
+                                                filter: `hue-rotate(${colorMeta.rotation}deg)`,
                                             }}
                                         />
                                         {/* Live name plate */}
@@ -413,64 +422,6 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                     <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-playful text-[11px] font-bold text-tutor-navy/40">
                                         {playerName.length}/20
                                     </span>
-                                </div>
-                            </div>
-
-                            {/* ========================== COLOR ========================== */}
-                            <div className="space-y-2">
-                                <SectionHeading
-                                    icon={<Palette className="h-4 w-4" />}
-                                >
-                                    Choose your color
-                                </SectionHeading>
-                                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                                    {colorOptions.map((color) => {
-                                        const selected =
-                                            selectedColor === color.value;
-                                        return (
-                                            <button
-                                                type="button"
-                                                key={color.value}
-                                                aria-pressed={selected}
-                                                onClick={() =>
-                                                    selectColor(color.value)
-                                                }
-                                                className={`relative flex items-center gap-2 rounded-lg border-tutor-navy px-2 py-2 transition-all duration-150 sm:flex-col sm:gap-1.5 sm:py-2.5 ${
-                                                    selected
-                                                        ? "-translate-y-0.5 border-[3px] bg-tutor-cream shadow-[0_0_0_3px_#FFD84D,4px_4px_0_0_#071B3A]"
-                                                        : "border-2 bg-tutor-cream opacity-80 hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0 active:shadow-[2px_2px_0_0_#071B3A]"
-                                                }`}
-                                            >
-                                                {selected && (
-                                                    <span className="absolute -right-1.5 -top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full border-2 border-tutor-navy bg-tutor-navy text-tutor-yellow">
-                                                        <Check
-                                                            className="h-3 w-3"
-                                                            strokeWidth={3.5}
-                                                        />
-                                                    </span>
-                                                )}
-                                                {/* Color swatch */}
-                                                <span
-                                                    className="h-9 w-9 shrink-0 rounded-md border-2 border-tutor-navy sm:h-10 sm:w-10"
-                                                    style={{
-                                                        backgroundColor:
-                                                            color.value,
-                                                        boxShadow:
-                                                            "inset 0 -3px 0 rgba(7,27,58,0.18), 2px 2px 0 0 rgba(7,27,58,0.5)",
-                                                    }}
-                                                />
-                                                <span
-                                                    className={`font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy sm:text-sm ${
-                                                        selected
-                                                            ? ""
-                                                            : "text-tutor-navy/60"
-                                                    }`}
-                                                >
-                                                    {color.name}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
                                 </div>
                             </div>
 

@@ -53,6 +53,23 @@ import { quizzes, defaultQuiz } from "./data/quizzes";
 // 🧪 TESTING MODE: Set to true to bypass mission prerequisites for testing
 const DEBUG_BYPASS_PREREQUISITES = false;
 
+// 🧱 COLLISION EDITOR authoring tool — which scenes can open it, and the
+// background image the editor draws on top of for each map.
+type MapSceneKey =
+    | "BarangayMap"
+    | "CityMap"
+    | "ProvinceMap"
+    | "RegionMap"
+    | "NationalMap";
+
+const COLLISION_EDITOR_MAPS: MapSceneKey[] = [
+    "BarangayMap",
+    "CityMap",
+    "ProvinceMap",
+    "RegionMap",
+    "NationalMap",
+];
+
 function App() {
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const gameStateManager = useRef(GameStateManager.getInstance());
@@ -89,9 +106,14 @@ function App() {
     const [showDailyChallenges, setShowDailyChallenges] = useState(false);
     const [showSecretQuests, setShowSecretQuests] = useState(false);
     const [showCollisionEditor, setShowCollisionEditor] = useState(false);
-    const [currentMapForEditor, setCurrentMapForEditor] = useState<
-        "BarangayMap" | "CityMap"
-    >("BarangayMap");
+    const [currentMapForEditor, setCurrentMapForEditor] =
+        useState<MapSceneKey>("BarangayMap");
+    // Background image path for the editor — taken from the active scene's own
+    // getWorldBackgroundConfig().imagePath so the editor always shows exactly
+    // the same background file the game displays (no stale variant drift).
+    const [currentMapBackground, setCurrentMapBackground] = useState(
+        "/assets/barangay-background.png",
+    );
     const [showCelebration, setShowCelebration] = useState(false);
     const [celebrationData, setCelebrationData] = useState({
         badge: "",
@@ -111,13 +133,18 @@ function App() {
         }));
 
         // Track current map for collision editor
-        if (
-            scene.scene.key === "BarangayMap" ||
-            scene.scene.key === "CityMap"
-        ) {
-            setCurrentMapForEditor(
-                scene.scene.key as "BarangayMap" | "CityMap",
-            );
+        if (COLLISION_EDITOR_MAPS.includes(scene.scene.key as MapSceneKey)) {
+            setCurrentMapForEditor(scene.scene.key as MapSceneKey);
+
+            // Editor background = the exact background the scene displays, by
+            // asking the scene for its own config (not a hardcoded path).
+            const mapScene = scene as unknown as {
+                getWorldBackgroundConfig?: () => { imagePath: string };
+            };
+            const bgConfig = mapScene.getWorldBackgroundConfig?.();
+            if (bgConfig?.imagePath && !bgConfig.imagePath.startsWith("/")) {
+                setCurrentMapBackground("/" + bgConfig.imagePath);
+            }
         }
 
         // Update game data from Phaser registry
@@ -146,8 +173,34 @@ function App() {
     // Handle keyboard events for UI
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
+            // Don't steal keys while the player is typing in an input/textarea
+            const target = event.target as HTMLElement | null;
+            if (
+                target &&
+                (target.tagName === "INPUT" ||
+                    target.tagName === "TEXTAREA" ||
+                    target.tagName === "SELECT" ||
+                    target.isContentEditable)
+            ) {
+                return;
+            }
+
             if (event.key === "Escape") {
-                setShowPauseMenu(!showPauseMenu);
+                // Close the collision editor first, else toggle the pause menu
+                if (showCollisionEditor) {
+                    setShowCollisionEditor(false);
+                } else {
+                    setShowPauseMenu(!showPauseMenu);
+                }
+            } else if (event.key === "c" || event.key === "C") {
+                // Collision Editor authoring tool — only on map scenes
+                if (
+                    COLLISION_EDITOR_MAPS.includes(
+                        gameInfo.currentScene as MapSceneKey,
+                    )
+                ) {
+                    setShowCollisionEditor((prev) => !prev);
+                }
             } else if (event.key === "i" || event.key === "I") {
                 setShowInventory(!showInventory);
             } else if (event.key === "q" || event.key === "Q") {
@@ -157,7 +210,13 @@ function App() {
 
         window.addEventListener("keydown", handleKeyPress);
         return () => window.removeEventListener("keydown", handleKeyPress);
-    }, [showPauseMenu, showInventory, showQuestLog]);
+    }, [
+        showPauseMenu,
+        showInventory,
+        showQuestLog,
+        showCollisionEditor,
+        gameInfo.currentScene,
+    ]);
 
     // Initialize audio manager
     useEffect(() => {
@@ -207,7 +266,7 @@ function App() {
         const savedProgress = GameValidation.loadProgress();
         if (savedProgress) {
             const playerName = savedProgress.playerName || "Citizen";
-            handleCharacterCreated(playerName, "default");
+            handleCharacterCreated(playerName, "default", savedProgress.gender);
         } else {
             alert("No saved game found! Start a new game first.");
         }
@@ -243,15 +302,23 @@ function App() {
         // Exit functionality is handled in MainMenu component
     };
 
-    const handleCharacterCreated = (name: string, color: string) => {
-        console.log("Character created:", name, color);
+    const handleCharacterCreated = (
+        name: string,
+        color: string,
+        gender?: "boy" | "girl",
+    ) => {
+        console.log("Character created:", name, color, gender);
         setShowCharacterCreation(false);
 
         // Stop any current music to ensure clean transition
         audioManager.stopMusic();
 
-        // Initialize game state with validation
-        const progress = gameStateManager.current.initializeGame(name);
+        // Initialize game state with validation (persist gender for reload)
+        const resolvedGender = gender ?? "boy";
+        const progress = gameStateManager.current.initializeGame(
+            name,
+            resolvedGender,
+        );
         updateGameInfoFromProgress(progress);
 
         // Show welcome notification for new players
@@ -282,6 +349,10 @@ function App() {
                 console.log("Phaser game found, setting registry...");
                 phaserRef.current.game.registry.set("playerName", name);
                 phaserRef.current.game.registry.set("playerColor", color);
+                phaserRef.current.game.registry.set(
+                    "playerGender",
+                    resolvedGender,
+                );
 
                 // Sync game state with Phaser registry
                 syncGameStateWithPhaser(progress);
@@ -1332,6 +1403,19 @@ function App() {
                                             </div>
                                         </div>
 
+                                        {/* Collision Editor Button — authoring tool (C key) */}
+                                        <button
+                                            onClick={() => {
+                                                setShowPauseMenu(false);
+                                                setShowCollisionEditor(true);
+                                            }}
+                                            type="button"
+                                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-[3px] border-dashed border-tutor-navy bg-tutor-cream px-3 py-2.5 font-brutal text-xs uppercase tracking-wide text-tutor-navy shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                        >
+                                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-orange text-tutor-cream">🧱</span>
+                                            Map Collisions (C)
+                                        </button>
+
                                         {/* Bottom Actions */}
                                         <div className="mt-3 grid grid-cols-2 gap-2">
                                             <button
@@ -1767,11 +1851,7 @@ function App() {
                 }}
                 isVisible={showCollisionEditor}
                 mapName={currentMapForEditor}
-                backgroundImage={
-                    currentMapForEditor === "BarangayMap"
-                        ? "/barangay-background.png"
-                        : "/assets/city-background.png"
-                }
+                backgroundImage={currentMapBackground}
             />
 
             {/* Achievement Celebration */}

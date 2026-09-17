@@ -9,29 +9,34 @@ Complete guide to building your CIVIKA game as an Android APK.
 ### **1. Install Required Software**
 
 #### **Node.js & npm** (Already installed ✅)
+
 ```bash
 node --version  # Should be v18 or higher
 npm --version   # Should be v9 or higher
 ```
 
 #### **Java Development Kit (JDK)** ⚠️ REQUIRED
+
 - **Download**: [Oracle JDK 17](https://www.oracle.com/java/technologies/downloads/#java17) or [OpenJDK 17](https://adoptium.net/)
 - **Version Required**: JDK 17 (recommended for Capacitor 6)
 - **Verify Installation**:
+
 ```bash
 java -version
 # Should show: java version "17.x.x"
 ```
 
 #### **Android Studio** ⚠️ REQUIRED
+
 - **Download**: [Android Studio](https://developer.android.com/studio)
 - **Install with**:
-  - Android SDK
-  - Android SDK Platform Tools
-  - Android SDK Build-Tools
-  - Android Emulator (optional, for testing)
+    - Android SDK
+    - Android SDK Platform Tools
+    - Android SDK Build-Tools
+    - Android Emulator (optional, for testing)
 
 #### **Gradle** (Comes with Android Studio ✅)
+
 - Automatically included with Android Studio
 - Will be used via `gradlew` wrapper
 
@@ -57,6 +62,7 @@ PATH += %ANDROID_HOME%\tools\bin
 ```
 
 **To set environment variables:**
+
 1. Press `Win + X` → System
 2. Advanced system settings → Environment Variables
 3. Add/Edit the variables above
@@ -90,6 +96,7 @@ npm install
 ```
 
 This will install:
+
 - `@capacitor/core` - Capacitor core functionality
 - `@capacitor/cli` - Capacitor command-line tools
 - `@capacitor/android` - Android platform support
@@ -138,11 +145,13 @@ npm run mobile:build:android
 ```
 
 This will:
+
 1. Build your Next.js app (`next build`)
 2. Sync files to Android project (`npx cap sync`)
 3. Build Android debug APK (`gradlew assembleDebug`)
 
 **Output Location:**
+
 ```
 android/app/build/outputs/apk/debug/app-debug.apk
 ```
@@ -155,6 +164,7 @@ npm run mobile:build:android:release
 ```
 
 **Output Location:**
+
 ```
 android/app/build/outputs/apk/release/app-release-unsigned.apk
 ```
@@ -211,6 +221,7 @@ npx cap open android
 ```
 
 **In Android Studio:**
+
 1. Wait for Gradle sync to complete
 2. Click **Build** → **Build Bundle(s) / APK(s)** → **Build APK(s)**
 3. Wait for build to complete
@@ -227,6 +238,7 @@ npx cap open android
 3. Choose a device (e.g., Pixel 5)
 4. Download system image (Android 11+)
 5. **Install APK**:
+
 ```bash
 adb install android/app/build/outputs/apk/debug/app-debug.apk
 ```
@@ -234,16 +246,19 @@ adb install android/app/build/outputs/apk/debug/app-debug.apk
 ### **Option 2: Physical Device**
 
 1. **Enable Developer Options** on your Android device:
-   - Settings → About Phone → Tap "Build Number" 7 times
+    - Settings → About Phone → Tap "Build Number" 7 times
 2. **Enable USB Debugging**:
-   - Settings → Developer Options → USB Debugging
+    - Settings → Developer Options → USB Debugging
 3. **Connect device** via USB
 4. **Verify connection**:
+
 ```bash
 adb devices
 # Should show your device
 ```
+
 5. **Install APK**:
+
 ```bash
 adb install android/app/build/outputs/apk/debug/app-debug.apk
 ```
@@ -331,6 +346,7 @@ npm run mobile:build:android:release
 ### **1. App Icon**
 
 Replace icons in:
+
 ```
 android/app/src/main/res/
   ├── mipmap-hdpi/ic_launcher.png (72x72)
@@ -340,9 +356,10 @@ android/app/src/main/res/
   └── mipmap-xxxhdpi/ic_launcher.png (192x192)
 ```
 
-**Use your logo.png** to generate icons:
+**Use your logo.jpg** to generate icons:
+
 - Online tool: [Android Asset Studio](https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html)
-- Upload your `logo.png`
+- Upload your `logo.jpg`
 - Download and replace icons
 
 ### **2. App Name**
@@ -382,6 +399,7 @@ android {
 ### **Issue 1: "JAVA_HOME not set"**
 
 **Solution:**
+
 ```bash
 # Set JAVA_HOME in Windows
 setx JAVA_HOME "C:\Program Files\Java\jdk-17"
@@ -391,6 +409,7 @@ setx JAVA_HOME "C:\Program Files\Java\jdk-17"
 ### **Issue 2: "Android SDK not found"**
 
 **Solution:**
+
 ```bash
 # Set ANDROID_HOME
 setx ANDROID_HOME "C:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk"
@@ -400,6 +419,7 @@ setx ANDROID_HOME "C:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk"
 ### **Issue 3: "Gradle build failed"**
 
 **Solution:**
+
 ```bash
 # Clean and rebuild
 cd android
@@ -410,6 +430,7 @@ cd android
 ### **Issue 4: "Cannot find 'dist' directory"**
 
 **Solution:**
+
 ```bash
 # Make sure to build first
 npm run build
@@ -420,6 +441,7 @@ npm run mobile:sync
 ### **Issue 5: "Permission denied" on gradlew**
 
 **Solution (Windows):**
+
 ```bash
 # Use .\gradlew instead of ./gradlew
 cd android
@@ -429,6 +451,7 @@ cd android
 ### **Issue 6: APK won't install on device**
 
 **Solution:**
+
 - Enable "Install from Unknown Sources" in device settings
 - Check if an older version is installed and uninstall it first
 - Ensure APK is not corrupted (re-download/re-build)
@@ -502,11 +525,13 @@ Before distributing your APK:
 ## 📊 **Expected Output**
 
 **Debug APK:**
+
 - **Location**: `android/app/build/outputs/apk/debug/app-debug.apk`
 - **Size**: ~50-100 MB (depending on assets)
 - **Use**: Testing only, not for distribution
 
 **Release APK:**
+
 - **Location**: `android/app/build/outputs/apk/release/app-release.apk`
 - **Size**: ~50-100 MB (optimized)
 - **Use**: Distribution, Google Play submission
@@ -518,15 +543,15 @@ Before distributing your APK:
 1. **Test thoroughly** on physical devices
 2. **Optimize performance** if needed
 3. **Prepare store assets**:
-   - Screenshots (phone & tablet)
-   - Feature graphic
-   - App description
-   - Privacy policy
+    - Screenshots (phone & tablet)
+    - Feature graphic
+    - App description
+    - Privacy policy
 4. **Submit to Google Play Store**:
-   - Create developer account
-   - Upload APK/AAB
-   - Fill in store listing
-   - Set pricing & distribution
+    - Create developer account
+    - Upload APK/AAB
+    - Fill in store listing
+    - Set pricing & distribution
 
 ---
 
@@ -545,6 +570,7 @@ Before distributing your APK:
 ## 🏆 **Success Indicators**
 
 You've successfully built your APK when:
+
 - ✅ Build completes without errors
 - ✅ APK file exists in output folder
 - ✅ APK installs on device
@@ -563,4 +589,3 @@ You've successfully built your APK when:
 ---
 
 Ready to build your CIVIKA APK! 🎮📱✨
-

@@ -122,7 +122,7 @@ export const Credits: React.FC<CreditsProps> = ({ onClose, isVisible }) => {
                     </h2>
                     <div className="flex items-center justify-center mb-4">
                         <img
-                            src="/logo.png"
+                            src="/logo.jpg"
                             alt="Tutor Town Logo"
                             className="w-16 h-16 mr-4 drop-shadow-lg"
                         />
@@ -237,11 +237,13 @@ export const Credits: React.FC<CreditsProps> = ({ onClose, isVisible }) => {
                             <p className="text-gray-700 text-center leading-relaxed">
                                 <strong>Tutor Town</strong> was created as a
                                 capstone project to teach algebra through
-                                interactive gameplay and real-world problem solving.
-                                Filipino students explore their community and city,
-                                solving mathematical challenges that mirror everyday
-                                situations, from market transactions to business planning,
-                                building both algebraic skills and practical mathematical thinking.
+                                interactive gameplay and real-world problem
+                                solving. Filipino students explore their
+                                community and city, solving mathematical
+                                challenges that mirror everyday situations, from
+                                market transactions to business planning,
+                                building both algebraic skills and practical
+                                mathematical thinking.
                             </p>
                             <div className="mt-4 flex justify-center space-x-6 text-sm text-gray-600">
                                 <div className="text-center">
@@ -273,14 +275,13 @@ export const Credits: React.FC<CreditsProps> = ({ onClose, isVisible }) => {
                             </div>
                             <div className="text-gray-200 text-xs">
                                 This game is part of a university capstone
-                                project and is designed to teach algebra
-                                and mathematical thinking to Filipino students
+                                project and is designed to teach algebra and
+                                mathematical thinking to Filipino students
                                 through engaging, real-world scenarios.
                             </div>
                         </div>
                     </section>
                 </div>
-
             </div>
         </div>
     );

@@ -1,8 +1,14 @@
 import { GameObjects, Scene } from "phaser";
-import { CollectibleItemData, MissionLocation, MissionMetadata } from "../config/mapData";
+import {
+    CollectibleItemData,
+    MissionLocation,
+    MissionMetadata,
+} from "../config/mapData";
 import { EventBus } from "../EventBus";
 import { GameStateManager } from "../../utils/GameStateManager";
 import CollisionService from "../../services/CollisionService";
+import NpcService from "../../services/NpcService";
+import { NpcPosition } from "../../types/npcPositions";
 
 /**
  * Base class for the five open-world map scenes.
@@ -24,9 +30,40 @@ export abstract class OpenWorldMapScene extends Scene {
     backgroundImage: any = null;
     collisionBodies: Phaser.Physics.Arcade.StaticGroup | null = null;
 
+    // 🚧 COLLISION AUTHORING WALL — Only blocked spots the player draws in
+    // the Collision Editor (saved to localStorage under "civika-collision-<map>") are
+    // applied. Stale "{map}-collisions.json" files in public/ are intentionally
+    // IGNORED so old barrier shapes don't block the new generated background.
+    // Flip to true to also load a JSON file placed in public/ (e.g. the one the
+    // editor lets you download). localStorage still wins when both exist.
+    protected readonly ENABLE_FILE_COLLISIONS: boolean = false;
+
     protected readonly DEBUG_SHOW_COLLISIONS: boolean = false;
 
     locationDisplay: GameObjects.Text | null = null;
+
+    // 💬 DIALOGUE CUTSCENE — typewriter conversation box shared by every map.
+    // Lives in the base class so all 5 levels get the same experience from
+    // their own mission metadata + flavor text.
+    protected dialogueActive: boolean = false;
+    protected dialogueBox: GameObjects.Container | null = null;
+    protected dialogueBgRect: GameObjects.Rectangle | null = null;
+    protected dialogueNamePlate: GameObjects.Rectangle | null = null;
+    protected dialogueSpeakerText: GameObjects.Text | null = null;
+    protected dialogueBodyText: GameObjects.Text | null = null;
+    protected dialogueContinueIcon: GameObjects.Text | null = null;
+    protected dialogueLines: string[] = [];
+    protected dialogueLineIndex: number = 0;
+    protected dialogueTypewriterEvent: Phaser.Time.TimerEvent | null = null;
+    protected dialogueAfterClose: (() => void) | null = null;
+    protected dialogueCameraPanComplete: boolean = false;
+    protected currentDialogueSpeakers: string[] = [];
+    protected dialogueOverlay: GameObjects.Rectangle | null = null;
+    protected dialogueNpcBob: Phaser.Tweens.Tween | null = null;
+    protected dialogueAudioCtx: AudioContext | null = null;
+    protected dialogueBlipLastTime: number = 0;
+    protected dialogueOriginalZoom: number = 1;
+
     collectibles: Phaser.Physics.Arcade.Group | null = null;
     minimap: GameObjects.Container | null = null;
     minimapBackground: GameObjects.Graphics | null = null;
@@ -47,6 +84,15 @@ export abstract class OpenWorldMapScene extends Scene {
     collectibleItems: Map<string, any> = new Map();
     minimapNPCDots: GameObjects.Arc[] = [];
     minimapCollectibleDots: GameObjects.Arc[] = [];
+
+    // 🧍 NPC POSITION OVERRIDES — NPCs spawn at `override ?? default` percents
+    // (the override map is loaded from the NPC Position Editor's localStorage
+    // data). NPCs carry their own `missionData` COPY so the shared mapData
+    // arrays are never mutated.
+    protected npcPositionOverrides: Map<number, NpcPosition> | null = null;
+    protected npcEditorListenerRegistered: boolean = false;
+    npcNameLabels: Map<number, any> = new Map();
+    missionNumberLabels: Map<number, any> = new Map();
     protected DEBUG_BYPASS_PREREQUISITES: boolean = false;
 
     protected abstract getLocationDisplayColor(): string;
@@ -74,20 +120,51 @@ export abstract class OpenWorldMapScene extends Scene {
                         blur: 2,
                         fill: true,
                     },
-                }
+                },
             )
             .setOrigin(0.5)
             .setDepth(500) // Above player but below UI elements
             .setScrollFactor(1) // Follow camera (moves with world)
             .setVisible(true);
 
-        console.log(`${this.scene.key} location display created above player head`);
+        console.log(
+            `${this.scene.key} location display created above player head`,
+        );
     }
 
     protected abstract getInteractionPromptColor(): string;
     protected abstract getInteractionPromptStroke(): string;
 
     createUI() {
+        // Reset dialogue cutscene state on every (re)create. Revisiting a map
+        // reuses the same scene instance, so a stale dialogue box (whose canvas
+        // texture was destroyed on scene stop) must not survive the restart.
+        this.dialogueActive = false;
+        this.dialogueAfterClose = null;
+        this.dialogueCameraPanComplete = false;
+        this.currentDialogueSpeakers = [];
+        // If React still thinks a dialogue is open (restart mid-talk), tell it
+        // the conversation is over so the mobile controls come back.
+        EventBus.emit("dialogue-ended");
+        if (this.dialogueNpcBob) {
+            this.dialogueNpcBob.stop();
+            this.dialogueNpcBob = null;
+        }
+        if (this.dialogueOverlay) {
+            this.dialogueOverlay.destroy(true);
+            this.dialogueOverlay = null;
+        }
+        this.stopTypewriter();
+        if (this.dialogueBox) {
+            this.dialogueBox.destroy(true);
+            this.dialogueBox = null;
+        }
+        this.dialogueNamePlate = null;
+        if (this.dialogueAudioCtx) {
+            this.dialogueAudioCtx.close().catch(() => {});
+            this.dialogueAudioCtx = null;
+        }
+
         // Create interaction prompt positioned relative to player
         this.interactionPrompt = this.add
             .text(
@@ -103,7 +180,7 @@ export abstract class OpenWorldMapScene extends Scene {
                     align: "center",
                     backgroundColor: "#2F4F4F", // Dark slate gray
                     padding: { x: 8, y: 4 },
-                }
+                },
             )
             .setOrigin(0.5)
             .setDepth(1000)
@@ -132,7 +209,7 @@ export abstract class OpenWorldMapScene extends Scene {
         minimapBg.lineStyle(
             this.getMinimapBorderWidth(),
             this.getMinimapBorderColor(),
-            1
+            1,
         );
         minimapBg.strokeRoundedRect(0, 0, minimapSize, minimapSize, 8);
         this.minimap!.add(minimapBg);
@@ -147,7 +224,7 @@ export abstract class OpenWorldMapScene extends Scene {
                 color: this.getMinimapTitleColor(),
                 stroke: "#000000",
                 strokeThickness: 2,
-            }
+            },
         );
         minimapTitle.setOrigin(0.5);
         this.minimap!.add(minimapTitle);
@@ -157,15 +234,23 @@ export abstract class OpenWorldMapScene extends Scene {
             minimapSize / 2,
             4,
             0x00ff00,
-            1
+            1,
         );
         this.minimap!.add(this.minimapPlayerDot);
 
         this.missionLocations.forEach((location) => {
-            const npcX = (location.percentX / 100) * minimapSize;
-            const npcY = (location.percentY / 100) * minimapSize;
+            const npcOverride = this.npcPositionOverrides?.get(
+                location.missionId,
+            ) ?? null;
+            const npcX =
+                ((npcOverride?.percentX ?? location.percentX) / 100) *
+                minimapSize;
+            const npcY =
+                ((npcOverride?.percentY ?? location.percentY) / 100) *
+                minimapSize;
 
             const npcDot = this.add.circle(npcX, npcY, 2, 0x4169e1, 0.8);
+            npcDot.setData("missionId", location.missionId);
             this.minimap!.add(npcDot);
             this.minimapNPCDots.push(npcDot);
         });
@@ -178,12 +263,18 @@ export abstract class OpenWorldMapScene extends Scene {
                 item.rarity === "legendary"
                     ? 0xffd700
                     : item.rarity === "rare"
-                    ? 0xff00ff
-                    : item.rarity === "uncommon"
-                    ? 0x00ffff
-                    : 0xffff00;
+                      ? 0xff00ff
+                      : item.rarity === "uncommon"
+                        ? 0x00ffff
+                        : 0xffff00;
 
-            const collectibleDot = this.add.circle(itemX, itemY, 2, dotColor, 1);
+            const collectibleDot = this.add.circle(
+                itemX,
+                itemY,
+                2,
+                dotColor,
+                1,
+            );
             collectibleDot.setData("itemId", item.id);
             this.minimap!.add(collectibleDot);
             this.minimapCollectibleDots.push(collectibleDot);
@@ -199,10 +290,51 @@ export abstract class OpenWorldMapScene extends Scene {
             });
         });
 
-        console.log(`${this.scene.key} minimap created with collectible locations`);
+        console.log(
+            `${this.scene.key} minimap created with collectible locations`,
+        );
     }
 
     interactWithNPC(location: any) {
+        // Ignore re-entry while a dialogue cutscene is already playing.
+        if (this.dialogueActive) return;
+
+        const gameStateManager = GameStateManager.getInstance();
+        const flavor = this.getMissionFlavor();
+
+        // Pick the dialogue line for this mission state (reusing existing text
+        // — no new authoring), then run the original mission logic only after
+        // the cutscene finishes.
+        let dialogueLine: string;
+        if (gameStateManager.isMissionCompleted(location.missionId)) {
+            dialogueLine = flavor.completedMessage(location.npc);
+        } else if (
+            !this.DEBUG_BYPASS_PREREQUISITES &&
+            !gameStateManager.canAccessMission(location.missionId)
+        ) {
+            const availableMissions =
+                gameStateManager.getAvailableMissions();
+            const availableList =
+                availableMissions.length > 0
+                    ? availableMissions.join(", ")
+                    : flavor.prereqFallbackList;
+            dialogueLine = flavor.prereqMessage(location.npc, availableList);
+        } else {
+            dialogueLine =
+                this.getMissionData(location.missionId).description;
+        }
+
+        // Speakers array runs parallel to the lines array — currently every
+        // line is voiced by the NPC; add a "PLAYER" entry to make the player
+        // speak a line (the nameplate and highlight switch accordingly).
+        this.startDialogue(
+            [location.npc],
+            [dialogueLine],
+            () => this.continueInteractionWithNPC(location),
+        );
+    }
+
+    continueInteractionWithNPC(location: any) {
         const gameStateManager = GameStateManager.getInstance();
         const flavor = this.getMissionFlavor();
 
@@ -297,11 +429,13 @@ export abstract class OpenWorldMapScene extends Scene {
                 -Infinity,
                 -Infinity,
                 Infinity,
-                Infinity
+                Infinity,
             );
             this.cameras.main.setLerp(0.08, 0.08);
             this.cameras.main.setDeadzone(25, 25);
-            console.log(`${this.getCameraLogName()} camera optimized for open world`);
+            console.log(
+                `${this.getCameraLogName()} camera optimized for open world`,
+            );
         }
     }
 
@@ -310,24 +444,53 @@ export abstract class OpenWorldMapScene extends Scene {
         this.isMobile =
             this.sys.game.device.input.touch ||
             /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                navigator.userAgent
+                navigator.userAgent,
             ) ||
             window.innerWidth <= 768;
-        console.log(`Mobile device detected in ${this.scene.key}:`, this.isMobile);
+        console.log(
+            `Mobile device detected in ${this.scene.key}:`,
+            this.isMobile,
+        );
 
         // Set up input
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.wasd = this.input.keyboard!.addKeys("W,S,A,D");
 
         // Set up interaction key
-        this.input.keyboard!.on("keydown-SPACE", () =>
-            this.interactWithNearbyNPC()
-        );
+        this.input.keyboard!.on("keydown-SPACE", () => {
+            if (this.dialogueActive) {
+                this.advanceDialogue();
+            } else {
+                this.interactWithNearbyNPC();
+            }
+        });
+
+        // Space / Enter / E all advance the dialogue box.
+        this.input.keyboard!.on("keydown-ENTER", () => {
+            if (this.dialogueActive) {
+                this.advanceDialogue();
+            }
+        });
+        this.input.keyboard!.on("keydown-E", () => {
+            if (this.dialogueActive) {
+                this.advanceDialogue();
+            }
+        });
+
+        // Tap/click anywhere advances the dialogue — the main touch UX on
+        // mobile once the DOM "TAP" button hides during a conversation.
+        this.input.on("pointerdown", () => {
+            if (this.dialogueActive) {
+                this.advanceDialogue();
+            }
+        });
     }
 
     create() {
         const theme = this.getNPCTheme();
-        console.log(`=== CREATING ${theme.noun.toUpperCase()} MAP (LEVEL ${theme.level}) ===`);
+        console.log(
+            `=== CREATING ${theme.noun.toUpperCase()} MAP (LEVEL ${theme.level}) ===`,
+        );
 
         // Create background
         this.createBackground();
@@ -379,8 +542,23 @@ export abstract class OpenWorldMapScene extends Scene {
 
         // Listen for mobile interaction events from React
         this.game.events.on("mobile-interact", () => {
-            this.interactWithNearbyNPC();
+            if (this.dialogueActive) {
+                this.advanceDialogue();
+            } else {
+                this.interactWithNearbyNPC();
+            }
         });
+
+        // 🧍 NPC Position Editor — React emits this after a Save / Reset so the
+        // active scene repositions its NPCs live (no scene restart needed).
+        if (!this.npcEditorListenerRegistered) {
+            this.game.events.on(
+                "civika-npcs-saved",
+                this.handleNPCEditorSaved,
+                this,
+            );
+            this.npcEditorListenerRegistered = true;
+        }
 
         // Add resize handler
         this.scale.on("resize", this.handleResize, this);
@@ -389,19 +567,19 @@ export abstract class OpenWorldMapScene extends Scene {
         EventBus.emit("current-scene-ready", this);
     }
 
-
     getDistanceToNearestNPC(x?: number, y?: number): number {
         const playerX = x !== undefined ? x : this.player.x;
         const playerY = y !== undefined ? y : this.player.y;
 
         let nearestDistance = Infinity;
 
-        for (let npc of this.npcs.children.entries as Phaser.Physics.Arcade.Sprite[]) {
+        for (let npc of this.npcs.children
+            .entries as Phaser.Physics.Arcade.Sprite[]) {
             const distance = Phaser.Math.Distance.Between(
                 playerX,
                 playerY,
                 npc.x,
-                npc.y
+                npc.y,
             );
             if (distance < nearestDistance) {
                 nearestDistance = distance;
@@ -421,7 +599,8 @@ export abstract class OpenWorldMapScene extends Scene {
         const playerWidth = this.player.width * this.player.scaleX;
         const playerHeight = this.player.height * this.player.scaleY;
 
-        for (let npc of this.npcs.children.entries as Phaser.Physics.Arcade.Sprite[]) {
+        for (let npc of this.npcs.children
+            .entries as Phaser.Physics.Arcade.Sprite[]) {
             const npcWidth = npc.width * npc.scaleX;
             const npcHeight = npc.height * npc.scaleY;
 
@@ -457,7 +636,7 @@ export abstract class OpenWorldMapScene extends Scene {
                 this.player.x,
                 this.player.y,
                 npc.x,
-                npc.y
+                npc.y,
             );
 
             if (distance < nearestDistance) {
@@ -470,7 +649,7 @@ export abstract class OpenWorldMapScene extends Scene {
             this.nearbyNPC = nearestNPC;
             this.interactionPrompt.setPosition(
                 this.player.x + 80,
-                this.player.y
+                this.player.y,
             );
             this.interactionPrompt.setVisible(true);
         } else {
@@ -491,7 +670,7 @@ export abstract class OpenWorldMapScene extends Scene {
                     npc.x,
                     npc.y,
                     originalPosition.x,
-                    originalPosition.y
+                    originalPosition.y,
                 );
                 if (distance > 5) {
                     npc.setPosition(originalPosition.x, originalPosition.y);
@@ -520,17 +699,43 @@ export abstract class OpenWorldMapScene extends Scene {
 
         const percentX = Math.max(
             0,
-            Math.min(100, (playerRelativeX / bgWidth) * 100)
+            Math.min(100, (playerRelativeX / bgWidth) * 100),
         );
         const percentY = Math.max(
             0,
-            Math.min(100, (playerRelativeY / bgHeight) * 100)
+            Math.min(100, (playerRelativeY / bgHeight) * 100),
         );
 
         this.minimapPlayerDot.setPosition(
             (percentX / 100) * minimapSize,
-            (percentY / 100) * minimapSize
+            (percentY / 100) * minimapSize,
         );
+
+        // 🧍 NPC dots follow their live NPC every frame — covers editor drags,
+        // reset-to-default, and scene re-spawns with no extra event bookkeeping.
+        const npcEntries = (this.npcs?.children.entries ?? []) as any[];
+        this.minimapNPCDots.forEach((dot) => {
+            if (!dot.active) return; // stale refs survive scene restarts
+            const missionId = dot.getData("missionId");
+            const npc = npcEntries.find(
+                (n) => n.getData?.("missionData")?.missionId === missionId,
+            );
+            if (!npc) return;
+            const relX = npc.x - (bgX - bgWidth / 2);
+            const relY = npc.y - (bgY - bgHeight / 2);
+            const npcPctX = Math.max(
+                0,
+                Math.min(100, (relX / bgWidth) * 100),
+            );
+            const npcPctY = Math.max(
+                0,
+                Math.min(100, (relY / bgHeight) * 100),
+            );
+            dot.setPosition(
+                (npcPctX / 100) * minimapSize,
+                (npcPctY / 100) * minimapSize,
+            );
+        });
 
         const gameStateManager = GameStateManager.getInstance();
         this.minimapCollectibleDots.forEach((dot) => {
@@ -543,6 +748,24 @@ export abstract class OpenWorldMapScene extends Scene {
 
     update() {
         if (!this.player) return;
+
+        // Dialogue cutscene: freeze the player and skip world updates while
+        // the conversation box is up.
+        if (this.dialogueActive) {
+            this.player.setVelocity(0, 0);
+            this.player.setAngularVelocity(0);
+            const idleSpriteKey = this.getPlayerTextureKey(this.lastDirection);
+            if (this.textures.exists(idleSpriteKey)) {
+                this.player.setTexture(idleSpriteKey);
+            }
+            if (this.anims && this.anims.exists) {
+                const idleAnimKey = this.getIdleAnimKey(this.lastDirection);
+                if (this.anims.exists(idleAnimKey)) {
+                    this.player.play(idleAnimKey, true);
+                }
+            }
+            return;
+        }
 
         const speed = 120;
         let isMoving = false;
@@ -576,7 +799,7 @@ export abstract class OpenWorldMapScene extends Scene {
             }
         } else {
             const joystickDirection = this.registry.get(
-                "joystickDirection"
+                "joystickDirection",
             ) || { x: 0, y: 0 };
 
             if (joystickDirection.x !== 0 || joystickDirection.y !== 0) {
@@ -609,26 +832,26 @@ export abstract class OpenWorldMapScene extends Scene {
         }
 
         if (isMoving) {
-            const spriteKey = `student-${currentDirection}-1`;
+            const spriteKey = this.getPlayerTextureKey(currentDirection);
             if (this.textures.exists(spriteKey)) {
                 this.player.setTexture(spriteKey);
             }
 
             if (this.anims && this.anims.exists) {
-                const walkAnimKey = `student-${currentDirection}-walk`;
+                const walkAnimKey = this.getWalkAnimKey(currentDirection);
                 if (this.anims.exists(walkAnimKey)) {
                     this.player.play(walkAnimKey, true);
                 }
             }
         } else {
             this.player.setVelocity(0, 0);
-            const idleSpriteKey = `student-${this.lastDirection}-1`;
+            const idleSpriteKey = this.getPlayerTextureKey(this.lastDirection);
             if (this.textures.exists(idleSpriteKey)) {
                 this.player.setTexture(idleSpriteKey);
             }
 
             if (this.anims && this.anims.exists) {
-                const idleAnimKey = `student-${this.lastDirection}-idle`;
+                const idleAnimKey = this.getIdleAnimKey(this.lastDirection);
                 if (this.anims.exists(idleAnimKey)) {
                     this.player.play(idleAnimKey, true);
                 }
@@ -641,9 +864,44 @@ export abstract class OpenWorldMapScene extends Scene {
         this.enforceNPCPositions();
     }
 
+    // ----- Player appearance helpers (boy walk-cycle vs girl single-frame) -----
+
+    protected isGirlPlayer(): boolean {
+        return this.registry.get("playerGender") === "girl";
+    }
+
+    /** Texture key for the standing sprite in a given direction. */
+    protected getPlayerTextureKey(dir: string): string {
+        return this.isGirlPlayer() ? `student-girl-${dir}` : `student-${dir}-1`;
+    }
+
+    /** Animation key for walking in a given direction. */
+    protected getWalkAnimKey(dir: string): string {
+        return this.isGirlPlayer()
+            ? `student-girl-${dir}-walk`
+            : `student-${dir}-walk`;
+    }
+
+    /** Animation key for idling in a given direction. */
+    protected getIdleAnimKey(dir: string): string {
+        return this.isGirlPlayer()
+            ? `student-girl-${dir}-idle`
+            : `student-${dir}-idle`;
+    }
+
+    /** Scale applied to the player sprite (girl images are higher-res). */
+    protected getPlayerScale(): number {
+        // Girl renders ~12% taller than boy: boy front is 393px @ 0.2 (78.6px);
+        // girl is 629px, so 0.14 ≈ 88/629.
+        return this.isGirlPlayer() ? 0.18 : 0.2;
+    }
+
     createPlayerAnimations() {
-        // Check if animations already exist (from Level 1)
-        if (this.anims.exists("student-front-walk")) {
+        // Check if animations already exist (from Level 1) — both boy and girl sets.
+        if (
+            this.anims.exists("student-front-walk") &&
+            this.anims.exists("student-girl-front-walk")
+        ) {
             console.log("Player animations already exist, skipping creation");
             return;
         }
@@ -673,7 +931,7 @@ export abstract class OpenWorldMapScene extends Scene {
         for (const texture of requiredTextures) {
             if (!this.textures.exists(texture)) {
                 console.error(
-                    `Required texture ${texture} not found in City Map!`
+                    `Required texture ${texture} not found in City Map!`,
                 );
                 return;
             }
@@ -753,11 +1011,83 @@ export abstract class OpenWorldMapScene extends Scene {
             frameRate: 1,
         });
 
+        // Create girl student animations (single-frame glide per direction)
+        const girlRequiredTextures = [
+            "student-girl-front",
+            "student-girl-back",
+            "student-girl-left",
+            "student-girl-right",
+        ];
+
+        // Skip girl anims if her textures aren't loaded (defensive; they are preloaded)
+        const girlsReady = girlRequiredTextures.every((texture) =>
+            this.textures.exists(texture),
+        );
+
+        if (girlsReady) {
+            // Walking animations (single frame repeated — girl has no walk cycle frames)
+            this.anims.create({
+                key: "student-girl-front-walk",
+                frames: [{ key: "student-girl-front" }],
+                frameRate: 8,
+                repeat: -1,
+            });
+
+            this.anims.create({
+                key: "student-girl-back-walk",
+                frames: [{ key: "student-girl-back" }],
+                frameRate: 8,
+                repeat: -1,
+            });
+
+            this.anims.create({
+                key: "student-girl-left-walk",
+                frames: [{ key: "student-girl-left" }],
+                frameRate: 8,
+                repeat: -1,
+            });
+
+            this.anims.create({
+                key: "student-girl-right-walk",
+                frames: [{ key: "student-girl-right" }],
+                frameRate: 8,
+                repeat: -1,
+            });
+
+            // Idle animations
+            this.anims.create({
+                key: "student-girl-front-idle",
+                frames: [{ key: "student-girl-front" }],
+                frameRate: 1,
+            });
+
+            this.anims.create({
+                key: "student-girl-back-idle",
+                frames: [{ key: "student-girl-back" }],
+                frameRate: 1,
+            });
+
+            this.anims.create({
+                key: "student-girl-left-idle",
+                frames: [{ key: "student-girl-left" }],
+                frameRate: 1,
+            });
+
+            this.anims.create({
+                key: "student-girl-right-idle",
+                frames: [{ key: "student-girl-right" }],
+                frameRate: 1,
+            });
+        }
+
         console.log("Player animations created successfully!");
     }
 
     protected abstract getDefaultAreaName(): string;
-    protected abstract getAreaName(relativeX: number, relativeY: number): string;
+    protected abstract getAreaName(
+        relativeX: number,
+        relativeY: number,
+    ): string;
     protected abstract getWorldBackgroundConfig(): {
         label: string;
         textureKey: string;
@@ -775,7 +1105,7 @@ export abstract class OpenWorldMapScene extends Scene {
         console.log(`Creating ${label} background...`);
         console.log(
             `${title} background texture exists:`,
-            this.textures.exists(cfg.textureKey)
+            this.textures.exists(cfg.textureKey),
         );
 
         // If textures don't exist, load them directly
@@ -803,7 +1133,7 @@ export abstract class OpenWorldMapScene extends Scene {
         console.log(`Creating ${label} background image after delay...`);
         console.log(
             `${title} background root texture exists now:`,
-            this.textures.exists(cfg.textureKey)
+            this.textures.exists(cfg.textureKey),
         );
 
         // Create background image as the main visual element
@@ -821,7 +1151,7 @@ export abstract class OpenWorldMapScene extends Scene {
                 const bgImage = this.add.image(
                     gameCenterX,
                     gameCenterY,
-                    cfg.textureKey
+                    cfg.textureKey,
                 );
                 bgImage.setOrigin(0.5, 0.5);
                 bgImage.setDepth(-2000); // Much further behind everything
@@ -840,24 +1170,24 @@ export abstract class OpenWorldMapScene extends Scene {
                 const finalScaleY = Math.max(scaleY, minScale);
 
                 console.log(
-                    `${title} background scaling to cover entire Phaser game canvas:`
+                    `${title} background scaling to cover entire Phaser game canvas:`,
                 );
                 console.log(
                     "Game canvas dimensions:",
                     gameWidth,
                     "x",
-                    gameHeight
+                    gameHeight,
                 );
                 console.log(
                     "Image dimensions:",
                     bgImage.width,
                     "x",
-                    bgImage.height
+                    bgImage.height,
                 );
                 console.log(
                     "Scale factors:",
                     scaleToCoverWidth,
-                    scaleToCoverHeight
+                    scaleToCoverHeight,
                 );
                 console.log("Final scale:", finalScaleX, finalScaleY);
 
@@ -893,13 +1223,15 @@ export abstract class OpenWorldMapScene extends Scene {
             } catch (error) {
                 console.error(
                     `Error creating ${label} background image:`,
-                    error
+                    error,
                 );
                 // Fallback to theme-colored background if image fails
                 this.createFallbackBackground();
             }
         } else {
-            console.log(`${title} background texture not found, using fallback`);
+            console.log(
+                `${title} background texture not found, using fallback`,
+            );
             this.createFallbackBackground();
         }
     }
@@ -917,7 +1249,7 @@ export abstract class OpenWorldMapScene extends Scene {
             gameWidth * 2,
             gameHeight * 2,
             cfg.fallbackColor, // Theme color for this level
-            1
+            1,
         );
         bg.setDepth(-2000);
 
@@ -949,12 +1281,12 @@ export abstract class OpenWorldMapScene extends Scene {
             console.log(
                 `${title} player repositioned to (30%, 50%):`,
                 coords.x,
-                coords.y
+                coords.y,
             );
             console.log(
                 `${title} background dimensions:`,
                 this.backgroundImage.displayWidth,
-                this.backgroundImage.displayHeight
+                this.backgroundImage.displayHeight,
             );
         }
     }
@@ -972,7 +1304,7 @@ export abstract class OpenWorldMapScene extends Scene {
                 // Reposition NPC using percentage coordinates
                 const coords = this.percentageToWorldCoordinates(
                     missionData.percentX,
-                    missionData.percentY
+                    missionData.percentY,
                 );
                 npc.setPosition(coords.x, coords.y);
 
@@ -980,12 +1312,79 @@ export abstract class OpenWorldMapScene extends Scene {
                 npc.setData("originalPosition", { x: coords.x, y: coords.y });
 
                 console.log(
-                    `Repositioned NPC ${missionData.npc} to (${missionData.percentX}%, ${missionData.percentY}%) = (${coords.x}, ${coords.y})`
+                    `Repositioned NPC ${missionData.npc} to (${missionData.percentX}%, ${missionData.percentY}%) = (${coords.x}, ${coords.y})`,
                 );
             }
         });
     }
 
+    // 🧍 NPC POSITION OVERRIDES — editor-authored moves applied live.
+
+    /** (Re)read the NPC Position Editor's overrides from the shared NpcService. */
+    protected reloadNPCPositionOverrides() {
+        this.npcPositionOverrides = NpcService.getInstance().getNpcPositions(
+            this.scene.key,
+        );
+    }
+
+    /** Live-apply overrides (or defaults after Reset) to every spawned NPC + overlay. */
+    protected applyNPCPositionOverrides() {
+        this.reloadNPCPositionOverrides();
+        const positions = this.npcPositionOverrides ?? new Map();
+        const defaultById = new Map(
+            this.missionLocations.map((l) => [l.missionId, l]),
+        );
+
+        (this.npcs?.children.entries ?? []).forEach((npc: any) => {
+            const missionData = npc.getData?.("missionData");
+            if (!missionData) return;
+            const missionId = missionData.missionId;
+            if (missionId === undefined) return;
+
+            const override = positions.get(missionId);
+            const fallback = defaultById.get(missionId);
+            const pX = override?.percentX ?? fallback?.percentX;
+            const pY = override?.percentY ?? fallback?.percentY;
+            if (pX === undefined || pY === undefined) return;
+
+            const coords = this.percentageToWorldCoordinates(pX, pY);
+            const worldX = coords.x;
+            const worldY = coords.y;
+
+            npc.setPosition(worldX, worldY);
+            npc.setData("originalPosition", { x: worldX, y: worldY });
+            // Mutate the per-NPC COPY, never the shared mapData array.
+            missionData.percentX = pX;
+            missionData.percentY = pY;
+
+            const indicator = this.missionIndicators.get(missionId);
+            if (indicator) indicator.setPosition(worldX + 25, worldY - 25);
+            const nameLabel = this.npcNameLabels.get(missionId);
+            if (nameLabel) nameLabel.setPosition(worldX, worldY - 50);
+            const numberLabel = this.missionNumberLabels.get(missionId);
+            if (numberLabel) numberLabel.setPosition(worldX - 35, worldY - 35);
+            const glowData = this.npcGlowEffects.get(missionId);
+            if (glowData) {
+                if (glowData.baseGlow) {
+                    glowData.baseGlow.setPosition(worldX, worldY);
+                }
+                if (glowData.interactiveGlow) {
+                    glowData.interactiveGlow.setPosition(worldX, worldY);
+                }
+            }
+        });
+
+        // Minimap dots self-heal every frame in updateMinimap().
+    }
+
+    /** React → Phaser: called after the NPC editor persists a save/reset. */
+    private handleNPCEditorSaved = (payload: {
+        mapName: string;
+    }) => {
+        if (!this.scene.isActive()) return; // editor on a non-active map → next spawn
+        if (payload?.mapName !== this.scene.key) return;
+        this.applyNPCPositionOverrides();
+    };
 
     updateNPCIndicators() {
         const gameStateManager = GameStateManager.getInstance();
@@ -1030,26 +1429,28 @@ export abstract class OpenWorldMapScene extends Scene {
             return;
         }
 
-        // Try localStorage first (for editor testing), then JSON file
+        // Try localStorage first — editor-authored blocked spots only.
+        // (The old public/{map}-collisions.json files are NOT loaded until
+        // ENABLE_FILE_COLLISIONS above is flipped to true.)
         let collisionData = collisionService.loadCollisionData(dataKey);
 
-        if (!collisionData) {
-            // Try loading from public folder JSON file
-            collisionData = await collisionService.loadCollisionDataFromFile(
-                dataKey
-            );
+        if (!collisionData && this.ENABLE_FILE_COLLISIONS) {
+            // Optional: load "{map}-collisions.json" from public/ when
+            // authoring a shipped collision file for this map.
+            collisionData =
+                await collisionService.loadCollisionDataFromFile(dataKey);
         }
 
         if (collisionData && this.backgroundImage) {
             console.log(`✅ Loading collision data for ${dataKey}...`);
             console.log(
-                `Found ${collisionData.shapes.length} collision shapes`
+                `Found ${collisionData.shapes.length} collision shapes`,
             );
 
             this.collisionBodies = collisionService.createCollisions(
                 this,
                 collisionData,
-                this.backgroundImage
+                this.backgroundImage,
             );
 
             // 🎨 VISUAL DEBUG: Draw colored outlines to see collision boundaries (only in debug mode)
@@ -1059,7 +1460,7 @@ export abstract class OpenWorldMapScene extends Scene {
                         const box = shape as any;
                         const coords = this.percentageToWorldCoordinates(
                             box.percentX + box.percentWidth / 2,
-                            box.percentY + box.percentHeight / 2
+                            box.percentY + box.percentHeight / 2,
                         );
                         const width =
                             (box.percentWidth / 100) *
@@ -1074,7 +1475,7 @@ export abstract class OpenWorldMapScene extends Scene {
                             width,
                             height,
                             0xff0000,
-                            0 // Transparent fill
+                            0, // Transparent fill
                         );
                         debugRect.setStrokeStyle(3, 0xff0000); // Red outline
                         debugRect.setDepth(1000);
@@ -1083,8 +1484,8 @@ export abstract class OpenWorldMapScene extends Scene {
                             `🎨 Visualized collision "${
                                 box.name
                             }" at (${box.percentX.toFixed(
-                                1
-                            )}%, ${box.percentY.toFixed(1)}%)`
+                                1,
+                            )}%, ${box.percentY.toFixed(1)}%)`,
                         );
                     } else if (shape.type === "polygon") {
                         const poly = shape as any;
@@ -1095,7 +1496,7 @@ export abstract class OpenWorldMapScene extends Scene {
                         const firstPoint = poly.points[0];
                         const firstCoords = this.percentageToWorldCoordinates(
                             firstPoint.percentX,
-                            firstPoint.percentY
+                            firstPoint.percentY,
                         );
                         graphics.beginPath();
                         graphics.moveTo(firstCoords.x, firstCoords.y);
@@ -1104,7 +1505,7 @@ export abstract class OpenWorldMapScene extends Scene {
                             const point = poly.points[i];
                             const coords = this.percentageToWorldCoordinates(
                                 point.percentX,
-                                point.percentY
+                                point.percentY,
                             );
                             graphics.lineTo(coords.x, coords.y);
                         }
@@ -1113,19 +1514,19 @@ export abstract class OpenWorldMapScene extends Scene {
                         graphics.strokePath();
 
                         console.log(
-                            `🎨 Visualized polygon "${poly.name}" with ${poly.points.length} points`
+                            `🎨 Visualized polygon "${poly.name}" with ${poly.points.length} points`,
                         );
                     } else if (shape.type === "circle") {
                         const circle = shape as any;
                         const coords = this.percentageToWorldCoordinates(
                             circle.percentX,
-                            circle.percentY
+                            circle.percentY,
                         );
                         const radius =
                             (circle.percentRadius / 100) *
                             Math.min(
                                 this.backgroundImage.displayWidth,
-                                this.backgroundImage.displayHeight
+                                this.backgroundImage.displayHeight,
                             );
 
                         const graphics = this.add.graphics();
@@ -1137,14 +1538,14 @@ export abstract class OpenWorldMapScene extends Scene {
                             `🎨 Visualized circle "${
                                 circle.name
                             }" at (${circle.percentX.toFixed(
-                                1
-                            )}%, ${circle.percentY.toFixed(1)}%)`
+                                1,
+                            )}%, ${circle.percentY.toFixed(1)}%)`,
                         );
                     }
                 });
             } else {
                 console.log(
-                    "🚫 Visual debug disabled - collision boundaries are invisible"
+                    "🚫 Visual debug disabled - collision boundaries are invisible",
                 );
             }
 
@@ -1152,7 +1553,7 @@ export abstract class OpenWorldMapScene extends Scene {
             if (this.collisionBodies && this.player) {
                 this.physics.add.collider(this.player, this.collisionBodies);
                 console.log(
-                    `✅ Player collision enabled with ${collisionData.shapes.length} collision shapes`
+                    `✅ Player collision enabled with ${collisionData.shapes.length} collision shapes`,
                 );
             }
         } else {
@@ -1163,11 +1564,13 @@ export abstract class OpenWorldMapScene extends Scene {
     createCollectibles() {
         const cfg = this.getWorldBackgroundConfig();
         const label = cfg.label;
-        console.log(`=== CREATING ${label.toUpperCase()} COLLECTIBLE ITEMS ===`);
+        console.log(
+            `=== CREATING ${label.toUpperCase()} COLLECTIBLE ITEMS ===`,
+        );
         console.log(`Background ready: ${!!this.backgroundImage}`);
         console.log(`Player exists: ${!!this.player}`);
         console.log(
-            `Total items to create: ${this.collectibleItemsData.length}`
+            `Total items to create: ${this.collectibleItemsData.length}`,
         );
 
         this.collectibles = this.physics.add.group();
@@ -1181,7 +1584,7 @@ export abstract class OpenWorldMapScene extends Scene {
 
             const coords = this.percentageToWorldCoordinates(
                 item.percentX,
-                item.percentY
+                item.percentY,
             );
 
             const collectible = this.add
@@ -1195,7 +1598,7 @@ export abstract class OpenWorldMapScene extends Scene {
             this.physics.add.existing(collectible);
             (collectible.body as Phaser.Physics.Arcade.Body).setSize(48, 48);
             (collectible.body as Phaser.Physics.Arcade.Body).setAllowGravity(
-                false
+                false,
             );
 
             collectible.setDepth(200);
@@ -1218,17 +1621,17 @@ export abstract class OpenWorldMapScene extends Scene {
                 item.rarity === "legendary"
                     ? 0xffd700
                     : item.rarity === "rare"
-                    ? 0xff00ff
-                    : item.rarity === "uncommon"
-                    ? 0x00ffff
-                    : 0xffffff;
+                      ? 0xff00ff
+                      : item.rarity === "uncommon"
+                        ? 0x00ffff
+                        : 0xffffff;
 
             const glow = this.add.circle(
                 coords.x,
                 coords.y,
                 30,
                 glowColor,
-                0.4
+                0.4,
             );
             glow.setDepth(199);
             glow.setScrollFactor(1);
@@ -1245,7 +1648,7 @@ export abstract class OpenWorldMapScene extends Scene {
             });
 
             console.log(
-                `✓ Created ${label} collectible ${item.id} at (${item.percentX}%, ${item.percentY}%)`
+                `✓ Created ${label} collectible ${item.id} at (${item.percentX}%, ${item.percentY}%)`,
             );
         });
 
@@ -1255,14 +1658,15 @@ export abstract class OpenWorldMapScene extends Scene {
                 this.collectibles,
                 this.collectItem,
                 undefined,
-                this
+                this,
             );
         }
 
-        console.log(`=== ${label.toUpperCase()} COLLECTIBLES CREATION COMPLETE ===`);
+        console.log(
+            `=== ${label.toUpperCase()} COLLECTIBLES CREATION COMPLETE ===`,
+        );
         console.log(`Items created: ${this.collectibleItems.size}`);
     }
-
 
     collectItem(player: any, collectible: any) {
         const itemData = collectible.getData("itemData");
@@ -1272,14 +1676,14 @@ export abstract class OpenWorldMapScene extends Scene {
         const collected = gameStateManager.collectItem(
             itemData.id,
             itemData.value,
-            itemData.points
+            itemData.points,
         );
 
         if (collected) {
             this.createCollectionParticles(
                 collectible.x,
                 collectible.y,
-                itemData.rarity
+                itemData.rarity,
             );
             this.playCollectionSound(itemData.rarity);
 
@@ -1300,7 +1704,7 @@ export abstract class OpenWorldMapScene extends Scene {
             this.showFloatingText(
                 collectible.x,
                 collectible.y,
-                `+${itemData.value} 💰 +${itemData.points} ⭐`
+                `+${itemData.value} 💰 +${itemData.points} ⭐`,
             );
 
             this.checkCollectionAchievement();
@@ -1325,10 +1729,10 @@ export abstract class OpenWorldMapScene extends Scene {
             rarity === "legendary"
                 ? 0xffd700
                 : rarity === "rare"
-                ? 0xff00ff
-                : rarity === "uncommon"
-                ? 0x00ffff
-                : 0xffff00;
+                  ? 0xff00ff
+                  : rarity === "uncommon"
+                    ? 0x00ffff
+                    : 0xffff00;
 
         for (let i = 0; i < 20; i++) {
             const angle = (Math.PI * 2 * i) / 20;
@@ -1379,10 +1783,10 @@ export abstract class OpenWorldMapScene extends Scene {
             rarity === "legendary"
                 ? [440, 554, 659, 880]
                 : rarity === "rare"
-                ? [392, 494, 587]
-                : rarity === "uncommon"
-                ? [349, 440, 523]
-                : [330, 392, 440];
+                  ? [392, 494, 587]
+                  : rarity === "uncommon"
+                    ? [349, 440, 523]
+                    : [330, 392, 440];
 
         if (
             typeof AudioContext !== "undefined" ||
@@ -1409,7 +1813,7 @@ export abstract class OpenWorldMapScene extends Scene {
                     gainNode.gain.setValueAtTime(0.3, startTime);
                     gainNode.gain.exponentialRampToValueAtTime(
                         0.01,
-                        startTime + duration
+                        startTime + duration,
                     );
 
                     oscillator.start(startTime);
@@ -1442,6 +1846,578 @@ export abstract class OpenWorldMapScene extends Scene {
         });
     }
 
+    // ----- 💬 Dialogue cutscene (shared by every map) -----
+
+    protected stopTypewriter() {
+        if (this.dialogueTypewriterEvent) {
+            this.dialogueTypewriterEvent.remove();
+            this.dialogueTypewriterEvent = null;
+        }
+    }
+
+    /** Tiny soft "blip" as each letter appears (throttled so long lines don't machine-gun). */
+    protected playDialogueBlip() {
+        const now = Date.now();
+        if (now - this.dialogueBlipLastTime < 45) return;
+        this.dialogueBlipLastTime = now;
+
+        this.ensureDialogueAudio();
+        const ctx = this.dialogueAudioCtx;
+        if (!ctx) return;
+
+        try {
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            oscillator.type = "sine";
+            oscillator.frequency.value = 640 + Math.random() * 140;
+            const startTime = ctx.currentTime;
+            const duration = 0.05;
+            gainNode.gain.setValueAtTime(0.05, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(
+                0.001,
+                startTime + duration,
+            );
+            oscillator.start(startTime);
+            oscillator.stop(startTime + duration);
+        } catch (error) {
+            console.log("Dialogue blip not available:", error);
+        }
+    }
+
+    /** Pre-create + resume the blip AudioContext. Must happen inside a user
+     *  gesture on iOS/Android or the browser leaves it suspended (silent). */
+    protected ensureDialogueAudio() {
+        if (this.dialogueAudioCtx) {
+            if (this.dialogueAudioCtx.state === "suspended") {
+                this.dialogueAudioCtx.resume().catch(() => {});
+            }
+            return;
+        }
+        const AudioContextClass: typeof AudioContext | undefined =
+            typeof AudioContext !== "undefined"
+                ? AudioContext
+                : (window as any).webkitAudioContext;
+        if (!AudioContextClass) return;
+        try {
+            this.dialogueAudioCtx = new AudioContextClass();
+            if (this.dialogueAudioCtx.state === "suspended") {
+                this.dialogueAudioCtx.resume().catch(() => {});
+            }
+        } catch (error) {
+            console.log("Dialogue blip unavailable:", error);
+        }
+    }
+
+    // Bob the NPC up/down while they speak. This is safe on the physics NPC:
+    // an idle Arcade body copies gameobject->body but only ever writes back
+    // the gameobject position when the body itself moves (velocity/gravity),
+    // so the tween is not overridden each frame.
+
+    protected startDialogueNpcBob() {
+        const npc = this.nearbyNPC as Phaser.Physics.Arcade.Sprite | null;
+        if (!npc) return;
+        this.stopDialogueNpcBob();
+        const bobY = npc.y;
+        npc.setData("dialogueBobY", bobY);
+        this.dialogueNpcBob = this.tweens.add({
+            targets: npc,
+            y: bobY - 2,
+            duration: 550,
+            ease: "Sine.easeInOut",
+            yoyo: true,
+            repeat: -1,
+        });
+    }
+
+    protected stopDialogueNpcBob() {
+        if (this.dialogueNpcBob) {
+            this.dialogueNpcBob.stop();
+            this.dialogueNpcBob = null;
+        }
+        const npc = this.nearbyNPC as Phaser.Physics.Arcade.Sprite | null;
+        const bobY = npc?.getData("dialogueBobY");
+        if (npc && typeof bobY === "number") {
+            npc.setData("dialogueBobY", undefined);
+            npc.y = bobY;
+        }
+    }
+
+    /**
+     * Switch the active speaker: swap the nameplate to their color and give
+     * the speaker a subtle highlight — the NPC bobs while talking, while the
+     * player's line keeps the sprite at full focus.
+     */
+    protected applyDialogueSpeaker(speaker: string) {
+        if (!this.dialogueSpeakerText || !this.dialogueNamePlate) return;
+
+        const playerName =
+            (this.registry.get("playerName") as string) || "PLAYER";
+        const isPlayerSpeaker = speaker === playerName;
+        const theme = this.getNPCTheme();
+        const fill = isPlayerSpeaker ? "#FFD700" : theme.nameFill;
+        const stroke = isPlayerSpeaker ? "#000000" : theme.nameStroke;
+        const plateFill = isPlayerSpeaker ? 0x4a3b00 : 0x2f4f4f;
+
+        this.dialogueSpeakerText.setColor(fill);
+        this.dialogueSpeakerText.setStroke(stroke, 2);
+        this.dialogueSpeakerText.setText(speaker);
+
+        this.dialogueNamePlate.setFillStyle(plateFill, 1);
+
+        // Size and position the nameplate to fit the current speaker name.
+        const textW = this.dialogueSpeakerText.width;
+        const plateW = Math.max(textW + 24, 60);
+        const cam = this.cameras.main;
+        const boxWidth = Math.min(cam.width * 0.85, 700);
+        const boxHeight = Math.max(cam.height * 0.28, 110);
+        this.dialogueNamePlate.setSize(plateW, 26);
+        this.dialogueNamePlate.setPosition(
+            -boxWidth / 2 + 16 - 10,
+            -boxHeight / 2 + 16 + 2,
+        );
+        this.dialogueNamePlate.setVisible(true);
+
+        // Speaking highlight: the talker leads the scene.
+        if (isPlayerSpeaker) {
+            this.stopDialogueNpcBob();
+            if (this.player) this.player.setAlpha(1);
+        } else {
+            if (this.player) this.player.setAlpha(0.92);
+            this.startDialogueNpcBob();
+        }
+    }
+
+    protected startTypewriter(text: string) {
+        this.stopTypewriter();
+        if (!this.dialogueBodyText) return;
+
+        let i = 0;
+        this.dialogueBodyText.setText("");
+        this.dialogueTypewriterEvent = this.time.addEvent({
+            delay: 18,
+            repeat: Math.max(0, text.length - 1),
+            callback: () => {
+                i++;
+                this.dialogueBodyText!.setText(text.substring(0, i));
+                this.playDialogueBlip();
+                if (i >= text.length) {
+                    this.stopTypewriter();
+                    this.showDialogueContinueIcon();
+                }
+            },
+        });
+    }
+
+    protected showDialogueContinueIcon() {
+        if (!this.dialogueContinueIcon) return;
+        this.tweens.killTweensOf(this.dialogueContinueIcon);
+        this.dialogueContinueIcon.setAlpha(1);
+        this.dialogueContinueIcon.setVisible(true);
+        this.tweens.add({
+            targets: this.dialogueContinueIcon,
+            alpha: 0.2,
+            duration: 450,
+            yoyo: true,
+            repeat: -1,
+        });
+    }
+
+    protected hideDialogueContinueIcon() {
+        if (!this.dialogueContinueIcon) return;
+        this.tweens.killTweensOf(this.dialogueContinueIcon);
+        this.dialogueContinueIcon.setAlpha(1);
+        this.dialogueContinueIcon.setVisible(false);
+    }
+
+    protected createDialogueBox() {
+        // Rebuild safely across same-scene restarts (children die on restart).
+        if (this.dialogueBox) {
+            this.dialogueBox.destroy(true);
+            this.dialogueBox = null;
+        }
+
+        const cam = this.cameras.main;
+        const boxWidth = Math.min(cam.width * 0.85, 700);
+        const boxHeight = Math.max(cam.height * 0.28, 110);
+        const pad = 16;
+        // On mobile, lift the box above the home-indicator/safe area.
+        const bottomPad = this.isMobile ? 34 : 12;
+
+        this.dialogueBox = this.add.container(
+            cam.width / 2,
+            cam.height - boxHeight / 2 - bottomPad,
+        );
+        this.dialogueBox.setDepth(2000);
+        this.dialogueBox.setScrollFactor(0);
+
+        const bg = this.add.rectangle(
+            0,
+            0,
+            boxWidth,
+            boxHeight,
+            0x101418,
+            0.92,
+        );
+        bg.setStrokeStyle(3, 0x2f4f4f, 1);
+        this.dialogueBox.add(bg);
+        this.dialogueBgRect = bg;
+
+        // Speaker nameplate — a small colored plate behind the character name.
+        this.dialogueNamePlate = this.add.rectangle(
+            0, 0, 80, 26, 0x2f4f4f, 1,
+        );
+        this.dialogueNamePlate.setOrigin(0, 1);
+        this.dialogueNamePlate.setStrokeStyle(2, 0x101418, 1);
+        this.dialogueNamePlate.setVisible(false);
+        this.dialogueBox.add(this.dialogueNamePlate);
+
+        const theme = this.getNPCTheme();
+        this.dialogueSpeakerText = this.add.text(
+            -boxWidth / 2 + pad,
+            -boxHeight / 2 + pad - 8,
+            "",
+            {
+                fontFamily: "Arial Black",
+                fontSize: this.isMobile ? 11 : 14,
+                color: theme.nameFill,
+                stroke: theme.nameStroke,
+                strokeThickness: 2,
+            },
+        );
+        this.dialogueSpeakerText.setOrigin(0, 1);
+        this.dialogueBox.add(this.dialogueSpeakerText);
+
+        this.dialogueBodyText = this.add.text(
+            -boxWidth / 2 + pad,
+            -boxHeight / 2 + pad + 6,
+            "",
+            {
+                fontFamily: "Arial Black",
+                fontSize: this.isMobile ? 12 : 15,
+                color: "#FFFFFF",
+                stroke: "#000000",
+                strokeThickness: 2,
+                wordWrap: { width: boxWidth - pad * 2 },
+            },
+        );
+        this.dialogueBodyText.setOrigin(0, 0);
+        this.dialogueBodyText.setLineSpacing(4);
+        this.dialogueBox.add(this.dialogueBodyText);
+
+        this.dialogueContinueIcon = this.add.text(
+            boxWidth / 2 - pad - 8,
+            boxHeight / 2 - pad - 4,
+            "▼",
+            {
+                fontFamily: "Arial Black",
+                fontSize: this.isMobile ? 14 : 18,
+                color: "#FFD700",
+            },
+        );
+        this.dialogueContinueIcon.setOrigin(1, 1);
+        this.dialogueContinueIcon.setVisible(false);
+        this.dialogueBox.add(this.dialogueContinueIcon);
+
+        this.dialogueBox.setVisible(false);
+    }
+
+    protected showDialogueBox(speakers: string[], lines: string[]) {
+        if (!this.dialogueBox) return;
+
+        this.currentDialogueSpeakers = speakers.slice();
+        this.dialogueLines = lines.slice();
+        this.dialogueLineIndex = 0;
+        this.dialogueBox.setVisible(true);
+        this.hideDialogueContinueIcon();
+        this.applyDialogueSpeaker(speakers[0] || "");
+        this.startTypewriter(lines[0]);
+    }
+
+    protected hideDialogueBox() {
+        this.stopTypewriter();
+        this.hideDialogueContinueIcon();
+        this.stopDialogueNpcBob();
+        if (this.player) this.player.setAlpha(1);
+        if (this.dialogueNamePlate) this.dialogueNamePlate.setVisible(false);
+        if (this.dialogueBox) this.dialogueBox.setVisible(false);
+    }
+
+    protected startDialogue(
+        speakers: string[],
+        lines: string[],
+        afterClose?: () => void,
+    ) {
+        if (this.dialogueActive) return;
+        if (!lines || lines.length === 0) {
+            if (afterClose) afterClose();
+            return;
+        }
+        this.dialogueActive = true;
+        this.dialogueAfterClose = afterClose || null;
+        this.dialogueCameraPanComplete = false;
+        this.currentDialogueSpeakers = [];
+        this.interactionPrompt.setVisible(false);
+        EventBus.emit("dialogue-started");
+        // Create/resume the blip AudioContext inside the user gesture so
+        // mobile browsers (iOS especially) let the letters make sound.
+        this.ensureDialogueAudio();
+
+        // Turn both characters to face each other.
+        const nearbyNpc = this.nearbyNPC as
+            | Phaser.Physics.Arcade.Sprite
+            | null;
+        if (nearbyNpc) {
+            this.facePlayerToward(nearbyNpc.x, nearbyNpc.y);
+            this.faceNpcTowardPlayer(nearbyNpc);
+        }
+
+        // Conversation mode: darken the world and ease the camera in.
+        this.showDialogueOverlay();
+        this.startDialogueFocus();
+
+        this.createDialogueBox();
+        this.showDialogueBox(speakers, lines);
+    }
+
+    protected advanceDialogue() {
+        if (!this.dialogueActive || !this.dialogueBodyText) return;
+
+        const currentLine = this.dialogueLines[this.dialogueLineIndex];
+        const fullyTyped =
+            this.dialogueTypewriterEvent === null &&
+            this.dialogueBodyText.text.length >= currentLine.length;
+
+        if (!fullyTyped) {
+            // Reveal the rest of the current line instantly.
+            this.stopTypewriter();
+            this.dialogueBodyText.setText(currentLine);
+            this.showDialogueContinueIcon();
+            return;
+        }
+
+        if (this.dialogueLineIndex < this.dialogueLines.length - 1) {
+            this.dialogueLineIndex++;
+            this.hideDialogueContinueIcon();
+            this.applyDialogueSpeaker(
+                this.currentDialogueSpeakers[this.dialogueLineIndex] || "",
+            );
+            this.startTypewriter(this.dialogueLines[this.dialogueLineIndex]);
+        } else {
+            this.endDialogue();
+        }
+    }
+
+    protected endDialogue() {
+        if (!this.dialogueActive) return;
+        this.dialogueActive = false;
+        EventBus.emit("dialogue-ended");
+        // If the mobile joystick was hidden mid-drag, clear any stale
+        // direction so the player doesn't keep walking after the talk.
+        this.registry.set("joystickDirection", { x: 0, y: 0 });
+        this.hideDialogueBox();
+        this.hideDialogueOverlay();
+
+        // Restore the NPC's original flip state if we mirrored it.
+        const npc = this.nearbyNPC as
+            | Phaser.Physics.Arcade.Sprite
+            | null;
+        if (npc && npc.getData("dialogueOrigFlipX") !== undefined) {
+            npc.setFlipX(npc.getData("dialogueOrigFlipX"));
+            npc.setData("dialogueOrigFlipX", undefined);
+        }
+
+        const afterClose = this.dialogueAfterClose;
+        this.dialogueAfterClose = null;
+
+        this.endDialogueFocus();
+        if (afterClose) afterClose();
+    }
+
+    /** Dim the world behind the conversation (below the dialogue box depth). */
+    protected showDialogueOverlay() {
+        const cam = this.cameras.main;
+        if (!this.dialogueOverlay) {
+            this.dialogueOverlay = this.add.rectangle(
+                0,
+                0,
+                cam.width,
+                cam.height,
+                0x000000,
+                0.35,
+            );
+            this.dialogueOverlay.setOrigin(0, 0);
+            this.dialogueOverlay.setScrollFactor(0);
+            this.dialogueOverlay.setDepth(1990);
+        }
+        this.dialogueOverlay.setSize(cam.width, cam.height);
+        this.dialogueOverlay.setVisible(true);
+        this.tweens.killTweensOf(this.dialogueOverlay);
+        this.dialogueOverlay.setAlpha(0);
+        this.tweens.add({
+            targets: this.dialogueOverlay,
+            alpha: 0.45,
+            duration: 280,
+            ease: "Sine.easeOut",
+        });
+    }
+
+    protected hideDialogueOverlay() {
+        if (!this.dialogueOverlay) return;
+        this.tweens.killTweensOf(this.dialogueOverlay);
+        this.tweens.add({
+            targets: this.dialogueOverlay,
+            alpha: 0,
+            duration: 260,
+            ease: "Sine.easeIn",
+            onComplete: () => {
+                if (this.dialogueOverlay) {
+                    this.dialogueOverlay.setVisible(false);
+                }
+            },
+        });
+    }
+
+    // Camera: gentle zoom + fade into conversation mode, then ease back out.
+
+    protected startDialogueFocus() {
+        const cam = this.cameras.main;
+        const npc = this.nearbyNPC as Phaser.Physics.Arcade.Sprite | null;
+        if (!npc || !this.player) return;
+
+        const focusX = (this.player.x + npc.x) / 2;
+        const focusY = (this.player.y + npc.y) / 2;
+
+        this.dialogueOriginalZoom = cam.zoom;
+        this.tweens.killTweensOf(cam);
+        cam.stopFollow();
+        this.dialogueCameraPanComplete = false;
+        this.tweens.add({
+            targets: cam,
+            scrollX: focusX - cam.width / 2,
+            scrollY: focusY - cam.height / 2,
+            zoom: Math.min(this.dialogueOriginalZoom + 0.08, 1.2),
+            duration: 600,
+            ease: "Sine.easeInOut",
+            onComplete: () => {
+                this.dialogueCameraPanComplete = true;
+            },
+        });
+        cam.fadeIn(300, 0, 0, 0);
+    }
+
+    protected endDialogueFocus() {
+        const cam = this.cameras.main;
+        if (!this.player) return;
+
+        this.tweens.killTweensOf(cam);
+        cam.stopFollow();
+        this.tweens.add({
+            targets: cam,
+            scrollX: this.player.x - cam.width / 2,
+            scrollY: this.player.y - cam.height / 2,
+            zoom: this.dialogueOriginalZoom,
+            duration: 450,
+            ease: "Sine.easeInOut",
+            onComplete: () => {
+                this.dialogueCameraPanComplete = false;
+                this.cameras.main.startFollow(this.player);
+                this.optimizeCameraForOpenWorld();
+            },
+        });
+        // Dip to black briefly, then reveal the gameplay view again.
+        cam.fadeOut(250, 0, 0, 0);
+        cam.once(
+            Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+            () => {
+                cam.fadeIn(250, 0, 0, 0);
+            },
+        );
+    }
+
+    // Make the player face toward a world position (e.g. an NPC).
+
+    protected facePlayerToward(x: number, y: number) {
+        if (!this.player) return;
+        const dx = x - this.player.x;
+        const dy = y - this.player.y;
+        const direction =
+            Math.abs(dx) > Math.abs(dy)
+                ? dx > 0
+                    ? "right"
+                    : "left"
+                : dy > 0
+                  ? "front"
+                  : "back";
+        this.lastDirection = direction;
+        const spriteKey = this.getPlayerTextureKey(direction);
+        if (this.textures.exists(spriteKey)) {
+            this.player.setTexture(spriteKey);
+        }
+        if (this.anims && this.anims.exists) {
+            const idleAnimKey = this.getIdleAnimKey(direction);
+            if (this.anims.exists(idleAnimKey)) {
+                this.player.play(idleAnimKey, true);
+            }
+        }
+    }
+
+    // Flip the NPC sprite to face horizontally toward the player.
+
+    protected faceNpcTowardPlayer(
+        npc: Phaser.Physics.Arcade.Sprite,
+    ) {
+        if (!this.player) return;
+        const dx = this.player.x - npc.x;
+        const dy = this.player.y - npc.y;
+        // Only flip for horizontal positioning (skip vertical-only offsets).
+        if (Math.abs(dx) > Math.abs(dy)) {
+            if (npc.getData("dialogueOrigFlipX") === undefined) {
+                npc.setData("dialogueOrigFlipX", npc.flipX);
+            }
+            npc.setFlipX(dx < 0);
+        }
+    }
+
+    // Reposition the dialogue box after resize/rotation so it stays pinned.
+    protected repositionDialogueBox() {
+        if (!this.dialogueBox || !this.dialogueBgRect) return;
+        const cam = this.cameras.main;
+        const boxWidth = Math.min(cam.width * 0.85, 700);
+        const boxHeight = Math.max(cam.height * 0.28, 110);
+        const pad = 16;
+
+        this.dialogueBox.setPosition(
+            cam.width / 2,
+            cam.height - boxHeight / 2 - (this.isMobile ? 34 : 12),
+        );
+        this.dialogueBgRect.setSize(boxWidth, boxHeight);
+        this.dialogueSpeakerText?.setPosition(
+            -boxWidth / 2 + pad,
+            -boxHeight / 2 + pad - 8,
+        );
+        this.dialogueNamePlate?.setPosition(
+            -boxWidth / 2 + pad - 10,
+            -boxHeight / 2 + pad - 3,
+        );
+        this.dialogueNamePlate?.setSize(
+            Math.max((this.dialogueSpeakerText?.width ?? 0) + 24, 60),
+            26,
+        );
+        this.dialogueBodyText?.setPosition(
+            -boxWidth / 2 + pad,
+            -boxHeight / 2 + pad + 6,
+        );
+        this.dialogueBodyText?.setStyle({
+            wordWrap: { width: boxWidth - pad * 2 },
+        });
+        this.dialogueContinueIcon?.setPosition(
+            boxWidth / 2 - pad - 8,
+            boxHeight / 2 - pad - 4,
+        );
+    }
+
     checkCollectionAchievement() {
         const gameStateManager = GameStateManager.getInstance();
         const totalItems = this.collectibleItemsData.length;
@@ -1449,7 +2425,7 @@ export abstract class OpenWorldMapScene extends Scene {
         const title = cfg.label.charAt(0).toUpperCase() + cfg.label.slice(1);
 
         const allItemsCollected = this.collectibleItemsData.every((item) =>
-            gameStateManager.isItemCollected(item.id)
+            gameStateManager.isItemCollected(item.id),
         );
 
         if (allItemsCollected) {
@@ -1467,7 +2443,10 @@ export abstract class OpenWorldMapScene extends Scene {
                 ],
             });
 
-            gameStateManager.addCoins(100, "${title} Master Collector Achievement");
+            gameStateManager.addCoins(
+                100,
+                "${title} Master Collector Achievement",
+            );
             const progress = gameStateManager.getProgress();
             if (progress) {
                 progress.totalScore += 200;
@@ -1480,17 +2459,17 @@ export abstract class OpenWorldMapScene extends Scene {
 
     protected abstract getTreasureHunterBadge(): string;
 
-
     createNPCs() {
         const theme = this.getNPCTheme();
         this.npcs = this.physics.add.group();
+        this.reloadNPCPositionOverrides();
 
         console.log(`Creating ${theme.noun} NPCs for Level ${theme.level}...`);
 
         // Debug: List all available textures
         console.log(
             `Available textures in ${theme.className}:`,
-            Object.keys(this.textures.list)
+            Object.keys(this.textures.list),
         );
 
         // Map official NPC names to their dedicated level image keys
@@ -1499,24 +2478,27 @@ export abstract class OpenWorldMapScene extends Scene {
         // Check if official NPC images are loaded, if not load them directly
         const levelImages = Object.values(npcImageMap);
         const missingImages = levelImages.filter(
-            (img) => !this.textures.exists(img)
+            (img) => !this.textures.exists(img),
         );
 
         if (missingImages.length > 0) {
             console.log(
                 `Missing Level ${theme.level} ${theme.noun.toLowerCase()} official images, loading them directly:`,
-                missingImages
+                missingImages,
             );
             missingImages.forEach((img) => {
                 // Map the image key back to the file name
                 const imageFileMap = theme.imageFileMap;
-                this.load.image(img, `assets/LEVEL${theme.level}/${(imageFileMap as Record<string, string>)[img]}`);
+                this.load.image(
+                    img,
+                    `assets/LEVEL${theme.level}/${(imageFileMap as Record<string, string>)[img]}`,
+                );
             });
             this.load.start();
 
             this.load.once("complete", () => {
                 console.log(
-                    `Level ${theme.level} ${theme.noun.toLowerCase()} official images loaded, creating NPCs...`
+                    `Level ${theme.level} ${theme.noun.toLowerCase()} official images loaded, creating NPCs...`,
                 );
                 this.createNPCsAfterLoad(npcImageMap);
             });
@@ -1532,26 +2514,37 @@ export abstract class OpenWorldMapScene extends Scene {
             // Use percentage coordinates if available, otherwise fallback to tile coordinates
             let worldX, worldY;
 
+            // NPC Position Editor override wins over the authored default.
+            const npcOverride = this.npcPositionOverrides?.get(
+                location.missionId,
+            ) ?? null;
+            const npcPercentX = npcOverride
+                ? npcOverride.percentX
+                : location.percentX;
+            const npcPercentY = npcOverride
+                ? npcOverride.percentY
+                : location.percentY;
+
             if (
-                location.percentX !== undefined &&
-                location.percentY !== undefined
+                npcPercentX !== undefined &&
+                npcPercentY !== undefined
             ) {
                 // Use background-relative percentage coordinates
                 const coords = this.percentageToWorldCoordinates(
-                    location.percentX,
-                    location.percentY
+                    npcPercentX,
+                    npcPercentY,
                 );
                 worldX = coords.x;
                 worldY = coords.y;
                 console.log(
-                    `${theme.noun} NPC ${location.npc} positioned at (${location.percentX}%, ${location.percentY}%) = (${worldX}, ${worldY})`
+                    `${theme.noun} NPC ${location.npc} positioned at (${npcPercentX}%, ${npcPercentY}%) = (${worldX}, ${worldY})`,
                 );
             } else {
                 // Fallback to tile-based coordinates
                 worldX = location.x * this.tileSize + this.tileSize / 2;
                 worldY = location.y * this.tileSize + this.tileSize / 2;
                 console.log(
-                    `${theme.noun} NPC ${location.npc} positioned at tile (${location.x}, ${location.y}) = (${worldX}, ${worldY})`
+                    `${theme.noun} NPC ${location.npc} positioned at tile (${location.x}, ${location.y}) = (${worldX}, ${worldY})`,
                 );
             }
 
@@ -1559,11 +2552,11 @@ export abstract class OpenWorldMapScene extends Scene {
             const npcImageKey = npcImageMap[location.npc] || "student-front-1";
 
             console.log(
-                `Creating ${theme.noun} NPC: ${location.npc} with image: ${npcImageKey}`
+                `Creating ${theme.noun} NPC: ${location.npc} with image: ${npcImageKey}`,
             );
             console.log(
                 `Level ${theme.level} texture exists for ${npcImageKey}:`,
-                this.textures.exists(npcImageKey)
+                this.textures.exists(npcImageKey),
             );
 
             // Use fallback if texture doesn't exist
@@ -1572,12 +2565,29 @@ export abstract class OpenWorldMapScene extends Scene {
                 : "student-front-1";
 
             const npc = this.physics.add.sprite(worldX, worldY, finalImageKey);
-            npc.setScale(0.3); // Same scale as player for consistent sizing
+            // Size by target height, not a fixed scale: renders every NPC at a
+            // fixed on-screen height (a bit bigger than the player), whatever the
+            // source image's pixel resolution (exports vary 408-2000px+). A hard
+            // floor guarantees the NPC is always visible even if the player's
+            // displayHeight reads anomalously low. Matches the Barangay map.
+            const npcTargetHeight =
+                Math.max(this.player?.displayHeight || 0, 80) * 1.35;
+            npc.setScale(npcTargetHeight / npc.height);
             npc.setInteractive();
 
-            // Set up collision body for NPC
-            (npc as any).body.setSize(npc.width * 0.8, npc.height * 0.8);
-            (npc as any).body.setOffset(npc.width * 0.1, npc.height * 0.1);
+            // Set up collision body for NPC — size from frame pixels so the hitbox
+            // tracks the on-screen sprite (Phaser multiplies source size by scale;
+            // sizing from the scaled display size shrinks/misplaces the box).
+            const npcFrame = npc.frame;
+            (npc as any).body.setSize(
+                npcFrame.realWidth * 0.55,
+                npcFrame.realHeight * 0.7,
+                false,
+            );
+            (npc as any).body.setOffset(
+                npcFrame.realWidth * 0.225,
+                npcFrame.realHeight * 0.15,
+            );
             (npc as any).body.setImmovable(true);
             (npc as any).body.setGravity(0, 0);
             (npc as any).body.setVelocity(0, 0);
@@ -1585,7 +2595,7 @@ export abstract class OpenWorldMapScene extends Scene {
 
             // Add NPC name text via the themed config
             const npcName = this.add
-                .text(worldX, worldY - 35, location.npc, {
+                .text(worldX, worldY - 50, location.npc, {
                     fontFamily: "Arial Black",
                     fontSize: 11,
                     color: theme.nameFill,
@@ -1635,6 +2645,9 @@ export abstract class OpenWorldMapScene extends Scene {
                 .setOrigin(0.5)
                 .setDepth(100);
 
+            // Store name/text label refs for live repositioning (NPC Position Editor)
+            this.npcNameLabels.set(location.missionId, npcName);
+
             // Store reference for real-time updates
             this.missionIndicators.set(location.missionId, missionIndicator);
 
@@ -1652,20 +2665,35 @@ export abstract class OpenWorldMapScene extends Scene {
                 })
                 .setOrigin(0.5)
                 .setDepth(100);
+            this.missionNumberLabels.set(location.missionId, missionNumber);
 
             // Add a themed glow effect around NPCs
-            const glow = this.add.circle(worldX, worldY, 25, theme.glowColor, 0.15);
+            const glow = this.add.circle(
+                worldX,
+                worldY,
+                25,
+                theme.glowColor,
+                0.15,
+            );
             glow.setDepth(-1);
+            this.npcGlowEffects.set(location.missionId, { baseGlow: glow });
 
-            // Store mission data and original position on NPC
-            npc.setData("missionData", location);
+            // Store mission data and original position on NPC. missionData is a
+            // per-NPC COPY so the shared mapData arrays are never mutated — it
+            // carries the resolved (override) percents so reposition helpers
+            // honor the editor's placements.
+            npc.setData("missionData", {
+                ...location,
+                percentX: npcPercentX,
+                percentY: npcPercentY,
+            });
             npc.setData("originalPosition", { x: worldX, y: worldY });
 
             this.npcs.add(npc);
         });
 
         console.log(
-            `Created ${this.missionLocations.length} ${theme.noun} NPCs for Level ${theme.level} with dedicated ${theme.noun.toLowerCase()} official sprites from LEVEL${theme.level} folder`
+            `Created ${this.missionLocations.length} ${theme.noun} NPCs for Level ${theme.level} with dedicated ${theme.noun.toLowerCase()} official sprites from LEVEL${theme.level} folder`,
         );
 
         // Update indicators after all NPCs are created
@@ -1704,6 +2732,35 @@ export abstract class OpenWorldMapScene extends Scene {
     }
 
     updateLocationDisplay() {
+        if (!this.player) {
+            return;
+        }
+
+        // Rebuild the location label if it survived a scene restart in a dead
+        // state. Revisiting a map reuses the same scene instance, but the
+        // label is only recreated when null, so the old (destroyed) Text stays
+        // referenced. Text.destroy() also destroys its canvas texture, and
+        // calling setText() on it crashes inside Frame.updateUVs (drawImage on
+        // a null source image).
+        if (this.locationDisplay) {
+            const texture = this.locationDisplay.texture;
+            const source = texture ? texture.source : null;
+            const textureDead =
+                !texture ||
+                !source ||
+                source.length === 0 ||
+                !source[0] ||
+                source[0].image === null;
+            if (textureDead) {
+                if (this.locationDisplay.active) {
+                    this.locationDisplay.destroy();
+                }
+                this.locationDisplay = null;
+            }
+        }
+        if (!this.locationDisplay) {
+            this.createLocationDisplay();
+        }
         if (this.locationDisplay && this.player) {
             let relativeX = 0,
                 relativeY = 0;
@@ -1718,14 +2775,26 @@ export abstract class OpenWorldMapScene extends Scene {
                 const playerRelativeX = this.player.x - (bgX - bgWidth / 2);
                 const playerRelativeY = this.player.y - (bgY - bgHeight / 2);
 
-                relativeX = Math.max(0, Math.min(100, Math.round((playerRelativeX / bgWidth) * 100)));
-                relativeY = Math.max(0, Math.min(100, Math.round((playerRelativeY / bgHeight) * 100)));
+                relativeX = Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        Math.round((playerRelativeX / bgWidth) * 100),
+                    ),
+                );
+                relativeY = Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        Math.round((playerRelativeY / bgHeight) * 100),
+                    ),
+                );
 
                 this.onLocationCalculated(relativeX, relativeY);
                 areaName = this.getAreaName(relativeX, relativeY);
 
                 console.log(
-                    `${this.getCameraLogName()} player position: ${relativeX}%, ${relativeY}% - Area: ${areaName}`
+                    `${this.getCameraLogName()} player position: ${relativeX}%, ${relativeY}% - Area: ${areaName}`,
                 );
             } else {
                 const mapX = Math.round(this.player.x / this.tileSize);
@@ -1737,7 +2806,9 @@ export abstract class OpenWorldMapScene extends Scene {
             const displayText = `${areaName}\n(${relativeX}%, ${relativeY}%)`;
             this.locationDisplay.setText(displayText);
             this.locationDisplay.setPosition(this.player.x, this.player.y - 60);
-            this.locationDisplay.setStyle({ fontSize: this.isMobile ? 10 : 12 });
+            this.locationDisplay.setStyle({
+                fontSize: this.isMobile ? 10 : 12,
+            });
         }
     }
 
@@ -1764,24 +2835,24 @@ export abstract class OpenWorldMapScene extends Scene {
                 child.setPosition(gameWidth / 2, gameHeight / 2);
 
                 console.log(
-                    `${title} background rescaled to cover entire Phaser game canvas:`
+                    `${title} background rescaled to cover entire Phaser game canvas:`,
                 );
                 console.log(
                     "Game canvas dimensions:",
                     gameWidth,
                     "x",
-                    gameHeight
+                    gameHeight,
                 );
                 console.log(
                     "Image dimensions:",
                     child.width,
                     "x",
-                    child.height
+                    child.height,
                 );
                 console.log(
                     "Scale factors:",
                     scaleToCoverWidth,
-                    scaleToCoverHeight
+                    scaleToCoverHeight,
                 );
                 console.log("Final scale:", scaleX, scaleY);
                 break;
@@ -1795,25 +2866,36 @@ export abstract class OpenWorldMapScene extends Scene {
             return;
         }
 
-        console.log(`${this.getCameraLogName()} screen resized, updating camera and background...`);
+        console.log(
+            `${this.getCameraLogName()} screen resized, updating camera and background...`,
+        );
         this.optimizeCameraForOpenWorld();
         this.updateBackgroundForOrientation();
 
         this.isMobile =
             this.sys.game.device.input.touch ||
             /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                navigator.userAgent
+                navigator.userAgent,
             ) ||
             window.innerWidth <= 768;
 
-        console.log(`${this.getCameraLogName()} mobile device detected after resize:`, this.isMobile);
+        console.log(
+            `${this.getCameraLogName()} mobile device detected after resize:`,
+            this.isMobile,
+        );
+
+        // Keep the dialogue box pinned to the viewport bottom.
+        this.repositionDialogueBox();
     }
 
     createPlayer() {
-        // Use the same player sprite as Level 1
-        const playerTexture = this.textures.exists("student-front-1")
-            ? "student-front-1"
-            : "player";
+        // Use the player sprite for the chosen gender (boy walk-cycle or girl)
+        const frontKey = this.getPlayerTextureKey("front");
+        const playerTexture = this.textures.exists(frontKey)
+            ? frontKey
+            : this.isGirlPlayer() && this.textures.exists("student-front-1")
+              ? "student-front-1"
+              : "player";
 
         let playerX, playerY;
 
@@ -1832,7 +2914,7 @@ export abstract class OpenWorldMapScene extends Scene {
 
         // Remove world bounds collision for unlimited movement
         this.player.setCollideWorldBounds(false);
-        this.player.setScale(0.2);
+        this.player.setScale(this.getPlayerScale());
 
         // Create player animations if not already created
         this.createPlayerAnimations();
@@ -1859,3 +2941,4 @@ export abstract class OpenWorldMapScene extends Scene {
         return { x: worldX, y: worldY };
     }
 }
+

@@ -18,7 +18,12 @@ import {
 interface CollisionEditorProps {
     onClose: () => void;
     isVisible: boolean;
-    mapName: "BarangayMap" | "CityMap";
+    mapName:
+        | "BarangayMap"
+        | "CityMap"
+        | "ProvinceMap"
+        | "RegionMap"
+        | "NationalMap";
     backgroundImage: string; // Path to background image
 }
 

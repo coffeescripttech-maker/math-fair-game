@@ -5,6 +5,7 @@
 
 export interface GameProgress {
     playerName: string;
+    gender?: "boy" | "girl"; // Player's chosen gender for in-game sprite (defaults to "boy")
     level: number;
     coins: number;
     badges: string[];
@@ -453,9 +454,13 @@ export class GameValidation {
     /**
      * Initialize default game progress
      */
-    public static initializeGameProgress(playerName: string): GameProgress {
+    public static initializeGameProgress(
+        playerName: string,
+        gender?: "boy" | "girl"
+    ): GameProgress {
         return {
             playerName,
+            gender: gender || "boy",
             level: 1,
             coins: 0,
             badges: [],
