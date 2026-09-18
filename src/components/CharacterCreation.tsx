@@ -17,7 +17,7 @@ interface CharacterCreationProps {
     onCharacterCreated: (
         name: string,
         color: string,
-        gender: "boy" | "girl"
+        gender: "boy" | "girl",
     ) => void;
     /** Optional handler for returning to the main menu. */
     onBack?: () => void;
@@ -196,41 +196,43 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                 />
             </div>
 
-            <div className="flex min-h-full flex-col items-center justify-center px-4 py-6 sm:py-8">
-                <div className="w-full max-w-[760px]">
+            <div className="flex h-full flex-col items-center justify-center p-3">
+                <div className="w-full max-w-sm">
                     {/* Double-frame game window: navy outer, yellow inner */}
-                    <section className="animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
+                    <section className="animate-slide-up rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-1 shadow-[4px_4px_0_0_#071B3A]">
                         <form
                             onSubmit={handleSubmit}
-                            className="space-y-4 rounded-[14px] border-2 border-tutor-yellow px-4 py-5 sm:space-y-5 sm:px-7 sm:py-6"
+                            className="max-h-[calc(100dvh-24px)] overflow-y-auto overscroll-contain custom-scrollbar space-y-3 rounded-lg border-2 border-tutor-yellow px-3 py-3"
                         >
                             {/* =========================== TITLE =========================== */}
                             <div className="relative text-center">
-                                <h1 className="font-brutal text-[26px] uppercase leading-tight tracking-wide text-tutor-navy sm:text-[34px]">
+                                <h1 className="font-brutal text-xl uppercase leading-tight tracking-wide text-tutor-navy">
                                     Create Your Character
                                 </h1>
-                                <div className="mt-1.5 flex items-center justify-center gap-2">
-                                    <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <div className="mt-1 flex items-center justify-center gap-1.5">
+                                    <div className="h-1 w-6 rounded-full bg-tutor-orange" />
                                     <Star
-                                        className="h-4 w-4 text-tutor-yellow"
+                                        className="h-3 w-3 text-tutor-yellow"
                                         fill={YELLOW}
                                     />
-                                    <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                    <div className="h-1 w-6 rounded-full bg-tutor-orange" />
                                 </div>
-                                <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
-                                    <GraduationCap className="h-4 w-4" />
+                                <p className="mt-1.5 inline-flex items-center gap-1 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 font-playful text-[10px] font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A]">
+                                    <GraduationCap className="h-3 w-3" />
                                     Choose your student
                                 </p>
                             </div>
 
                             {/* ====================== CHOOSE STUDENT ====================== */}
-                            <div className="space-y-2">
+                            <div className="space-y-1.5 sm:space-y-2">
                                 <SectionHeading
-                                    icon={<Users className="h-4 w-4" />}
+                                    icon={
+                                        <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                    }
                                 >
                                     Pick who you play
                                 </SectionHeading>
-                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                                <div className="grid grid-cols-2 gap-2">
                                     {GENDER_OPTIONS.map((option) => {
                                         const selected = gender === option.id;
                                         const Glyph =
@@ -245,21 +247,21 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                                 onClick={() =>
                                                     selectGender(option.id)
                                                 }
-                                                className={`relative flex items-center gap-3 rounded-xl border-tutor-navy px-4 py-3 text-left transition-all duration-150 ${
+                                                className={`relative flex flex-col items-center gap-1.5 rounded-lg border-tutor-navy px-2 py-2 text-center transition-all duration-150 ${
                                                     selected
-                                                        ? "-translate-y-0.5 scale-[1.02] border-4 bg-tutor-cream shadow-[0_0_0_4px_#FFD84D,7px_7px_0_0_#071B3A]"
-                                                        : "border-[3px] bg-tutor-cream opacity-85 saturate-[0.85] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0 active:shadow-[3px_3px_0_0_#071B3A]"
+                                                        ? "-translate-y-0.5 scale-[1.02] border-4 bg-tutor-cream shadow-[0_0_0_4px_#FFD84D,5px_5px_0_0_#071B3A]"
+                                                        : "border-[3px] bg-tutor-cream opacity-85 saturate-[0.85] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0 active:shadow-[1px_1px_0_0_#071B3A]"
                                                 }`}
                                             >
                                                 {/* Warm yellow highlight strip */}
                                                 {selected && (
-                                                    <span className="absolute inset-x-0 top-0 h-1.5 rounded-t-xl bg-tutor-yellow" />
+                                                    <span className="absolute inset-x-0 top-0 h-1 rounded-t-lg bg-tutor-yellow" />
                                                 )}
                                                 {/* Selection checkmark */}
                                                 {selected && (
-                                                    <span className="absolute -right-2 -top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border-2 border-tutor-navy bg-tutor-navy text-tutor-yellow shadow-[2px_2px_0_0_rgba(7,27,58,0.35)]">
+                                                    <span className="absolute -right-1.5 -top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 border-tutor-navy bg-tutor-navy text-tutor-yellow shadow-[2px_2px_0_0_rgba(7,27,58,0.35)]">
                                                         <Check
-                                                            className="h-4 w-4"
+                                                            className="h-3.5 w-3.5"
                                                             strokeWidth={3.5}
                                                         />
                                                     </span>
@@ -267,19 +269,21 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
 
                                                 {/* Avatar thumb */}
                                                 <span
-                                                    className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy sm:h-20 sm:w-20"
+                                                    className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy"
                                                     style={{
                                                         backgroundColor:
                                                             option.accentSoft,
                                                     }}
                                                 >
                                                     <img
-                                                        src={option.id === "girl" ? GIRL_AVATAR : PLAYER_AVATAR}
+                                                        src={
+                                                            option.id === "girl"
+                                                                ? GIRL_AVATAR
+                                                                : PLAYER_AVATAR
+                                                        }
                                                         alt={`${option.label} student avatar`}
                                                         className="h-[85%] w-[85%] object-contain"
                                                         style={{
-                                                            // Each card keeps its own gender color —
-                                                            // picking Boy must not recolor the Girl card.
                                                             filter: `hue-rotate(${GENDER_COLOR[option.id].rotation}deg)`,
                                                         }}
                                                     />
@@ -287,7 +291,7 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
 
                                                 <span className="flex min-w-0 flex-col gap-0.5">
                                                     <span
-                                                        className="flex items-center gap-1.5 font-brutal text-sm uppercase tracking-wide sm:text-base"
+                                                        className="flex items-center justify-center gap-1.5 font-brutal text-xs uppercase tracking-wide sm:text-sm"
                                                         style={{
                                                             color: option.accent,
                                                         }}
@@ -295,7 +299,7 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                                         <Glyph className="h-4 w-4" />
                                                         {option.label}
                                                     </span>
-                                                    <span className="truncate font-playful text-xs font-semibold text-tutor-navy/55">
+                                                    <span className="truncate font-playful text-[10px] font-semibold text-tutor-navy/55">
                                                         {option.caption}
                                                     </span>
                                                 </span>
@@ -306,13 +310,13 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                             </div>
 
                             {/* ===================== CHARACTER PREVIEW ===================== */}
-                            <div className="relative overflow-hidden rounded-xl border-[3px] border-tutor-navy bg-white shadow-[5px_5px_0_0_#071B3A]">
+                            <div className="relative overflow-hidden rounded-lg border-[3px] border-tutor-navy bg-white shadow-[3px_3px_0_0_#071B3A]">
                                 {/* Top accent strip = favorite color */}
                                 <div
-                                    className="h-2"
+                                    className="h-1.5"
                                     style={{ backgroundColor: colorMeta.value }}
                                 />
-                                <div className="relative flex min-h-[210px] items-center justify-center px-5 pb-4 pt-8 sm:min-h-[225px] sm:px-6">
+                                <div className="relative flex min-h-[140px] items-center justify-center px-4 pb-3 pt-6">
                                     {/* Soft color spotlight */}
                                     <div
                                         className="pointer-events-none absolute inset-0"
@@ -372,7 +376,8 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                         <span
                                             className="h-3.5 w-3.5 rounded-full border border-tutor-navy/60"
                                             style={{
-                                                backgroundColor: colorMeta.value,
+                                                backgroundColor:
+                                                    colorMeta.value,
                                             }}
                                         />
                                         {colorMeta.name} splash
@@ -381,9 +386,13 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                     {/* The avatar itself */}
                                     <div className="relative flex flex-col items-center">
                                         <img
-                                            src={gender === "girl" ? GIRL_AVATAR : PLAYER_AVATAR}
+                                            src={
+                                                gender === "girl"
+                                                    ? GIRL_AVATAR
+                                                    : PLAYER_AVATAR
+                                            }
                                             alt="Character preview"
-                                            className="h-32 w-auto max-w-[200px] object-contain drop-shadow-[3px_4px_0_rgba(7,27,58,0.25)] sm:h-36"
+                                            className="h-24 w-auto max-w-[160px] object-contain drop-shadow-[3px_4px_0_rgba(7,27,58,0.25)]"
                                             style={{
                                                 filter: `hue-rotate(${colorMeta.rotation}deg)`,
                                             }}
@@ -417,7 +426,7 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                         placeholder="Enter your name..."
                                         maxLength={20}
                                         aria-label="What's your name?"
-                                        className="w-full rounded-xl border-[3px] border-tutor-navy bg-tutor-cream py-3 pl-10 pr-14 font-playful text-base font-bold text-tutor-navy outline-none shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 placeholder:text-tutor-navy/35 focus:-translate-y-0.5 focus:border-tutor-orange focus:shadow-[4px_4px_0_0_#F26522]"
+                                        className="w-full rounded-lg border-[3px] border-tutor-navy bg-tutor-cream py-2.5 pl-9 pr-14 font-playful text-sm font-bold text-tutor-navy outline-none shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 placeholder:text-tutor-navy/35 focus:-translate-y-0.5 focus:border-tutor-orange focus:shadow-[3px_3px_0_0_#F26522]"
                                     />
                                     <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-playful text-[11px] font-bold text-tutor-navy/40">
                                         {playerName.length}/20
@@ -430,10 +439,10 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                                 <button
                                     type="submit"
                                     disabled={!canCreate}
-                                    className={`group flex w-full items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy py-3.5 font-brutal text-base uppercase tracking-wider transition-all duration-150 sm:py-4 sm:text-lg ${
+                                    className={`group flex w-full items-center justify-center gap-2 rounded-lg border-[3px] border-tutor-navy py-2.5 min-h-[44px] font-brutal text-sm uppercase tracking-wider transition-all duration-150 ${
                                         canCreate
-                                            ? "bg-tutor-orange text-tutor-cream shadow-[5px_5px_0_0_#071B3A] hover:-translate-y-1 hover:shadow-[7px_7px_0_0_#071B3A] hover:brightness-105 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
-                                            : "cursor-not-allowed bg-[#D8CFC0] text-tutor-navy/40 shadow-[3px_3px_0_0_rgba(7,27,58,0.35)]"
+                                            ? "bg-tutor-orange text-tutor-cream shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-1 hover:shadow-[4px_4px_0_0_#071B3A] hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                            : "cursor-not-allowed bg-[#D8CFC0] text-tutor-navy/40 shadow-[2px_2px_0_0_rgba(7,27,58,0.35)]"
                                     }`}
                                 >
                                     Create Character

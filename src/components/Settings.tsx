@@ -165,30 +165,30 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
         document.addEventListener("fullscreenchange", handleFullscreenChange);
         document.addEventListener(
             "webkitfullscreenchange",
-            handleFullscreenChange
+            handleFullscreenChange,
         );
         document.addEventListener(
             "mozfullscreenchange",
-            handleFullscreenChange
+            handleFullscreenChange,
         );
         document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
         return () => {
             document.removeEventListener(
                 "fullscreenchange",
-                handleFullscreenChange
+                handleFullscreenChange,
             );
             document.removeEventListener(
                 "webkitfullscreenchange",
-                handleFullscreenChange
+                handleFullscreenChange,
             );
             document.removeEventListener(
                 "mozfullscreenchange",
-                handleFullscreenChange
+                handleFullscreenChange,
             );
             document.removeEventListener(
                 "MSFullscreenChange",
-                handleFullscreenChange
+                handleFullscreenChange,
             );
         };
     }, []);
@@ -209,7 +209,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
             window.gameAudioManager.setEffectsVolume(newSettings.effectsVolume);
             window.gameAudioManager.setMusicEnabled(newSettings.enableMusic);
             window.gameAudioManager.setEffectsEnabled(
-                newSettings.enableEffects
+                newSettings.enableEffects,
             );
         }
 
@@ -234,13 +234,13 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
         window.dispatchEvent(
             new CustomEvent("civika-settings-changed", {
                 detail: newSettings,
-            })
+            }),
         );
     };
 
     const updateSetting = <K extends keyof GameSettings>(
         key: K,
-        value: GameSettings[K]
+        value: GameSettings[K],
     ) => {
         setSettings((prev) => ({ ...prev, [key]: value }));
     };
@@ -255,41 +255,41 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
-            <div className="flex min-h-full items-center justify-center p-4">
+            <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                <section className="relative w-full max-w-2xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                    <div className="relative space-y-5 rounded-[14px] border-2 border-tutor-yellow px-5 py-6 sm:px-7">
+                <section className="relative w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain space-y-3 sm:space-y-4 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
                         {/* Close button */}
                         <button
                             onClick={onClose}
                             type="button"
                             aria-label="Close settings"
-                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </button>
 
                         {/* Header */}
-                        <div className="text-center">
-                            <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                        <div className="text-center pr-7">
+                            <h2 className="font-brutal text-base sm:text-xl md:text-2xl uppercase leading-tight tracking-wide text-tutor-navy">
                                 Settings
                             </h2>
-                            <div className="mt-1.5 flex items-center justify-center gap-2">
-                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                            <div className="mt-1 flex items-center justify-center gap-1.5 sm:gap-2">
+                                <div className="h-1 w-5 sm:w-8 rounded-full bg-tutor-orange" />
                                 <Star
-                                    className="h-4 w-4 text-tutor-yellow"
+                                    className="h-3 w-3 sm:h-4 sm:w-4 text-tutor-yellow"
                                     fill={YELLOW}
                                 />
-                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <div className="h-1 w-5 sm:w-8 rounded-full bg-tutor-orange" />
                             </div>
-                            <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
-                                <SettingsIcon className="h-4 w-4" />
+                            <p className="mt-1.5 sm:mt-2.5 inline-flex items-center gap-1 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 sm:px-3 sm:py-1 font-playful text-[10px] font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-xs">
+                                <SettingsIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                                 Tweak your adventure
                             </p>
                         </div>
 
                         {/* Tabs */}
-                        <div className="flex flex-wrap justify-center gap-2">
+                        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                             {TABS.map((tab) => {
                                 const active = activeTab === tab.id;
                                 return (
@@ -298,29 +298,29 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                         type="button"
                                         onClick={() => {
                                             audioManager.playEffect(
-                                                "button-click"
+                                                "button-click",
                                             );
                                             setActiveTab(tab.id);
                                         }}
-                                        className={`flex items-center gap-2 rounded-xl border-[3px] px-3 py-2 font-brutal text-xs uppercase tracking-wide transition-all duration-150 sm:px-4 sm:text-sm ${
+                                        className={`flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] px-2.5 sm:px-4 py-1.5 sm:py-2 font-brutal text-[10px] uppercase tracking-wide transition-all duration-150 sm:text-sm ${
                                             active
-                                                ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
-                                                : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                                ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_2px_#FFD84D,4px_4px_0_0_#071B3A] sm:shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
+                                                : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[3px_3px_0_0_#071B3A] sm:hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         }`}
                                     >
                                         <span
-                                            className={`flex h-6 w-6 items-center justify-center rounded-md border-2 ${
+                                            className={`flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-md border-2 ${
                                                 active
                                                     ? "border-tutor-navy bg-tutor-yellow text-tutor-navy"
                                                     : `border-tutor-navy text-tutor-cream ${tab.accent}`
                                             }`}
                                         >
                                             {tab.id === "audio" ? (
-                                                <Volume2 className="h-3.5 w-3.5" />
+                                                <Volume2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                                             ) : tab.id === "graphics" ? (
-                                                <Monitor className="h-3.5 w-3.5" />
+                                                <Monitor className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                                             ) : (
-                                                <Gamepad2 className="h-3.5 w-3.5" />
+                                                <Gamepad2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                                             )}
                                         </span>
                                         <span className="hidden sm:inline">
@@ -332,7 +332,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                         </div>
 
                         {/* Settings Content */}
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                             {/* Audio Settings */}
                             {activeTab === "audio" && (
                                 <div className="space-y-3">
@@ -349,10 +349,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                         <VolumeControl
                                             value={settings.masterVolume}
                                             onChange={(v) =>
-                                                updateSetting(
-                                                    "masterVolume",
-                                                    v
-                                                )
+                                                updateSetting("masterVolume", v)
                                             }
                                         />
                                     </SettingRow>
@@ -365,10 +362,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                             value={settings.musicVolume}
                                             disabled={!settings.enableMusic}
                                             onChange={(v) =>
-                                                updateSetting(
-                                                    "musicVolume",
-                                                    v
-                                                )
+                                                updateSetting("musicVolume", v)
                                             }
                                         />
                                     </SettingRow>
@@ -383,7 +377,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                             onChange={(v) =>
                                                 updateSetting(
                                                     "effectsVolume",
-                                                    v
+                                                    v,
                                                 )
                                             }
                                         />
@@ -393,10 +387,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                         <ToggleControl
                                             checked={settings.enableMusic}
                                             onChange={(v) =>
-                                                updateSetting(
-                                                    "enableMusic",
-                                                    v
-                                                )
+                                                updateSetting("enableMusic", v)
                                             }
                                         />
                                     </SettingRow>
@@ -407,7 +398,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                             onChange={(v) =>
                                                 updateSetting(
                                                     "enableEffects",
-                                                    v
+                                                    v,
                                                 )
                                             }
                                         />
@@ -431,10 +422,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                         <ToggleControl
                                             checked={settings.fullscreen}
                                             onChange={(v) =>
-                                                updateSetting(
-                                                    "fullscreen",
-                                                    v
-                                                )
+                                                updateSetting("fullscreen", v)
                                             }
                                         />
                                     </SettingRow>
@@ -472,7 +460,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                             onChange={(e) =>
                                                 updateSetting(
                                                     "language",
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }
                                             className="cursor-pointer rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-3 py-2 font-playful text-sm font-bold text-tutor-navy shadow-[2px_2px_0_0_#071B3A] transition-colors focus:border-tutor-orange focus:outline-none"
@@ -501,7 +489,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                             onChange={(e) =>
                                                 updateSetting(
                                                     "difficulty",
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }
                                             className="cursor-pointer rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-3 py-2 font-playful text-sm font-bold text-tutor-navy shadow-[2px_2px_0_0_#071B3A] transition-colors focus:border-tutor-orange focus:outline-none"
@@ -530,7 +518,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                             onChange={(v) =>
                                                 updateSetting(
                                                     "showTutorials",
-                                                    v
+                                                    v,
                                                 )
                                             }
                                         />
@@ -538,28 +526,28 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                 </div>
                             )}
                         </div>
+                    </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-between">
-                            <button
-                                onClick={resetToDefaults}
-                                type="button"
-                                className="group flex items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-5 py-3.5 font-brutal text-sm uppercase tracking-wide text-tutor-navy shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
-                            >
-                                <span className="flex h-7 w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-red text-tutor-cream">
-                                    <RotateCcw className="h-3.5 w-3.5" />
-                                </span>
-                                Reset to Defaults
-                            </button>
-                            <button
-                                onClick={onClose}
-                                type="button"
-                                className="flex items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-6 py-3.5 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
-                            >
-                                <Check className="h-5 w-5" />
-                                Apply & Close
-                            </button>
-                        </div>
+                    {/* Action Buttons */}
+                    <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-between">
+                        <button
+                            onClick={resetToDefaults}
+                            type="button"
+                            className="group flex items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-5 py-3.5 font-brutal text-sm uppercase tracking-wide text-tutor-navy shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
+                        >
+                            <span className="flex h-7 w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-red text-tutor-cream">
+                                <RotateCcw className="h-3.5 w-3.5" />
+                            </span>
+                            Reset to Defaults
+                        </button>
+                        <button
+                            onClick={onClose}
+                            type="button"
+                            className="flex items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-6 py-3.5 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
+                        >
+                            <Check className="h-5 w-5" />
+                            Apply & Close
+                        </button>
                     </div>
                 </section>
             </div>
@@ -579,3 +567,4 @@ declare global {
         };
     }
 }
+

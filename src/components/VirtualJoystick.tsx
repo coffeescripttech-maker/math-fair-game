@@ -152,7 +152,7 @@ export const VirtualJoystick: React.FC<VirtualJoystickProps> = ({
             return () => {
                 document.removeEventListener(
                     "mousemove",
-                    handleGlobalMouseMove
+                    handleGlobalMouseMove,
                 );
                 document.removeEventListener("mouseup", handleGlobalMouseUp);
             };
@@ -162,11 +162,16 @@ export const VirtualJoystick: React.FC<VirtualJoystickProps> = ({
     if (!isVisible) return null;
 
     return (
-        <div className="fixed bottom-4 left-4 z-50 pointer-events-auto">
+        <div
+            className="fixed left-4 z-50 pointer-events-auto"
+            style={{
+                bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+            }}
+        >
             {/* Joystick Base */}
             <div
                 ref={joystickRef}
-                className="relative w-20 h-20 rounded-full bg-brutal-blue bg-opacity-40 border-[3px] border-black shadow-brutal"
+                className="relative w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-full bg-brutal-blue bg-opacity-40 border-[3px] border-black shadow-brutal"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -177,7 +182,7 @@ export const VirtualJoystick: React.FC<VirtualJoystickProps> = ({
                 {/* Joystick Knob */}
                 <div
                     ref={knobRef}
-                    className="absolute w-10 h-10 rounded-full bg-brutal-yellow border-[3px] border-black shadow-brutal-xs transition-transform duration-100"
+                    className="absolute w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brutal-yellow border-[3px] border-black shadow-brutal-xs transition-transform duration-100"
                     style={{
                         left: "50%",
                         top: "50%",

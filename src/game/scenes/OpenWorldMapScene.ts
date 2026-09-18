@@ -239,9 +239,8 @@ export abstract class OpenWorldMapScene extends Scene {
         this.minimap!.add(this.minimapPlayerDot);
 
         this.missionLocations.forEach((location) => {
-            const npcOverride = this.npcPositionOverrides?.get(
-                location.missionId,
-            ) ?? null;
+            const npcOverride =
+                this.npcPositionOverrides?.get(location.missionId) ?? null;
             const npcX =
                 ((npcOverride?.percentX ?? location.percentX) / 100) *
                 minimapSize;
@@ -312,25 +311,21 @@ export abstract class OpenWorldMapScene extends Scene {
             !this.DEBUG_BYPASS_PREREQUISITES &&
             !gameStateManager.canAccessMission(location.missionId)
         ) {
-            const availableMissions =
-                gameStateManager.getAvailableMissions();
+            const availableMissions = gameStateManager.getAvailableMissions();
             const availableList =
                 availableMissions.length > 0
                     ? availableMissions.join(", ")
                     : flavor.prereqFallbackList;
             dialogueLine = flavor.prereqMessage(location.npc, availableList);
         } else {
-            dialogueLine =
-                this.getMissionData(location.missionId).description;
+            dialogueLine = this.getMissionData(location.missionId).description;
         }
 
         // Speakers array runs parallel to the lines array — currently every
         // line is voiced by the NPC; add a "PLAYER" entry to make the player
         // speak a line (the nameplate and highlight switch accordingly).
-        this.startDialogue(
-            [location.npc],
-            [dialogueLine],
-            () => this.continueInteractionWithNPC(location),
+        this.startDialogue([location.npc], [dialogueLine], () =>
+            this.continueInteractionWithNPC(location),
         );
     }
 
@@ -723,14 +718,8 @@ export abstract class OpenWorldMapScene extends Scene {
             if (!npc) return;
             const relX = npc.x - (bgX - bgWidth / 2);
             const relY = npc.y - (bgY - bgHeight / 2);
-            const npcPctX = Math.max(
-                0,
-                Math.min(100, (relX / bgWidth) * 100),
-            );
-            const npcPctY = Math.max(
-                0,
-                Math.min(100, (relY / bgHeight) * 100),
-            );
+            const npcPctX = Math.max(0, Math.min(100, (relX / bgWidth) * 100));
+            const npcPctY = Math.max(0, Math.min(100, (relY / bgHeight) * 100));
             dot.setPosition(
                 (npcPctX / 100) * minimapSize,
                 (npcPctY / 100) * minimapSize,
@@ -1378,9 +1367,7 @@ export abstract class OpenWorldMapScene extends Scene {
     }
 
     /** React → Phaser: called after the NPC editor persists a save/reset. */
-    private handleNPCEditorSaved = (payload: {
-        mapName: string;
-    }) => {
+    private handleNPCEditorSaved = (payload: { mapName: string }) => {
         if (!this.scene.isActive()) return; // editor on a non-active map → next spawn
         if (payload?.mapName !== this.scene.key) return;
         this.applyNPCPositionOverrides();
@@ -2065,9 +2052,7 @@ export abstract class OpenWorldMapScene extends Scene {
         this.dialogueBgRect = bg;
 
         // Speaker nameplate — a small colored plate behind the character name.
-        this.dialogueNamePlate = this.add.rectangle(
-            0, 0, 80, 26, 0x2f4f4f, 1,
-        );
+        this.dialogueNamePlate = this.add.rectangle(0, 0, 80, 26, 0x2f4f4f, 1);
         this.dialogueNamePlate.setOrigin(0, 1);
         this.dialogueNamePlate.setStrokeStyle(2, 0x101418, 1);
         this.dialogueNamePlate.setVisible(false);
@@ -2165,9 +2150,7 @@ export abstract class OpenWorldMapScene extends Scene {
         this.ensureDialogueAudio();
 
         // Turn both characters to face each other.
-        const nearbyNpc = this.nearbyNPC as
-            | Phaser.Physics.Arcade.Sprite
-            | null;
+        const nearbyNpc = this.nearbyNPC as Phaser.Physics.Arcade.Sprite | null;
         if (nearbyNpc) {
             this.facePlayerToward(nearbyNpc.x, nearbyNpc.y);
             this.faceNpcTowardPlayer(nearbyNpc);
@@ -2220,9 +2203,7 @@ export abstract class OpenWorldMapScene extends Scene {
         this.hideDialogueOverlay();
 
         // Restore the NPC's original flip state if we mirrored it.
-        const npc = this.nearbyNPC as
-            | Phaser.Physics.Arcade.Sprite
-            | null;
+        const npc = this.nearbyNPC as Phaser.Physics.Arcade.Sprite | null;
         if (npc && npc.getData("dialogueOrigFlipX") !== undefined) {
             npc.setFlipX(npc.getData("dialogueOrigFlipX"));
             npc.setData("dialogueOrigFlipX", undefined);
@@ -2328,12 +2309,9 @@ export abstract class OpenWorldMapScene extends Scene {
         });
         // Dip to black briefly, then reveal the gameplay view again.
         cam.fadeOut(250, 0, 0, 0);
-        cam.once(
-            Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
-            () => {
-                cam.fadeIn(250, 0, 0, 0);
-            },
-        );
+        cam.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+            cam.fadeIn(250, 0, 0, 0);
+        });
     }
 
     // Make the player face toward a world position (e.g. an NPC).
@@ -2365,9 +2343,7 @@ export abstract class OpenWorldMapScene extends Scene {
 
     // Flip the NPC sprite to face horizontally toward the player.
 
-    protected faceNpcTowardPlayer(
-        npc: Phaser.Physics.Arcade.Sprite,
-    ) {
+    protected faceNpcTowardPlayer(npc: Phaser.Physics.Arcade.Sprite) {
         if (!this.player) return;
         const dx = this.player.x - npc.x;
         const dy = this.player.y - npc.y;
@@ -2515,9 +2491,8 @@ export abstract class OpenWorldMapScene extends Scene {
             let worldX, worldY;
 
             // NPC Position Editor override wins over the authored default.
-            const npcOverride = this.npcPositionOverrides?.get(
-                location.missionId,
-            ) ?? null;
+            const npcOverride =
+                this.npcPositionOverrides?.get(location.missionId) ?? null;
             const npcPercentX = npcOverride
                 ? npcOverride.percentX
                 : location.percentX;
@@ -2525,10 +2500,7 @@ export abstract class OpenWorldMapScene extends Scene {
                 ? npcOverride.percentY
                 : location.percentY;
 
-            if (
-                npcPercentX !== undefined &&
-                npcPercentY !== undefined
-            ) {
+            if (npcPercentX !== undefined && npcPercentY !== undefined) {
                 // Use background-relative percentage coordinates
                 const coords = this.percentageToWorldCoordinates(
                     npcPercentX,
@@ -2571,7 +2543,7 @@ export abstract class OpenWorldMapScene extends Scene {
             // floor guarantees the NPC is always visible even if the player's
             // displayHeight reads anomalously low. Matches the Barangay map.
             const npcTargetHeight =
-                Math.max(this.player?.displayHeight || 0, 80) * 1.35;
+                Math.max(this.player?.displayHeight || 0, 80) * 1.1;
             npc.setScale(npcTargetHeight / npc.height);
             npc.setInteractive();
 

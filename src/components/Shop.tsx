@@ -34,7 +34,7 @@ const YELLOW = "#FFD84D";
 
 export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
     const [selectedCategory, setSelectedCategory] = useState<ShopItemCategory>(
-        ShopItemCategory.POWERUPS
+        ShopItemCategory.POWERUPS,
     );
     const [shopItems, setShopItems] = useState<ShopItem[]>([]);
     const [playerCoins, setPlayerCoins] = useState(0);
@@ -60,10 +60,10 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
 
         // Get shop items for current category and player level
         const availableItems = shopService.getAvailableItems(
-            progress?.level || 1
+            progress?.level || 1,
         );
         const categoryItems = availableItems.filter(
-            (item) => item.category === selectedCategory
+            (item) => item.category === selectedCategory,
         );
         setShopItems(categoryItems);
 
@@ -82,7 +82,7 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                     item.effect
                         ? "Effect activated!"
                         : "Added to your collection!"
-                }`
+                }`,
             );
             loadShopData(); // Refresh shop data
         } else {
@@ -131,89 +131,89 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
-            <div className="flex min-h-full items-center justify-center p-4">
+            <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                <section className="relative w-full max-w-5xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                    <div className="flex max-h-[90vh] flex-col rounded-[14px] border-2 border-tutor-yellow px-5 py-5 sm:px-7">
+                <section className="relative w-full min-[500px]:max-w-5xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex max-h-[calc(100dvh-20px)] flex-col rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
                         {/* Close Button */}
                         <button
                             onClick={onClose}
                             type="button"
                             aria-label="Close shop"
-                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </button>
 
                         {/* Header */}
-                        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 pr-10">
+                        <div className="mb-2 sm:mb-4 flex flex-wrap items-center justify-between gap-2 sm:gap-3 pr-7 sm:pr-10">
                             <div>
-                                <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                                <h2 className="font-brutal text-base sm:text-xl md:text-2xl uppercase leading-tight tracking-wide text-tutor-navy">
                                     Shop
                                 </h2>
-                                <div className="mt-1.5 flex items-center gap-2">
-                                    <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <div className="mt-1 flex items-center gap-1.5 sm:gap-2">
+                                    <div className="h-1 w-5 sm:w-8 rounded-full bg-tutor-orange" />
                                     <Star
-                                        className="h-4 w-4 text-tutor-yellow"
+                                        className="h-3 w-3 sm:h-4 sm:w-4 text-tutor-yellow"
                                         fill={YELLOW}
                                     />
-                                    <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                    <div className="h-1 w-5 sm:w-8 rounded-full bg-tutor-orange" />
                                 </div>
-                                <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
-                                    <Store className="h-4 w-4" />
+                                <p className="mt-1.5 sm:mt-2.5 inline-flex items-center gap-1 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 sm:px-3 sm:py-1 font-playful text-[9px] font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-xs">
+                                    <Store className="h-3 w-3 sm:h-4 sm:w-4" />
                                     Upgrade your adventure
                                 </p>
                             </div>
                             {/* Player Coins */}
-                            <div className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-yellow px-4 py-2.5 shadow-[3px_3px_0_0_#071B3A]">
-                                <span className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-green text-tutor-cream">
-                                    <Coins className="h-5 w-5" />
+                            <div className="flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-yellow px-2 sm:px-4 py-1 sm:py-2.5 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A]">
+                                <span className="flex h-6 w-6 sm:h-9 sm:w-9 items-center justify-center rounded-md sm:rounded-lg border-2 border-tutor-navy bg-tutor-green text-tutor-cream">
+                                    <Coins className="h-3 w-3 sm:h-5 sm:w-5" />
                                 </span>
-                                <span className="font-brutal text-xl text-tutor-navy">
+                                <span className="font-brutal text-base sm:text-xl text-tutor-navy">
                                     {playerCoins}
                                 </span>
                             </div>
                         </div>
 
                         {/* View Tabs: Shop / Inventory */}
-                        <div className="mb-4 flex flex-wrap gap-2">
+                        <div className="mb-2 sm:mb-4 flex gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 custom-scrollbar">
                             <button
                                 onClick={() => setShowInventory(false)}
                                 type="button"
-                                className={`flex items-center gap-2 rounded-xl border-[3px] px-3 py-2 font-brutal text-xs uppercase tracking-wide transition-all duration-150 sm:text-sm ${
+                                className={`flex shrink-0 items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] px-2 sm:px-3 py-1.5 sm:py-2 font-brutal text-[10px] sm:text-xs uppercase tracking-wide transition-all duration-150 min-h-[36px] sm:min-h-[40px] ${
                                     !showInventory
-                                        ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
-                                        : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                        ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_2px_#FFD84D,4px_4px_0_0_#071B3A] sm:shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
+                                        : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[3px_3px_0_0_#071B3A] sm:hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                 }`}
                             >
                                 <span
-                                    className={`flex h-6 w-6 items-center justify-center rounded-md border-2 ${
+                                    className={`flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-md border-2 ${
                                         !showInventory
                                             ? "border-tutor-navy bg-tutor-yellow text-tutor-navy"
                                             : "border-tutor-navy bg-tutor-orange text-tutor-cream"
                                     }`}
                                 >
-                                    <Store className="h-3.5 w-3.5" />
+                                    <Store className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
                                 </span>
                                 <span>Shop</span>
                             </button>
                             <button
                                 onClick={() => setShowInventory(true)}
                                 type="button"
-                                className={`flex items-center gap-2 rounded-xl border-[3px] px-3 py-2 font-brutal text-xs uppercase tracking-wide transition-all duration-150 sm:text-sm ${
+                                className={`flex shrink-0 items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] px-2 sm:px-3 py-1.5 sm:py-2 font-brutal text-[10px] sm:text-xs uppercase tracking-wide transition-all duration-150 min-h-[36px] sm:min-h-[40px] ${
                                     showInventory
-                                        ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
-                                        : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                        ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_2px_#FFD84D,4px_4px_0_0_#071B3A] sm:shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
+                                        : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[3px_3px_0_0_#071B3A] sm:hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                 }`}
                             >
                                 <span
-                                    className={`flex h-6 w-6 items-center justify-center rounded-md border-2 ${
+                                    className={`flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-md border-2 ${
                                         showInventory
                                             ? "border-tutor-navy bg-tutor-yellow text-tutor-navy"
                                             : "border-tutor-navy bg-tutor-purple text-tutor-cream"
                                     }`}
                                 >
-                                    <Backpack className="h-3.5 w-3.5" />
+                                    <Backpack className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
                                 </span>
                                 <span>Inventory ({purchasedItems.length})</span>
                             </button>
@@ -221,32 +221,38 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
 
                         {!showInventory ? (
                             <>
-                                {/* Category Tabs */}
-                                <div className="mb-4 flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                                {/* Category Tabs - Horizontally scrollable on mobile */}
+                                <div className="mb-2 sm:mb-4 flex gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 overscroll-contain custom-scrollbar">
                                     {[
                                         {
                                             cat: ShopItemCategory.POWERUPS,
-                                            icon: <Zap className="h-3 w-3" />,
+                                            icon: (
+                                                <Zap className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                            ),
                                             label: "Powerups",
                                             accent: "bg-tutor-orange",
                                         },
                                         {
                                             cat: ShopItemCategory.BOOSTERS,
                                             icon: (
-                                                <TrendingUp className="h-3 w-3" />
+                                                <TrendingUp className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                             ),
                                             label: "Boosters",
                                             accent: "bg-tutor-green",
                                         },
                                         {
                                             cat: ShopItemCategory.COSMETICS,
-                                            icon: <Crown className="h-3 w-3" />,
+                                            icon: (
+                                                <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                            ),
                                             label: "Cosmetics",
                                             accent: "bg-tutor-purple",
                                         },
                                         {
                                             cat: ShopItemCategory.SPECIAL,
-                                            icon: <Gift className="h-3 w-3" />,
+                                            icon: (
+                                                <Gift className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                            ),
                                             label: "Special",
                                             accent: "bg-tutor-red",
                                         },
@@ -259,17 +265,17 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                 type="button"
                                                 onClick={() =>
                                                     setSelectedCategory(
-                                                        category.cat
+                                                        category.cat,
                                                     )
                                                 }
-                                                className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border-[3px] border-tutor-navy px-3 py-2 font-playful text-xs font-bold uppercase tracking-wide transition-all duration-150 sm:text-sm ${
+                                                className={`flex shrink-0 items-center gap-1 sm:gap-1.5 whitespace-nowrap rounded-lg border-[3px] border-tutor-navy px-2 sm:px-3 py-1 sm:py-2 font-playful text-[10px] sm:text-xs font-bold uppercase tracking-wide transition-all duration-150 ${
                                                     active
-                                                        ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[3px_3px_0_0_#071B3A]"
-                                                        : "bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                                        ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A]"
+                                                        : "bg-tutor-cream text-tutor-navy opacity-80 shadow-[1px_1px_0_0_#071B3A] sm:shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                                 }`}
                                             >
                                                 <span
-                                                    className={`flex h-5 w-5 items-center justify-center rounded-md border-2 ${
+                                                    className={`flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-md border-2 ${
                                                         active
                                                             ? "border-tutor-navy bg-tutor-yellow text-tutor-navy"
                                                             : `border-tutor-navy text-tutor-cream ${category.accent}`
@@ -318,11 +324,11 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                             </span>
                                                             <span
                                                                 className={`inline-flex items-center gap-1 rounded-md border-2 border-tutor-navy px-2 py-1 font-brutal text-[10px] uppercase tracking-wide ${getRarityColor(
-                                                                    item.rarity
+                                                                    item.rarity,
                                                                 )}`}
                                                             >
                                                                 {getRarityBadge(
-                                                                    item.rarity
+                                                                    item.rarity,
                                                                 )}
                                                                 {item.rarity.toUpperCase()}
                                                             </span>
@@ -344,7 +350,8 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                                 <span className="font-bold uppercase text-tutor-blue">
                                                                     Effect:
                                                                 </span>{" "}
-                                                                {item.effect.duration && (
+                                                                {item.effect
+                                                                    .duration && (
                                                                     <span className="font-semibold">
                                                                         {
                                                                             item
@@ -355,7 +362,8 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                                         duration
                                                                     </span>
                                                                 )}
-                                                                {item.effect.multiplier && (
+                                                                {item.effect
+                                                                    .multiplier && (
                                                                     <span className="font-semibold">
                                                                         {" "}
                                                                         {
@@ -375,15 +383,13 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                             <div className="flex items-center gap-1.5 rounded-lg border-2 border-tutor-navy bg-tutor-green/10 px-2 py-1">
                                                                 <Coins className="h-4 w-4 text-tutor-green" />
                                                                 <span className="font-brutal text-base text-tutor-navy">
-                                                                    {
-                                                                        item.price
-                                                                    }
+                                                                    {item.price}
                                                                 </span>
                                                             </div>
                                                             <button
                                                                 onClick={() =>
                                                                     handlePurchase(
-                                                                        item
+                                                                        item,
                                                                     )
                                                                 }
                                                                 disabled={
@@ -456,7 +462,7 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                 .find(
                                                     (i) =>
                                                         i.id ===
-                                                        purchased.itemId
+                                                        purchased.itemId,
                                                 );
                                             if (!item) return null;
 
@@ -472,7 +478,8 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                         {item.name}
                                                     </h4>
                                                     <div className="mb-2 font-playful text-xs text-tutor-navy/60">
-                                                        Qty: {purchased.quantity}
+                                                        Qty:{" "}
+                                                        {purchased.quantity}
                                                     </div>
                                                     {item.effect?.duration && (
                                                         <button
@@ -480,12 +487,12 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                             onClick={() => {
                                                                 const result =
                                                                     shopService.useItem(
-                                                                        item.id
+                                                                        item.id,
                                                                     );
                                                                 alert(
                                                                     result.success
                                                                         ? `✅ ${result.message}`
-                                                                        : `❌ ${result.message}`
+                                                                        : `❌ ${result.message}`,
                                                                 );
                                                                 loadShopData();
                                                             }}
@@ -513,3 +520,4 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
         </div>
     );
 };
+

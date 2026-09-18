@@ -17,14 +17,7 @@ interface TutorialSection {
 const YELLOW = "#FFD84D";
 
 /** Colored info-card used across the tutorial content. */
-type Tone =
-    | "yellow"
-    | "blue"
-    | "green"
-    | "purple"
-    | "orange"
-    | "red"
-    | "cream";
+type Tone = "yellow" | "blue" | "green" | "purple" | "orange" | "red" | "cream";
 
 const TONE_CLASSES: Record<Tone, string> = {
     yellow: "bg-tutor-yellow text-tutor-navy",
@@ -233,8 +226,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
 
                     <InfoCard tone="purple" className="p-3">
                         <p>
-                            🎯{" "}
-                            <strong className="font-bold">Fun Fact:</strong>{" "}
+                            🎯 <strong className="font-bold">Fun Fact:</strong>{" "}
                             Each NPC represents a different profession and
                             teaches unique math concepts!
                         </p>
@@ -292,10 +284,12 @@ export const Tutorial: React.FC<TutorialProps> = ({
 
                     <InfoCard tone="yellow" title="✅ After Answering:">
                         <p>
-                            <strong className="font-bold">Correct:</strong>{" "}
-                            Earn coins and XP! 🎉
+                            <strong className="font-bold">Correct:</strong> Earn
+                            coins and XP! 🎉
                             <br />
-                            <strong className="font-bold">Incorrect:</strong>{" "}
+                            <strong className="font-bold">
+                                Incorrect:
+                            </strong>{" "}
                             See explanation and try again
                         </p>
                     </InfoCard>
@@ -330,8 +324,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         </InfoCard>
                         <InfoCard tone="purple" title="🏛️ Level 3: PROVINCE">
                             <p className="text-tutor-cream/85">
-                                Missions 21-30 • Provincial scholarship
-                                coaching
+                                Missions 21-30 • Provincial scholarship coaching
                             </p>
                         </InfoCard>
                         <InfoCard tone="orange" title="🌏 Level 4: REGION">
@@ -574,7 +567,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
     const handleSkip = () => {
         if (
             window.confirm(
-                "Are you sure you want to skip the tutorial? You can always access it later from the main menu."
+                "Are you sure you want to skip the tutorial? You can always access it later from the main menu.",
             )
         ) {
             handleComplete();
@@ -588,43 +581,43 @@ export const Tutorial: React.FC<TutorialProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
-            <div className="flex min-h-full items-center justify-center p-4">
+            <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                <section className="relative w-full max-w-3xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                    <div className="flex max-h-[90vh] flex-col gap-4 rounded-[14px] border-2 border-tutor-yellow px-5 py-5 sm:px-7">
+                <section className="relative w-full min-[400px]:max-w-3xl max-w-[calc(100vw-8px)] animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex max-h-[calc(100dvh-20px)] flex-col gap-3 sm:gap-3 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-3 py-3 sm:px-4 sm:py-4">
                         {/* Close / Skip Button */}
                         <button
                             onClick={handleSkip}
                             type="button"
                             aria-label="Skip tutorial"
-                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2.5 top-2.5 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
                         </button>
 
                         {/* Header */}
                         <div className="text-center">
-                            <div className="mx-auto mb-2.5 flex h-16 w-16 items-center justify-center rounded-2xl border-[3px] border-tutor-navy bg-tutor-yellow text-3xl shadow-[3px_3px_0_0_#071B3A]">
+                            <div className="mx-auto mb-2 flex sm:mb-2.5 h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-[3px] border-tutor-navy bg-tutor-yellow text-2xl sm:text-3xl shadow-[3px_3px_0_0_#071B3A]">
                                 {currentTutorial.icon}
                             </div>
-                            <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                            <h2 className="font-brutal text-xl sm:text-2xl md:text-3xl uppercase leading-tight tracking-wide text-tutor-navy">
                                 How to Play
                             </h2>
                             <div className="mt-1.5 flex items-center justify-center gap-2">
-                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <div className="h-1.5 w-6 sm:w-8 rounded-full bg-tutor-orange" />
                                 <Star
-                                    className="h-4 w-4 text-tutor-yellow"
+                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-tutor-yellow"
                                     fill={YELLOW}
                                 />
-                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <div className="h-1.5 w-6 sm:w-8 rounded-full bg-tutor-orange" />
                             </div>
-                            <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
+                            <p className="mt-1.5 sm:mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 sm:px-3 sm:py-1 font-playful text-[10px] sm:text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A]">
                                 {currentTutorial.title}
                             </p>
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="h-2.5 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-[#E5DCC9]">
+                        <div className="h-2 sm:h-2.5 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-[#E5DCC9]">
                             <div
                                 className="h-full rounded-full bg-tutor-green transition-all duration-300"
                                 style={{ width: `${progress}%` }}
@@ -639,9 +632,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                                     <button
                                         key={section.id}
                                         type="button"
-                                        onClick={() =>
-                                            setCurrentSection(index)
-                                        }
+                                        onClick={() => setCurrentSection(index)}
                                         className={`flex shrink-0 items-center gap-1.5 rounded-lg border-[3px] whitespace-nowrap px-2.5 py-1.5 font-playful text-xs font-bold uppercase transition-all duration-150 ${
                                             active
                                                 ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
@@ -675,7 +666,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                                             checked={dontShowAgain}
                                             onChange={(e) =>
                                                 setDontShowAgain(
-                                                    e.target.checked
+                                                    e.target.checked,
                                                 )
                                             }
                                             className="h-5 w-5 cursor-pointer rounded accent-tutor-orange"
@@ -732,3 +723,4 @@ export const Tutorial: React.FC<TutorialProps> = ({
         </div>
     );
 };
+

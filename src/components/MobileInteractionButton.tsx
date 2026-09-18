@@ -11,10 +11,16 @@ export const MobileInteractionButton: React.FC<
     if (!isVisible) return null;
 
     return (
-        <div className="fixed bottom-4 right-4 z-50 pointer-events-auto">
+        <div
+            className="fixed z-50 pointer-events-auto"
+            style={{
+                bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+                right: "calc(16px + env(safe-area-inset-right, 0px))",
+            }}
+        >
             <button
                 onClick={onInteract}
-                className="w-16 h-16 rounded-full bg-brutal-orange bg-opacity-90 border-[3px] border-black shadow-brutal flex items-center justify-center text-black font-bold uppercase text-sm active:translate-y-1 active:shadow-none transition-all duration-150"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brutal-orange bg-opacity-90 border-[3px] border-black shadow-brutal flex items-center justify-center text-black font-bold uppercase text-xs sm:text-sm active:translate-y-1 active:shadow-none transition-all duration-150"
             >
                 TAP
             </button>

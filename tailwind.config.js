@@ -8,7 +8,7 @@ module.exports = {
                 "civika-green": "#2c5530",
                 "civika-gold": "#FFD700",
                 "civika-brown": "#8B4513",
-                
+
                 // Math-themed primary colors
                 math: {
                     blue: "#3B82F6",
@@ -17,7 +17,7 @@ module.exports = {
                     green: "#10B981",
                     teal: "#14B8A6",
                 },
-                
+
                 // Level-based themes
                 level1: {
                     primary: "#F59E0B",
@@ -31,7 +31,7 @@ module.exports = {
                     accent: "#8B5CF6",
                     light: "#DBEAFE",
                 },
-                
+
                 // Semantic colors
                 success: "#10B981",
                 error: "#EF4444",
@@ -95,8 +95,14 @@ module.exports = {
                     "100%": { transform: "translateY(0)", opacity: "1" },
                 },
                 confetti: {
-                    "0%": { transform: "translateY(0) rotate(0deg)", opacity: "1" },
-                    "100%": { transform: "translateY(1000px) rotate(720deg)", opacity: "0" },
+                    "0%": {
+                        transform: "translateY(0) rotate(0deg)",
+                        opacity: "1",
+                    },
+                    "100%": {
+                        transform: "translateY(1000px) rotate(720deg)",
+                        opacity: "0",
+                    },
                 },
                 celebrate: {
                     "0%, 100%": { transform: "scale(1) rotate(0deg)" },
@@ -120,7 +126,8 @@ module.exports = {
             },
             backgroundImage: {
                 "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-                "shimmer-gradient": "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                "shimmer-gradient":
+                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
             },
         },
     },

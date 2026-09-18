@@ -407,8 +407,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Simplify for the Exam",
         npc: "Carla",
         missionId: 11,
-        percentX: 19, // Background-relative percentage X
-        percentY: 46, // Background-relative percentage Y
+        percentX: 14.967340378097948,
+        percentY: 46.40558165743329,
     },
     {
         x: 21,
@@ -416,8 +416,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Fare Formula",
         npc: "Mang Roy",
         missionId: 12,
-        percentX: 59, // Background-relative percentage X
-        percentY: 23, // Background-relative percentage Y
+        percentX: 61.276601715539925,
+        percentY: 25.055207465091044,
     },
     {
         x: 22,
@@ -425,8 +425,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Building Shadow",
         npc: "Arki Maya",
         missionId: 13,
-        percentX: 81, // Background-relative percentage X
-        percentY: 23, // Background-relative percentage Y
+        percentX: 81.72484514603833,
+        percentY: 24.754498893579406,
     },
     {
         x: 10,
@@ -434,8 +434,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Peso to Dollar",
         npc: "Student Leo",
         missionId: 14,
-        percentX: 81, // Background-relative percentage X
-        percentY: 46, // Background-relative percentage Y
+        percentX: 13.463797520539773,
+        percentY: 26.1076925126907,
     },
     {
         x: 18,
@@ -443,8 +443,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Park Path",
         npc: "Gina",
         missionId: 15,
-        percentX: 79, // Background-relative percentage X
-        percentY: 67, // Background-relative percentage Y
+        percentX: 78.26669152634558,
+        percentY: 60.23821632543998,
     },
     {
         x: 5,
@@ -452,8 +452,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Grade Reverse",
         npc: "Sir Tan",
         missionId: 16,
-        percentX: 60, // Background-relative percentage X
-        percentY: 90, // Background-relative percentage Y
+        percentX: 59.32199095340537,
+        percentY: 86.85100566116265,
     },
     {
         x: 20,
@@ -461,8 +461,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Bus Route Map",
         npc: "Manager Ben",
         missionId: 17,
-        percentX: 50, // Background-relative percentage X
-        percentY: 78, // Background-relative percentage Y
+        percentX: 73.90640209750008,
+        percentY: 36.482168513695726,
     },
     {
         x: 12,
@@ -470,8 +470,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Commission Check",
         npc: "Carlos",
         missionId: 18,
-        percentX: 19, // Background-relative percentage X
-        percentY: 89, // Background-relative percentage Y
+        percentX: 39.62552399899498,
+        percentY: 60.08786203968417,
     },
     {
         x: 25,
@@ -479,8 +479,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Sports Complex",
         npc: "Coach Kim",
         missionId: 19,
-        percentX: 27, // Background-relative percentage X
-        percentY: 27, // Background-relative percentage Y
+        percentX: 32.25813876041524,
+        percentY: 25.20556175084686,
     },
     {
         x: 16,
@@ -488,8 +488,8 @@ export const cityMissionLocations: MissionLocation[] = [
         name: "Citywide Exam Review",
         npc: "Principal Santos",
         missionId: 20,
-        percentX: 50, // Background-relative percentage X
-        percentY: 56, // Background-relative percentage Y
+        percentX: 50.451062857267445,
+        percentY: 45.05238803832199,
     },
 ];
 
@@ -797,8 +797,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Scholarship Qualifier",
         npc: "Sarah",
         missionId: 21,
-        percentX: 19,
-        percentY: 46,
+        percentX: 28.95033437916939,
+        percentY: 39.03819641885355,
     },
     {
         x: 21,
@@ -806,8 +806,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Farm Plot Diagonal",
         npc: "Mang Tomas",
         missionId: 22,
-        percentX: 59,
-        percentY: 23,
+        percentX: 59.17163162034061,
+        percentY: 22.799888131444845,
     },
     {
         x: 22,
@@ -815,8 +815,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Fertilizer Mix",
         npc: "Ate Liza",
         missionId: 23,
-        percentX: 81,
-        percentY: 23,
+        percentX: 76.16172143114628,
+        percentY: 19.492083750198987,
     },
     {
         x: 10,
@@ -824,8 +824,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Irrigation Pipe",
         npc: "Engineer Pat",
         missionId: 24,
-        percentX: 81,
-        percentY: 46,
+        percentX: 71.35037419234224,
+        percentY: 46.40558165743329,
     },
     {
         x: 18,
@@ -833,8 +833,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Budget Scaling",
         npc: "Budget Officer Amy",
         missionId: 25,
-        percentX: 79,
-        percentY: 67,
+        percentX: 83.52909657510814,
+        percentY: 61.14034708728382,
     },
     {
         x: 5,
@@ -842,8 +842,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Dosage Formula",
         npc: "Nurse Joy",
         missionId: 26,
-        percentX: 60,
-        percentY: 90,
+        percentX: 83.07804885976748,
+        percentY: 79.18291185107128,
     },
     {
         x: 20,
@@ -851,8 +851,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Road Slope",
         npc: "Foreman Bob",
         missionId: 27,
-        percentX: 50,
-        percentY: 78,
+        percentX: 33.76168161797343,
+        percentY: 11.072215987674069,
     },
     {
         x: 12,
@@ -860,8 +860,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Yield Reverse",
         npc: "Ma'am Elena",
         missionId: 28,
-        percentX: 19,
-        percentY: 89,
+        percentX: 34.06239018948506,
+        percentY: 76.47652461284869,
     },
     {
         x: 25,
@@ -869,8 +869,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Water Tank Volume",
         npc: "Sir Dan",
         missionId: 29,
-        percentX: 27,
-        percentY: 27,
+        percentX: 92.40002467124604,
+        percentY: 37.233939942474805,
     },
     {
         x: 16,
@@ -878,8 +878,8 @@ export const provinceMissionLocations: MissionLocation[] = [
         name: "Provincial Scholarship Final",
         npc: "Governor's Aide",
         missionId: 30,
-        percentX: 50,
-        percentY: 56,
+        percentX: 48.64680133357977,
+        percentY: 53.02119041992499,
     },
 ];
 

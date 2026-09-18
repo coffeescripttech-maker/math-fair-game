@@ -138,24 +138,22 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
 
     const isLevelOne = level === 1;
     // Level tint for the question card: yellow (level 1) vs blue (level 2+)
-    const questionCardTint = isLevelOne
-        ? "bg-tutor-yellow"
-        : "bg-tutor-blue";
+    const questionCardTint = isLevelOne ? "bg-tutor-yellow" : "bg-tutor-blue";
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
-            <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
+            <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl">
-                    <section className="relative animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                        <div className="space-y-4 rounded-[14px] border-2 border-tutor-yellow px-4 py-4 sm:space-y-5 sm:px-6 sm:py-5">
+                <div className="w-full min-[420px]:max-w-2xl lg:max-w-4xl max-w-[calc(100vw-6px)]">
+                    <section className="relative animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                        <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar space-y-2 sm:space-y-3 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
                             {/* Header */}
-                            <div className="flex items-center justify-between gap-3">
-                                <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-orange text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
-                                        <ClipboardList className="h-4 w-4" />
+                            <div className="flex items-center justify-between gap-2 sm:gap-3">
+                                <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
+                                    <span className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-md sm:rounded-lg border-2 border-tutor-navy bg-tutor-orange text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
+                                        <ClipboardList className="h-3 w-3 sm:h-4 sm:w-4" />
                                     </span>
-                                    <h2 className="truncate font-brutal text-base uppercase tracking-wide text-tutor-navy sm:text-xl">
+                                    <h2 className="truncate font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-xl">
                                         Math Challenge
                                     </h2>
                                     <span className="hidden shrink-0 rounded-lg border-2 border-tutor-navy bg-tutor-navy px-2 py-1 font-playful text-xs font-bold uppercase text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:inline-block">
@@ -175,24 +173,24 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                     onClick={onClose}
                                     type="button"
                                     aria-label="Close quiz"
-                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] sm:h-10 sm:w-10"
+                                    className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                 >
-                                    <X className="h-5 w-5" />
+                                    <X className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </button>
                             </div>
 
                             {/* Timer Display */}
                             {!showResult && (
                                 <div
-                                    className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] transition-all duration-300 sm:p-4 ${getTimerBgColor()}`}
+                                    className={`rounded-lg sm:rounded-xl border-[3px] border-tutor-navy p-1.5 sm:p-4 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-300 ${getTimerBgColor()}`}
                                 >
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div className="flex items-center gap-2">
+                                    <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                                        <div className="flex items-center gap-1 sm:gap-2">
                                             <span
-                                                className={`flex h-9 w-9 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-cream/90 ${getTimerTextColor()}`}
+                                                className={`flex h-6 w-6 sm:h-9 sm:w-9 items-center justify-center rounded-md sm:rounded-lg border-2 border-tutor-navy bg-tutor-cream/90 ${getTimerTextColor()}`}
                                             >
                                                 <Timer
-                                                    className={`h-4 w-4 ${
+                                                    className={`h-3 w-3 sm:h-4 sm:w-4 ${
                                                         timeRemaining <= 10
                                                             ? "animate-pulse"
                                                             : ""
@@ -200,18 +198,18 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                                 />
                                             </span>
                                             <span
-                                                className={`font-brutal text-xl sm:text-3xl ${getTimerTextColor()}`}
+                                                className={`font-brutal text-base sm:text-xl md:text-3xl ${getTimerTextColor()}`}
                                             >
                                                 {timeRemaining}s
                                             </span>
                                         </div>
                                         <span
-                                            className={`rounded-full border-2 border-tutor-navy px-2.5 py-1 text-center font-playful text-xs font-bold uppercase sm:text-sm ${getTimerTextColor()}`}
+                                            className={`rounded-full border-2 border-tutor-navy px-1.5 sm:px-2.5 py-0.5 text-center font-playful text-[9px] font-bold uppercase sm:text-sm ${getTimerTextColor()}`}
                                         >
                                             {getTimerMessage()}
                                         </span>
                                     </div>
-                                    <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-tutor-cream/90 sm:h-3">
+                                    <div className="mt-1.5 sm:mt-3 h-1.5 sm:h-2.5 md:h-3 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-tutor-cream/90">
                                         <div
                                             className="h-full bg-tutor-navy transition-all duration-1000 ease-linear"
                                             style={{
@@ -224,22 +222,22 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
 
                             {/* Question Card */}
                             <div
-                                className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] sm:p-4 ${questionCardTint}`}
+                                className={`rounded-lg sm:rounded-xl border-[3px] border-tutor-navy p-2 sm:p-4 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] ${questionCardTint}`}
                             >
                                 <h3
-                                    className={`mb-1.5 flex items-center gap-2 font-brutal text-xs uppercase tracking-wide sm:text-sm ${
+                                    className={`mb-0.5 flex items-center gap-1.5 font-brutal text-[10px] uppercase tracking-wide sm:text-sm ${
                                         isLevelOne
                                             ? "text-tutor-navy"
                                             : "text-tutor-cream"
                                     }`}
                                 >
-                                    <span className="text-base sm:text-lg">
+                                    <span className="text-sm sm:text-lg">
                                         ❓
                                     </span>
                                     Question:
                                 </h3>
                                 <p
-                                    className={`font-playful text-sm leading-relaxed sm:text-base ${
+                                    className={`font-playful text-xs leading-relaxed sm:text-sm ${
                                         isLevelOne
                                             ? "text-tutor-navy"
                                             : "text-tutor-cream"
@@ -250,92 +248,96 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                             </div>
 
                             {/* Help Section (Hints & Formula) */}
-                            {!showResult && (question.hints || question.formula) && (
-                                <div className="space-y-2">
-                                    {question.formula && (
-                                        <button
-                                            onClick={() =>
-                                                setShowFormula(!showFormula)
-                                            }
-                                            type="button"
-                                            className="flex w-full items-center justify-between rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] sm:p-3"
-                                        >
-                                            <span className="flex items-center gap-2 font-playful text-sm font-bold text-tutor-navy">
-                                                <span className="flex h-7 w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
-                                                    <BookOpen className="h-3.5 w-3.5" />
+                            {!showResult &&
+                                (question.hints || question.formula) && (
+                                    <div className="space-y-1 sm:space-y-2">
+                                        {question.formula && (
+                                            <button
+                                                onClick={() =>
+                                                    setShowFormula(!showFormula)
+                                                }
+                                                type="button"
+                                                className="flex w-full items-center justify-between rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2 sm:p-3 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] min-h-[40px]"
+                                            >
+                                                <span className="flex items-center gap-1.5 sm:gap-2 font-playful text-[11px] sm:text-sm font-bold text-tutor-navy">
+                                                    <span className="flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
+                                                        <BookOpen className="h-2.5 sm:h-3.5 w-2.5 sm:w-3.5" />
+                                                    </span>
+                                                    Show Formula
                                                 </span>
-                                                Show Formula
-                                            </span>
-                                            <span className="font-playful text-sm font-bold text-tutor-navy">
-                                                {showFormula ? "▲" : "▼"}
-                                            </span>
-                                        </button>
-                                    )}
-                                    {showFormula && question.formula && (
-                                        <div className="animate-slide-down rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-3 shadow-[2px_2px_0_0_#071B3A]">
-                                            <code className="block text-center font-math text-lg text-tutor-navy">
-                                                {question.formula}
-                                            </code>
-                                        </div>
-                                    )}
-                                    {question.hints && question.hints.length > 0 && (
-                                        <button
-                                            onClick={handleShowHint}
-                                            type="button"
-                                            disabled={
-                                                currentHintLevel >=
-                                                    question.hints.length -
-                                                        1 && showHints
-                                            }
-                                            className="flex w-full items-center justify-between rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] disabled:cursor-not-allowed disabled:opacity-50 sm:p-3"
-                                        >
-                                            <span className="flex items-center gap-2 font-playful text-sm font-bold text-tutor-navy">
-                                                <span className="flex h-7 w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-orange text-tutor-cream">
-                                                    <Lightbulb className="h-3.5 w-3.5" />
+                                                <span className="font-playful text-[10px] sm:text-xs font-bold text-tutor-navy">
+                                                    {showFormula ? "▲" : "▼"}
                                                 </span>
-                                                Get a Hint
-                                            </span>
-                                            <span className="font-playful text-xs font-bold text-tutor-navy">
-                                                {currentHintLevel + 1}/
-                                                {question.hints.length}
-                                            </span>
-                                        </button>
-                                    )}
-                                    {showHints && question.hints && (
-                                        <div className="space-y-2 animate-slide-down">
-                                            {question.hints
-                                                .slice(0, currentHintLevel + 1)
-                                                .map((hint, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        className="flex items-start gap-2 rounded-lg border-2 border-tutor-navy bg-tutor-yellow p-2.5"
-                                                    >
-                                                        <span className="shrink-0 font-brutal text-xs uppercase text-tutor-navy">
-                                                            Hint {idx + 1}:
+                                            </button>
+                                        )}
+                                        {showFormula && question.formula && (
+                                            <div className="animate-slide-down rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2 sm:p-3 shadow-[2px_2px_0_0_#071B3A]">
+                                                <code className="block text-center font-math text-sm sm:text-lg text-tutor-navy">
+                                                    {question.formula}
+                                                </code>
+                                            </div>
+                                        )}
+                                        {question.hints &&
+                                            question.hints.length > 0 && (
+                                                <button
+                                                    onClick={handleShowHint}
+                                                    type="button"
+                                                    disabled={
+                                                        currentHintLevel >=
+                                                            question.hints
+                                                                .length -
+                                                                1 && showHints
+                                                    }
+                                                    className="flex w-full items-center justify-between rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2 sm:p-3 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] disabled:cursor-not-allowed disabled:opacity-50 min-h-[40px]"
+                                                >
+                                                    <span className="flex items-center gap-1.5 sm:gap-2 font-playful text-[11px] sm:text-sm font-bold text-tutor-navy">
+                                                        <span className="flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-orange text-tutor-cream">
+                                                            <Lightbulb className="h-2.5 sm:h-3.5 w-2.5 sm:w-3.5" />
                                                         </span>
-                                                        <span className="font-playful text-sm text-tutor-navy">
-                                                            {hint}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                                        Get a Hint
+                                                    </span>
+                                                    <span className="font-playful text-[9px] sm:text-xs font-bold text-tutor-navy">
+                                                        {currentHintLevel + 1}/
+                                                        {question.hints.length}
+                                                    </span>
+                                                </button>
+                                            )}
+                                        {showHints && question.hints && (
+                                            <div className="space-y-1.5 sm:space-y-2 animate-slide-down">
+                                                {question.hints
+                                                    .slice(
+                                                        0,
+                                                        currentHintLevel + 1,
+                                                    )
+                                                    .map((hint, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className="flex items-start gap-2 rounded-lg border-2 border-tutor-navy bg-tutor-yellow p-2 sm:p-2.5"
+                                                        >
+                                                            <span className="shrink-0 font-brutal text-[10px] uppercase text-tutor-navy sm:text-xs">
+                                                                Hint {idx + 1}:
+                                                            </span>
+                                                            <span className="font-playful text-xs sm:text-sm text-tutor-navy">
+                                                                {hint}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                             {/* Options Grid */}
-                            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
+                            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 sm:gap-3">
                                 {question.options.map((option, index) => {
                                     const isSelected = selectedOption === index;
                                     let optionClass =
-                                        "w-full rounded-xl border-[3px] border-tutor-navy p-2.5 text-left transition-all duration-150 sm:p-3 ";
+                                        "w-full rounded-lg sm:rounded-xl border-[3px] border-tutor-navy p-2 sm:p-3 text-left transition-all duration-150 min-h-[44px] ";
 
                                     if (showResult) {
-                                        if (
-                                            index === question.correctAnswer
-                                        ) {
+                                        if (index === question.correctAnswer) {
                                             optionClass +=
-                                                "bg-tutor-green text-tutor-cream shadow-[3px_3px_0_0_#071B3A]";
+                                                "bg-tutor-green text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A]";
                                         } else if (isSelected && !isCorrect) {
                                             optionClass +=
                                                 "bg-tutor-red text-tutor-cream";
@@ -345,8 +347,8 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                         }
                                     } else {
                                         optionClass += isSelected
-                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,4px_4px_0_0_#071B3A]"
-                                            : "bg-tutor-cream text-tutor-navy hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A]";
+                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_2px_#FFD84D,3px_3px_0_0_#071B3A]"
+                                            : "bg-tutor-cream text-tutor-navy hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A]";
                                     }
 
                                     return (
@@ -361,33 +363,34 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                         >
                                             <div className="flex items-center">
                                                 <span
-                                                    className={`mr-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy font-brutal text-sm ${
+                                                    className={`mr-1.5 sm:mr-2 flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy font-brutal text-[11px] sm:text-sm ${
                                                         showResult
                                                             ? index ===
                                                               question.correctAnswer
                                                                 ? "bg-tutor-cream text-tutor-green"
                                                                 : isSelected &&
-                                                                  !isCorrect
-                                                                ? "bg-tutor-cream text-tutor-red"
-                                                                : "bg-[#E5DCC9] text-tutor-navy/50"
+                                                                    !isCorrect
+                                                                  ? "bg-tutor-cream text-tutor-red"
+                                                                  : "bg-[#E5DCC9] text-tutor-navy/50"
                                                             : isSelected
-                                                            ? "bg-tutor-yellow text-tutor-navy"
-                                                            : "bg-[#F3EBDD] text-tutor-navy"
+                                                              ? "bg-tutor-yellow text-tutor-navy"
+                                                              : "bg-[#F3EBDD] text-tutor-navy"
                                                     }`}
                                                 >
                                                     {String.fromCharCode(
-                                                        65 + index
+                                                        65 + index,
                                                     )}
                                                 </span>
                                                 <span
-                                                    className={`font-playful text-sm font-medium sm:text-base ${
-                                                        isSelected && !showResult
+                                                    className={`font-playful text-[11px] sm:text-base ${
+                                                        isSelected &&
+                                                        !showResult
                                                             ? "text-tutor-cream"
                                                             : showResult &&
-                                                              index ===
-                                                                  question.correctAnswer
-                                                            ? "text-tutor-cream"
-                                                            : "text-tutor-navy"
+                                                                index ===
+                                                                    question.correctAnswer
+                                                              ? "text-tutor-cream"
+                                                              : "text-tutor-navy"
                                                     }`}
                                                 >
                                                     {option}
@@ -401,25 +404,25 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                             {/* Result Section with Step-by-Step Solution */}
                             {showResult && (
                                 <div
-                                    className={`rounded-xl border-[3px] border-tutor-navy p-3 shadow-[3px_3px_0_0_#071B3A] sm:p-4 ${
+                                    className={`rounded-lg sm:rounded-xl border-[3px] border-tutor-navy p-2 sm:p-4 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] ${
                                         isCorrect
                                             ? "bg-tutor-green"
                                             : "bg-tutor-red"
                                     }`}
                                 >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2 sm:gap-3">
                                         {isCorrect ? (
-                                            <CheckCircle2 className="h-9 w-9 shrink-0 text-tutor-cream" />
+                                            <CheckCircle2 className="h-6 w-6 sm:h-9 sm:w-9 shrink-0 text-tutor-cream" />
                                         ) : (
-                                            <XCircle className="h-9 w-9 shrink-0 text-tutor-cream" />
+                                            <XCircle className="h-6 w-6 sm:h-9 sm:w-9 shrink-0 text-tutor-cream" />
                                         )}
                                         <div className="min-w-0">
-                                            <h4 className="font-brutal text-base uppercase tracking-wide text-tutor-cream sm:text-lg">
+                                            <h4 className="font-brutal text-xs sm:text-lg uppercase tracking-wide text-tutor-cream">
                                                 {isCorrect
                                                     ? "Excellent!"
                                                     : "Not Quite!"}
                                             </h4>
-                                            <p className="font-playful text-sm text-tutor-cream/90">
+                                            <p className="font-playful text-[10px] sm:text-sm text-tutor-cream/90">
                                                 {isCorrect
                                                     ? timeBonus > 0
                                                         ? `Amazing! Speed bonus: +${timeBonus} points!`
@@ -429,18 +432,18 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                         </div>
                                     </div>
 
-                                    <div className="mt-3 space-y-1">
-                                        <p className="font-playful text-xs text-tutor-cream/80">
-                                            ⏱️ Time Taken:{" "}
+                                    <div className="mt-1.5 sm:mt-3 space-y-0.5 sm:space-y-1">
+                                        <p className="font-playful text-[10px] sm:text-xs text-tutor-cream/80">
+                                            ⏱️ Time:{" "}
                                             {Math.round(submissionTime)}s /{" "}
                                             {QUIZ_TIME_LIMIT}s
                                         </p>
                                         {isCorrect && timeBonus > 0 && (
-                                            <p className="flex items-center gap-1 font-playful text-xs font-bold text-tutor-cream">
+                                            <p className="flex items-center gap-1 font-playful text-[10px] sm:text-xs font-bold text-tutor-cream">
                                                 <span>⚡</span>
                                                 <span>
                                                     Speed Bonus: +{timeBonus}{" "}
-                                                    points!
+                                                    pts!
                                                 </span>
                                             </p>
                                         )}
@@ -448,42 +451,42 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
 
                                     {/* Step-by-Step Solution */}
                                     {question.steps && (
-                                        <div className="mt-3 rounded-xl border-2 border-tutor-navy bg-tutor-cream p-3 sm:p-4">
-                                            <h5 className="mb-2 flex items-center gap-2 font-brutal text-xs uppercase tracking-wide text-tutor-navy sm:text-sm">
-                                                <span className="text-base">
+                                        <div className="mt-2 sm:mt-3 rounded-lg sm:rounded-xl border-2 border-tutor-navy bg-tutor-cream p-2 sm:p-4">
+                                            <h5 className="mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2 font-brutal text-[10px] uppercase tracking-wide text-tutor-navy sm:text-sm">
+                                                <span className="text-sm sm:text-base">
                                                     📝
                                                 </span>
                                                 Step-by-Step Solution:
                                             </h5>
-                                            <ol className="space-y-2">
+                                            <ol className="space-y-1 sm:space-y-2">
                                                 {question.steps.map(
                                                     (step, idx) => (
                                                         <li
                                                             key={idx}
-                                                            className="flex items-start gap-2"
+                                                            className="flex items-start gap-1.5 sm:gap-2"
                                                         >
-                                                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-navy font-brutal text-xs text-tutor-cream">
+                                                            <span className="flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-navy font-brutal text-[10px] text-tutor-cream sm:text-xs">
                                                                 {idx + 1}
                                                             </span>
-                                                            <span className="font-playful text-sm text-tutor-navy">
+                                                            <span className="font-playful text-[11px] sm:text-sm text-tutor-navy">
                                                                 {step}
                                                             </span>
                                                         </li>
-                                                    )
+                                                    ),
                                                 )}
                                             </ol>
                                         </div>
                                     )}
 
                                     {/* Key Concept / Explanation */}
-                                    <div className="mt-3 rounded-xl border-2 border-tutor-navy bg-tutor-yellow p-3 sm:p-4">
-                                        <h5 className="mb-1 flex items-center gap-2 font-brutal text-xs uppercase tracking-wide text-tutor-navy sm:text-sm">
-                                            <span className="text-base">
+                                    <div className="mt-2 sm:mt-3 rounded-lg sm:rounded-xl border-2 border-tutor-navy bg-tutor-yellow p-2 sm:p-4">
+                                        <h5 className="mb-0.5 sm:mb-1 flex items-center gap-1.5 sm:gap-2 font-brutal text-[10px] uppercase tracking-wide text-tutor-navy sm:text-sm">
+                                            <span className="text-sm sm:text-base">
                                                 💡
                                             </span>
                                             Key Concept:
                                         </h5>
-                                        <p className="font-playful text-sm text-tutor-navy">
+                                        <p className="font-playful text-[11px] sm:text-sm text-tutor-navy">
                                             {question.explanation}
                                         </p>
                                     </div>
@@ -491,25 +494,25 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                             )}
 
                             {/* Action Buttons */}
-                            <div className="flex justify-center">
+                            <div className="flex justify-center pt-0.5 sm:pt-1">
                                 {!showResult ? (
                                     <button
                                         onClick={handleSubmit}
                                         type="button"
                                         disabled={selectedOption === null}
-                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-5 py-3 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A] disabled:cursor-not-allowed disabled:bg-[#D8CFC0] disabled:text-tutor-navy/40 disabled:shadow-[3px_3px_0_0_#071B3A] disabled:hover:translate-y-0 disabled:hover:brightness-100"
+                                        className="flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-4 py-2 sm:px-5 sm:py-3 font-brutal text-[11px] sm:text-sm uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] sm:shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A] disabled:cursor-not-allowed disabled:bg-[#D8CFC0] disabled:text-tutor-navy/40 disabled:shadow-[2px_2px_0_0_#071B3A] disabled:hover:translate-y-0 disabled:hover:brightness-100 min-h-[44px]"
                                     >
-                                        <span className="text-base">📤</span>
+                                        <span className="text-sm">📤</span>
                                         Submit Answer
                                     </button>
                                 ) : (
                                     <button
                                         onClick={handleNext}
                                         type="button"
-                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-5 py-3 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
+                                        className="flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-4 py-2 sm:px-5 sm:py-3 font-brutal text-[11px] sm:text-sm uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] sm:shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A] min-h-[44px]"
                                     >
                                         Continue
-                                        <ArrowRight className="h-4 w-4" />
+                                        <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                     </button>
                                 )}
                             </div>
@@ -520,3 +523,4 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
         </div>
     );
 };
+

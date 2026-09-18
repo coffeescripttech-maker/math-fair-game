@@ -36,10 +36,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
     isVisible,
 }) => {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>(
-        []
+        [],
     );
     const [selectedTab, setSelectedTab] = useState<LeaderboardType>(
-        LeaderboardType.OVERALL
+        LeaderboardType.OVERALL,
     );
     const [loading, setLoading] = useState(false);
     const [playerRank, setPlayerRank] = useState<number | null>(null);
@@ -57,7 +57,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                     () => {
                         console.log("Leaderboard updated, refreshing...");
                         loadLeaderboard();
-                    }
+                    },
                 );
 
                 return () => {
@@ -74,7 +74,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
         // Check if leaderboard is enabled
         if (!leaderboardService.isEnabled()) {
             setError(
-                "Leaderboard is not configured. Please set up Supabase to enable this feature."
+                "Leaderboard is not configured. Please set up Supabase to enable this feature.",
             );
             setLoading(false);
             return;
@@ -116,7 +116,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
             const progress = gameStateManager.getProgress();
             if (progress && selectedTab === LeaderboardType.OVERALL) {
                 const rank = await leaderboardService.getPlayerRank(
-                    progress.playerName
+                    progress.playerName,
                 );
                 setPlayerRank(rank);
             } else {
@@ -125,7 +125,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
         } catch (error) {
             console.error("Failed to load leaderboard:", error);
             setError(
-                "Failed to load leaderboard. Please check your connection."
+                "Failed to load leaderboard. Please check your connection.",
             );
         } finally {
             setLoading(false);
@@ -199,73 +199,71 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
-            <div className="flex min-h-full items-center justify-center p-4">
+            <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                <section className="relative w-full max-w-3xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                    <div className="flex max-h-[90vh] flex-col rounded-[14px] border-2 border-tutor-yellow px-5 py-5 sm:px-7">
+                <section className="relative w-full min-[420px]:max-w-3xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex max-h-[calc(100dvh-20px)] flex-col rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
                         {/* Close Button */}
                         <button
                             onClick={onClose}
                             type="button"
                             aria-label="Close leaderboard"
-                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </button>
 
                         {/* Header */}
-                        <div className="mb-4 text-center">
-                            <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                        <div className="mb-2 sm:mb-4 text-center pr-6">
+                            <h2 className="font-brutal text-base sm:text-xl md:text-2xl uppercase leading-tight tracking-wide text-tutor-navy">
                                 Leaderboard
                             </h2>
-                            <div className="mt-1.5 flex items-center justify-center gap-2">
-                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                            <div className="mt-1 flex items-center justify-center gap-1.5 sm:gap-2">
+                                <div className="h-1 w-5 sm:w-8 rounded-full bg-tutor-orange" />
                                 <Star
-                                    className="h-4 w-4 text-tutor-yellow"
+                                    className="h-3 w-3 sm:h-4 sm:w-4 text-tutor-yellow"
                                     fill={YELLOW}
                                 />
-                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <div className="h-1 w-5 sm:w-8 rounded-full bg-tutor-orange" />
                             </div>
-                            <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
-                                <Trophy className="h-4 w-4" />
+                            <p className="mt-1.5 sm:mt-2.5 inline-flex items-center gap-1 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 sm:px-3 sm:py-1 font-playful text-[9px] font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-xs">
+                                <Trophy className="h-3 w-3 sm:h-4 sm:w-4" />
                                 Global rankings
                             </p>
                         </div>
 
                         {/* Player's Rank Display */}
                         {playerRank && (
-                            <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border-2 border-tutor-navy bg-tutor-yellow px-4 py-3 shadow-[3px_3px_0_0_#071B3A]">
-                                <span className="font-playful text-sm font-bold text-tutor-navy">
+                            <div className="mb-2 sm:mb-4 flex items-center justify-between gap-2 sm:gap-3 rounded-lg sm:rounded-xl border-2 border-tutor-navy bg-tutor-yellow px-2.5 py-1.5 sm:px-4 sm:py-3 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A]">
+                                <span className="font-playful text-[11px] sm:text-sm font-bold text-tutor-navy">
                                     Your Rank:
                                 </span>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1.5 sm:gap-2">
                                     {getRankIcon(playerRank)}
-                                    <span className="font-brutal text-xl text-tutor-navy">
+                                    <span className="font-brutal text-base sm:text-xl text-tutor-navy">
                                         #{playerRank}
                                     </span>
                                 </div>
                             </div>
                         )}
 
-                        {/* Tabs */}
-                        <div className="mb-4 flex flex-wrap gap-2">
+                        {/* Tabs - Horizontally scrollable on mobile */}
+                        <div className="mb-2 sm:mb-4 flex gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 custom-scrollbar">
                             {TABS.map((tab) => {
                                 const active = selectedTab === tab.type;
                                 return (
                                     <button
                                         key={tab.type}
                                         type="button"
-                                        onClick={() =>
-                                            setSelectedTab(tab.type)
-                                        }
-                                        className={`flex items-center gap-2 rounded-xl border-[3px] px-3 py-2 font-brutal text-xs uppercase tracking-wide transition-all duration-150 sm:text-sm ${
+                                        onClick={() => setSelectedTab(tab.type)}
+                                        className={`flex shrink-0 items-center gap-1 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] px-2 sm:px-3 py-1 sm:py-2 font-brutal text-[9px] sm:text-xs uppercase tracking-wide transition-all duration-150 min-h-[36px] sm:min-h-[40px] ${
                                             active
-                                                ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
-                                                : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                                ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_2px_#FFD84D,4px_4px_0_0_#071B3A] sm:shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
+                                                : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[3px_3px_0_0_#071B3A] sm:hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         }`}
                                     >
                                         <span
-                                            className={`flex h-6 w-6 items-center justify-center rounded-md border-2 ${
+                                            className={`flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center rounded-md border-2 ${
                                                 active
                                                     ? "border-tutor-navy bg-tutor-yellow text-tutor-navy"
                                                     : `border-tutor-navy text-tutor-cream ${tab.accent}`
@@ -313,8 +311,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                                     </p>
                                     <p className="font-playful text-sm text-tutor-navy/60">
                                         Be the first to appear on the
-                                        leaderboard. Complete missions to
-                                        submit your score!
+                                        leaderboard. Complete missions to submit
+                                        your score!
                                     </p>
                                 </div>
                             ) : (
@@ -375,7 +373,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                                                         >
                                                             <td className="p-2.5 text-center">
                                                                 {getRankIcon(
-                                                                    rank
+                                                                    rank,
                                                                 )}
                                                             </td>
                                                             <td className="p-2.5 text-tutor-navy">
@@ -399,7 +397,9 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                                                             <td className="p-2.5 text-center">
                                                                 <span className="inline-flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 font-brutal text-xs text-tutor-navy">
                                                                     <Trophy className="h-3 w-3" />
-                                                                    {entry.badges}
+                                                                    {
+                                                                        entry.badges
+                                                                    }
                                                                 </span>
                                                             </td>
                                                             {selectedTab ===
@@ -407,7 +407,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                                                                 <td className="p-2.5 text-center font-bold text-tutor-green">
                                                                     <Zap className="mr-1 inline h-3 w-3" />
                                                                     {entry.fastest_quiz_time?.toFixed(
-                                                                        1
+                                                                        1,
                                                                     ) || "-"}
                                                                     s
                                                                 </td>
@@ -433,7 +433,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                                                             )}
                                                         </tr>
                                                     );
-                                                }
+                                                },
                                             )}
                                         </tbody>
                                     </table>
@@ -464,3 +464,4 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
         </div>
     );
 };
+

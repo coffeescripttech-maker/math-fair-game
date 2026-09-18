@@ -27,7 +27,7 @@ const YELLOW = "#FFD84D";
 
 /** Shared secondary button: cream game-card with a colored icon tile. */
 const secondaryButtonClasses =
-    "group flex w-full items-center gap-3 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-3 py-3 shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]";
+    "group flex w-full items-center gap-2 rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-2.5 py-2 min-h-[44px] shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]";
 
 export const MainMenu: React.FC<MainMenuProps> = ({
     onStartGame,
@@ -60,7 +60,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     };
 
     return (
-        <div className="absolute inset-0 overflow-y-auto bg-tutor-cream">
+        <div className="absolute inset-0 bg-tutor-cream">
             {/* Kept: background image, slightly dimmed */}
             <div
                 className="absolute inset-0 bg-cover bg-center"
@@ -72,38 +72,41 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             />
             <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
-            {/* Main content */}
-            <div className="relative z-10 flex min-h-full flex-col items-center justify-center px-4 py-6 sm:py-8">
-                <div className="w-full max-w-md sm:max-w-lg">
+            {/* Main content - viewport constrained */}
+            <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-3">
+                <div className="w-full max-w-sm">
                     {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                    <section className="animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                        <div className="space-y-5 rounded-[14px] border-2 border-tutor-yellow px-5 py-6 sm:px-8">
+                    <section className="animate-slide-up rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-1 shadow-[4px_4px_0_0_#071B3A]">
+                        <div className="max-h-[calc(100dvh-24px)] overflow-y-auto overscroll-contain custom-scrollbar space-y-2 rounded-lg border-2 border-tutor-yellow px-3 py-3">
                             {/* Header with Title */}
                             <div className="text-center">
-                                <h1 className="font-brutal text-3xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-4xl">
+                                <h1 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy">
                                     Tutor Town
                                 </h1>
-                                <div className="mt-1.5 flex items-center justify-center gap-2">
-                                    <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
-                                    <Star className="h-4 w-4 text-tutor-yellow" fill={YELLOW} />
-                                    <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                <div className="mt-1 flex items-center justify-center gap-1.5">
+                                    <div className="h-1 w-6 rounded-full bg-tutor-orange" />
+                                    <Star
+                                        className="h-3 w-3 text-tutor-yellow"
+                                        fill={YELLOW}
+                                    />
+                                    <div className="h-1 w-6 rounded-full bg-tutor-orange" />
                                 </div>
-                                <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
-                                    <GraduationCap className="h-4 w-4" />
+                                <p className="mt-1.5 inline-flex items-center gap-1 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2.5 py-0.5 font-playful text-[10px] font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A]">
+                                    <GraduationCap className="h-3 w-3" />
                                     Math Adventure Awaits!
                                 </p>
                             </div>
 
                             {/* Menu Buttons */}
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {/* New Game - primary CTA */}
                                 <button
                                     onClick={onStartGame}
-                                    className="group flex w-full items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange py-4 font-brutal text-base uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A] sm:text-lg"
+                                    className="group flex w-full items-center justify-center gap-2 rounded-lg border-[3px] border-tutor-navy bg-tutor-orange py-2.5 min-h-[44px] font-brutal text-base uppercase tracking-wider text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                 >
-                                    <Newspaper className="h-5 w-5" />
+                                    <Newspaper className="h-4 w-4" />
                                     New Game
-                                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </button>
 
                                 {/* Continue Button */}
@@ -119,10 +122,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                                     onClick={() => onShowSettings?.()}
                                     className={secondaryButtonClasses}
                                 >
-                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-purple text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
-                                        <Settings className="h-4 w-4" />
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-purple text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
+                                        <Settings className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-base">
+                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy">
                                         Settings
                                     </span>
                                     <ChevronRight className="h-4 w-4 text-tutor-navy/40 transition-transform group-hover:translate-x-0.5" />
@@ -133,10 +136,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                                     onClick={() => onShowLeaderboard?.()}
                                     className={secondaryButtonClasses}
                                 >
-                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-blue text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
-                                        <BarChart3 className="h-4 w-4" />
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
+                                        <BarChart3 className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-base">
+                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy">
                                         Leaderboard
                                     </span>
                                     <ChevronRight className="h-4 w-4 text-tutor-navy/40 transition-transform group-hover:translate-x-0.5" />
@@ -147,10 +150,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                                     onClick={() => onShowTutorial?.()}
                                     className={secondaryButtonClasses}
                                 >
-                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-green text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
-                                        <BookOpen className="h-4 w-4" />
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-green text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
+                                        <BookOpen className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-base">
+                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy">
                                         How to Play
                                     </span>
                                     <ChevronRight className="h-4 w-4 text-tutor-navy/40 transition-transform group-hover:translate-x-0.5" />
@@ -177,10 +180,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                                     onClick={handleExit}
                                     className={secondaryButtonClasses}
                                 >
-                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
-                                        <LogOut className="h-4 w-4" />
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_rgba(7,27,58,0.4)]">
+                                        <LogOut className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-base">
+                                    <span className="flex-1 text-left font-brutal text-sm uppercase tracking-wide text-tutor-navy">
                                         Exit
                                     </span>
                                     <ChevronRight className="h-4 w-4 text-tutor-navy/40 transition-transform group-hover:translate-x-0.5" />
@@ -193,3 +196,4 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </div>
     );
 };
+

@@ -34,6 +34,7 @@ import { Shop } from "./components/Shop";
 import { DailyChallenges } from "./components/DailyChallenges";
 import { SecretQuests } from "./components/SecretQuests";
 import { CollisionEditor } from "./components/CollisionEditor";
+import { NpcEditor } from "./components/NpcEditor";
 import { GameValidation } from "./utils/GameValidation";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { LandscapePrompt } from "./components/LandscapePrompt";
@@ -106,6 +107,7 @@ function App() {
     const [showDailyChallenges, setShowDailyChallenges] = useState(false);
     const [showSecretQuests, setShowSecretQuests] = useState(false);
     const [showCollisionEditor, setShowCollisionEditor] = useState(false);
+    const [showNpcEditor, setShowNpcEditor] = useState(false);
     const [currentMapForEditor, setCurrentMapForEditor] =
         useState<MapSceneKey>("BarangayMap");
     // Background image path for the editor — taken from the active scene's own
@@ -205,6 +207,16 @@ function App() {
                 setShowInventory(!showInventory);
             } else if (event.key === "q" || event.key === "Q") {
                 setShowQuestLog(!showQuestLog);
+            } else if (event.key === "n" || event.key === "N") {
+                // NPC Position Editor authoring tool — only on map scenes
+                if (
+                    COLLISION_EDITOR_MAPS.includes(
+                        gameInfo.currentScene as MapSceneKey,
+                    )
+                ) {
+                    setShowCollisionEditor(false);
+                    setShowNpcEditor((prev) => !prev);
+                }
             }
         };
 
@@ -215,6 +227,7 @@ function App() {
         showInventory,
         showQuestLog,
         showCollisionEditor,
+        showNpcEditor,
         gameInfo.currentScene,
     ]);
 
@@ -857,7 +870,7 @@ function App() {
     }, []);
 
     return (
-        <div className="relative w-screen h-screen overflow-hidden bg-sky-300">
+        <div className="relative w-full h-dvh overflow-hidden bg-sky-300">
             {/* Landscape Orientation Overlay - Blocks game until rotated */}
             <LandscapePrompt />
 
@@ -950,44 +963,48 @@ function App() {
                         style={{ zIndex: 10 }}
                     >
                         {/* HUD - Top Left - Player Card */}
-                        <div className="absolute top-2 left-2 pointer-events-auto">
-                            <div className="flex flex-col gap-1 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream/95 p-1.5 shadow-[3px_3px_0_0_#071B3A]">
-                                <div className="flex gap-1.5">
+                        <div className="absolute sm:top-2 sm:left-2 top-1 left-1 pointer-events-auto max-w-[calc(100vw-10px)]">
+                            <div className="flex flex-col gap-0.5 rounded-lg border-2 border-tutor-navy bg-tutor-cream/95 p-1 shadow-[2px_2px_0_0_#071B3A]">
+                                <div className="flex gap-1">
                                     {/* Player Name */}
-                                    <div className="flex items-center gap-1 rounded-lg border-[3px] border-tutor-navy bg-tutor-orange px-2 py-1 font-playful text-xs font-bold text-tutor-cream">
-                                        <span>👤</span>
-                                        {gameInfo.playerName || "Math Explorer"}
+                                    <div className="flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-orange px-1.5 py-0.5 font-playful text-[10px] font-bold text-tutor-cream">
+                                        <span className="sm:inline hidden">
+                                            👤
+                                        </span>
+                                        <span className="truncate max-w-[60px] sm:max-w-[100px]">
+                                            {gameInfo.playerName || "Explorer"}
+                                        </span>
                                     </div>
 
                                     {/* Level */}
-                                    <div className="flex items-center gap-1 rounded-lg border-[3px] border-tutor-navy bg-tutor-orange px-2 py-1 font-playful text-xs font-bold text-tutor-cream">
+                                    <div className="flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-orange px-1.5 py-0.5 font-playful text-[10px] font-bold text-tutor-cream">
                                         <span>⭐</span>L{gameInfo.level}
                                     </div>
                                 </div>
 
                                 {/* Player Title */}
                                 {secretQuestService.current.getCurrentTitle() && (
-                                    <div className="flex items-center gap-1 rounded-lg border-[3px] border-tutor-navy bg-tutor-purple px-2 py-1 font-playful text-xs font-bold text-tutor-cream">
+                                    <div className="flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-purple px-1.5 py-0.5 font-playful text-[10px] font-bold text-tutor-cream truncate max-w-[160px]">
                                         <span>👑</span>
                                         {secretQuestService.current.getCurrentTitle()}
                                     </div>
                                 )}
 
-                                <div className="flex gap-1.5">
+                                <div className="flex gap-1 flex-wrap">
                                     {/* Badges */}
-                                    <div className="flex items-center gap-1 rounded-lg border-[3px] border-tutor-navy bg-tutor-yellow px-2 py-1 font-playful text-xs font-bold text-tutor-navy">
+                                    <div className="flex items-center gap-0.5 rounded-md border-2 border-tutor-navy bg-tutor-yellow px-1.5 py-0.5 font-playful text-[10px] font-bold text-tutor-navy">
                                         <span>🏆</span>
                                         {gameInfo.badges}/20
                                     </div>
 
                                     {/* Coins */}
-                                    <div className="flex items-center gap-1 rounded-lg border-[3px] border-tutor-navy bg-tutor-green px-2 py-1 font-playful text-xs font-bold text-tutor-cream">
+                                    <div className="flex items-center gap-0.5 rounded-md border-2 border-tutor-navy bg-tutor-green px-1.5 py-0.5 font-playful text-[10px] font-bold text-tutor-cream">
                                         <span>💰</span>
                                         {gameInfo.coins}
                                     </div>
 
                                     {/* Score */}
-                                    <div className="flex items-center gap-1 rounded-lg border-[3px] border-tutor-navy bg-tutor-blue px-2 py-1 font-playful text-xs font-bold text-tutor-cream">
+                                    <div className="flex items-center gap-0.5 rounded-md border-2 border-tutor-navy bg-tutor-blue px-1.5 py-0.5 font-playful text-[10px] font-bold text-tutor-cream">
                                         <span>📊</span>
                                         {gameInfo.totalScore}
                                     </div>
@@ -996,29 +1013,29 @@ function App() {
                         </div>
 
                         {/* Quick Actions - Top Right */}
-                        <div className="absolute top-2 right-2 pointer-events-auto">
-                            <div className="flex flex-wrap justify-end gap-1.5">
+                        <div className="absolute top-2 right-2 pointer-events-auto max-w-[calc(100vw-180px)] sm:max-w-none">
+                            <div className="flex flex-wrap justify-end gap-1 sm:gap-1.5">
                                 <button
                                     onClick={() =>
                                         setShowQuestLog(!showQuestLog)
                                     }
-                                    className="flex items-center gap-1.5 rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-2 py-1.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
                                 >
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
                                         <ClipboardList className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="hidden font-playful text-xs font-bold uppercase text-tutor-navy sm:inline">
+                                    <span className="hidden font-playful text-[10px] font-bold uppercase text-tutor-navy sm:inline sm:text-xs">
                                         Quest
                                     </span>
                                 </button>
                                 <button
                                     onClick={() => setShowShop(!showShop)}
-                                    className="flex items-center gap-1.5 rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-2 py-1.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
                                 >
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-yellow text-tutor-navy">
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-yellow text-tutor-navy">
                                         <Store className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="hidden font-playful text-xs font-bold uppercase text-tutor-navy sm:inline">
+                                    <span className="hidden font-playful text-[10px] font-bold uppercase text-tutor-navy sm:inline sm:text-xs">
                                         Shop
                                     </span>
                                 </button>
@@ -1028,12 +1045,12 @@ function App() {
                                             !showDailyChallenges,
                                         )
                                     }
-                                    className="flex items-center gap-1.5 rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-2 py-1.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
                                 >
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-green text-tutor-cream">
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-green text-tutor-cream">
                                         <CalendarDays className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="hidden font-playful text-xs font-bold uppercase text-tutor-navy sm:inline">
+                                    <span className="hidden font-playful text-[10px] font-bold uppercase text-tutor-navy sm:inline sm:text-xs">
                                         Daily
                                     </span>
                                 </button>
@@ -1041,12 +1058,12 @@ function App() {
                                     onClick={() =>
                                         setShowSecretQuests(!showSecretQuests)
                                     }
-                                    className="flex items-center gap-1.5 rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-2 py-1.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
                                 >
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-purple text-tutor-cream">
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-purple text-tutor-cream">
                                         <Lock className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="hidden font-playful text-xs font-bold uppercase text-tutor-navy sm:inline">
+                                    <span className="hidden font-playful text-[10px] font-bold uppercase text-tutor-navy sm:inline sm:text-xs">
                                         Secrets
                                     </span>
                                 </button>
@@ -1054,24 +1071,24 @@ function App() {
                                     onClick={() =>
                                         setShowPauseMenu(!showPauseMenu)
                                     }
-                                    className="flex items-center gap-1.5 rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-2 py-1.5 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
                                 >
-                                    <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-navy text-tutor-cream">
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-navy text-tutor-cream">
                                         <Pause className="h-3.5 w-3.5" />
                                     </span>
-                                    <span className="hidden font-playful text-xs font-bold uppercase text-tutor-navy sm:inline">
+                                    <span className="hidden font-playful text-[10px] font-bold uppercase text-tutor-navy sm:inline sm:text-xs">
                                         Menu
                                     </span>
                                 </button>
                             </div>
                         </div>
 
-                                                {/* Pause Menu Overlay */}
+                        {/* Pause Menu Overlay */}
                         {showPauseMenu && (
-                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-4 pointer-events-auto">
+                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-1.5 sm:p-4 pointer-events-auto">
                                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                                <section className="relative w-full max-w-md animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                                    <div className="max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[14px] border-2 border-tutor-yellow px-5 py-6">
+                                <section className="relative w-full max-w-md animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                                    <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-3 sm:px-4 sm:py-4">
                                         {/* Close Button */}
                                         <button
                                             onClick={() =>
@@ -1079,9 +1096,9 @@ function App() {
                                             }
                                             type="button"
                                             aria-label="Close pause menu"
-                                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         >
-                                            <X className="h-5 w-5" />
+                                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
                                         </button>
 
                                         {/* Header */}
@@ -1160,7 +1177,9 @@ function App() {
                                             <button
                                                 onClick={() => {
                                                     setShowPauseMenu(false);
-                                                    setShowDailyChallenges(true);
+                                                    setShowDailyChallenges(
+                                                        true,
+                                                    );
                                                 }}
                                                 type="button"
                                                 className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-green px-3 py-3 font-brutal text-xs uppercase tracking-wide text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
@@ -1412,7 +1431,9 @@ function App() {
                                             type="button"
                                             className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-[3px] border-dashed border-tutor-navy bg-tutor-cream px-3 py-2.5 font-brutal text-xs uppercase tracking-wide text-tutor-navy shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         >
-                                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-orange text-tutor-cream">🧱</span>
+                                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-orange text-tutor-cream">
+                                                🧱
+                                            </span>
                                             Map Collisions (C)
                                         </button>
 
@@ -1469,10 +1490,10 @@ function App() {
                         )}
                         {/* Quest Log Overlay */}
                         {showQuestLog && (
-                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-4 pointer-events-auto">
+                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-1.5 sm:p-4 pointer-events-auto">
                                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                                <section className="relative w-full max-w-2xl animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                                    <div className="max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[14px] border-2 border-tutor-yellow px-5 py-6">
+                                <section className="relative w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                                    <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-3 sm:px-4 sm:py-4">
                                         {/* Close Button */}
                                         <button
                                             onClick={() =>
@@ -1480,41 +1501,41 @@ function App() {
                                             }
                                             type="button"
                                             aria-label="Close quest log"
-                                            className="absolute right-2.5 top-2.5 z-20 flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         >
-                                            <X className="h-5 w-5" />
+                                            <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                                         </button>
 
                                         {/* Header */}
-                                        <div className="mb-5 text-center">
-                                            <h2 className="font-brutal text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                                        <div className="mb-3 sm:mb-5 text-center pr-6">
+                                            <h2 className="font-brutal text-lg sm:text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
                                                 Quest Log
                                             </h2>
-                                            <div className="mt-1.5 flex items-center justify-center gap-2">
-                                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                            <div className="mt-1 flex items-center justify-center gap-1.5 sm:gap-2">
+                                                <div className="h-1 w-6 sm:w-8 rounded-full bg-tutor-orange" />
                                                 <Star
-                                                    className="h-4 w-4 text-tutor-yellow"
+                                                    className="h-3 w-3 sm:h-4 sm:w-4 text-tutor-yellow"
                                                     fill="#FFD84D"
                                                 />
-                                                <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                                <div className="h-1 w-6 sm:w-8 rounded-full bg-tutor-orange" />
                                             </div>
-                                            <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-3 py-1 font-playful text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-sm">
-                                                <ScrollText className="h-4 w-4" />
+                                            <p className="mt-2 sm:mt-2.5 inline-flex items-center gap-1 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 sm:px-3 sm:py-1 font-playful text-[10px] font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-xs">
+                                                <ScrollText className="h-3 w-3 sm:h-4 sm:w-4" />
                                                 Your mission checklist
                                             </p>
                                         </div>
 
                                         {/* Quest Cards */}
-                                        <div className="space-y-4">
+                                        <div className="space-y-3">
                                             {/* Main Objective */}
-                                            <div className="rounded-xl border-[3px] border-tutor-navy bg-tutor-blue/10 p-4 shadow-[3px_3px_0_0_#071B3A]">
-                                                <h3 className="mb-2 flex items-center gap-2 font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-base">
-                                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-blue text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
+                                            <div className="rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-blue/10 p-2.5 sm:p-4 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A]">
+                                                <h3 className="mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2 font-brutal text-[11px] uppercase tracking-wide text-tutor-navy sm:text-base">
+                                                    <span className="flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-md sm:rounded-lg border-2 border-tutor-navy bg-tutor-blue text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
                                                         🎯
                                                     </span>
                                                     Main Objective
                                                 </h3>
-                                                <p className="font-playful text-sm leading-relaxed text-tutor-navy sm:text-base">
+                                                <p className="font-playful text-xs leading-relaxed text-tutor-navy sm:text-sm">
                                                     {gameInfo.level === 1
                                                         ? "Complete 10 barangay math challenges to unlock city-level intermediate algebra problems and become a math expert!"
                                                         : gameInfo.level === 2
@@ -1524,9 +1545,9 @@ function App() {
                                             </div>
 
                                             {/* Progress */}
-                                            <div className="rounded-xl border-[3px] border-tutor-navy bg-tutor-green/15 p-4 shadow-[3px_3px_0_0_#071B3A]">
-                                                <h3 className="mb-2 flex items-center gap-2 font-brutal text-sm uppercase tracking-wide text-tutor-navy sm:text-base">
-                                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 border-tutor-navy bg-tutor-green text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
+                                            <div className="rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-green/15 p-2.5 sm:p-4 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A]">
+                                                <h3 className="mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2 font-brutal text-[11px] uppercase tracking-wide text-tutor-navy sm:text-base">
+                                                    <span className="flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-md sm:rounded-lg border-2 border-tutor-navy bg-tutor-green text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
                                                         📊
                                                     </span>
                                                     Progress
@@ -1608,7 +1629,8 @@ function App() {
                                                 <div className="space-y-2">
                                                     <div className="flex items-center justify-between gap-2">
                                                         <span className="font-playful text-sm font-bold text-tutor-navy">
-                                                            {gameInfo.level === 1
+                                                            {gameInfo.level ===
+                                                            1
                                                                 ? "Barangay Math Zone"
                                                                 : "City Math Zone"}
                                                         </span>
@@ -1633,7 +1655,9 @@ function App() {
                                                             Total Score:
                                                         </span>
                                                         <span className="font-bold text-tutor-blue">
-                                                            {gameInfo.totalScore}
+                                                            {
+                                                                gameInfo.totalScore
+                                                            }
                                                         </span>
                                                     </div>
                                                 </div>
@@ -1643,122 +1667,158 @@ function App() {
                                 </section>
                             </div>
                         )}
-{/* Inventory Overlay */}
+                        {/* Inventory Overlay */}
                         {showInventory && (
-                            <div className="absolute inset-0 bg-black/70 flex items-center justify-center pointer-events-auto p-4">
-                                <div className="brutal-panel relative p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-                                    <button
-                                        onClick={() => setShowInventory(false)}
-                                        className="absolute top-4 right-4 w-10 h-10 bg-brutal-red border-2 border-black shadow-brutal-xs flex items-center justify-center text-white brutal-press z-20"
-                                    >
-                                        ✕
-                                    </button>
+                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-1.5 sm:p-4 pointer-events-auto">
+                                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                                <section className="relative w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                                    <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-3 sm:px-4 sm:py-4">
+                                        {/* Close Button */}
+                                        <button
+                                            onClick={() =>
+                                                setShowInventory(false)
+                                            }
+                                            type="button"
+                                            aria-label="Close inventory"
+                                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                        >
+                                            <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+                                        </button>
 
-                                    <h2 className="text-2xl font-brutal uppercase text-gray-900 mb-6 text-center">
-                                        🎒 Inventory
-                                    </h2>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="rounded-none p-4 border-[3px] border-black bg-brutal-yellow shadow-brutal-sm text-center">
-                                            <div className="text-3xl mb-2">
-                                                💰
+                                        {/* Header */}
+                                        <div className="mb-3 sm:mb-5 text-center pr-6">
+                                            <h2 className="font-brutal text-lg sm:text-2xl uppercase leading-tight tracking-wide text-tutor-navy sm:text-3xl">
+                                                Inventory
+                                            </h2>
+                                            <div className="mt-1 flex items-center justify-center gap-1.5 sm:gap-2">
+                                                <div className="h-1 w-6 sm:w-8 rounded-full bg-tutor-orange" />
+                                                <Backpack
+                                                    className="h-3 w-3 sm:h-4 sm:w-4 text-tutor-yellow"
+                                                    fill="#FFD84D"
+                                                />
+                                                <div className="h-1 w-6 sm:w-8 rounded-full bg-tutor-orange" />
                                             </div>
-                                            <div className="text-gray-800 font-bold text-xl">
-                                                {gameInfo.coins}
-                                            </div>
-                                            <div className="text-sm text-gray-600 font-medium">
-                                                Gold Coins
-                                            </div>
+                                            <p className="mt-2 sm:mt-2.5 inline-flex items-center gap-1 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 sm:px-3 sm:py-1 font-playful text-[10px] font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A] sm:text-xs">
+                                                <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+                                                Your collection
+                                            </p>
                                         </div>
-                                        <div className="rounded-none p-4 border-[3px] border-black bg-brutal-orange shadow-brutal-sm text-center">
-                                            <div className="text-3xl mb-2">
-                                                🏆
-                                            </div>
-                                            <div className="text-gray-800 font-bold text-xl">
-                                                {gameInfo.badges}
-                                            </div>
-                                            <div className="text-sm text-gray-600 font-medium">
-                                                {gameInfo.level === 1
-                                                    ? "Math Achievements"
-                                                    : "Total Achievements"}
-                                            </div>
-                                        </div>
-                                        <div className="rounded-none p-4 border-[3px] border-black bg-brutal-purple shadow-brutal-sm text-center">
-                                            <div className="text-3xl mb-2">
-                                                📜
-                                            </div>
-                                            <div className="text-gray-800 font-bold text-xl">
-                                                0
-                                            </div>
-                                            <div className="text-sm text-gray-600 font-medium">
-                                                Quest Items
-                                            </div>
-                                        </div>
-                                        <div className="rounded-none p-4 border-[3px] border-black bg-brutal-blue shadow-brutal-sm text-center">
-                                            <div className="text-3xl mb-2">
-                                                ⭐
-                                            </div>
-                                            <div className="text-gray-800 font-bold text-xl">
-                                                {gameInfo.totalScore}
-                                            </div>
-                                            <div className="text-sm text-gray-600 font-medium">
-                                                Experience Points
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6 p-4 rounded-none border-[3px] border-black bg-white shadow-brutal-sm">
-                                        <h3 className="text-lg font-bold text-gray-800 mb-3 text-center">
-                                            📈 Character Stats
-                                        </h3>
-                                        <div className="grid grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
-                                            <div className="text-center">
-                                                <div className="text-gray-700 font-semibold">
-                                                    Level
+                                        {/* Player Stats Grid */}
+                                        <div className="space-y-3">
+                                            {/* Coins and Badges Row */}
+                                            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                                <div className="rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-yellow p-2.5 sm:p-3 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] text-center">
+                                                    <div className="text-2xl sm:text-3xl mb-1">
+                                                        💰
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-navy text-lg sm:text-xl">
+                                                        {gameInfo.coins}
+                                                    </div>
+                                                    <div className="font-playful text-[10px] sm:text-xs text-tutor-navy/80 font-medium">
+                                                        Gold Coins
+                                                    </div>
                                                 </div>
-                                                <div className="text-gray-800 font-bold">
-                                                    {gameInfo.level}
+                                                <div className="rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-orange p-2.5 sm:p-3 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] text-center">
+                                                    <div className="text-2xl sm:text-3xl mb-1">
+                                                        🏆
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-navy text-lg sm:text-xl">
+                                                        {gameInfo.badges}
+                                                    </div>
+                                                    <div className="font-playful text-[10px] sm:text-xs text-tutor-navy/80 font-medium">
+                                                        {gameInfo.level === 1
+                                                            ? "Math Achievements"
+                                                            : "Total Achievements"}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="text-center">
-                                                <div className="text-gray-700 font-semibold">
-                                                    Math Rank
+
+                                            {/* Quest Items and Score Row */}
+                                            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                                <div className="rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-purple p-2.5 sm:p-3 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] text-center">
+                                                    <div className="text-2xl sm:text-3xl mb-1">
+                                                        📜
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-cream text-lg sm:text-xl">
+                                                        0
+                                                    </div>
+                                                    <div className="font-playful text-[10px] sm:text-xs text-tutor-cream/80 font-medium">
+                                                        Quest Items
+                                                    </div>
                                                 </div>
-                                                <div className="text-gray-800 font-bold">
-                                                    {gameInfo.level === 1
-                                                        ? gameInfo.badges >= 10
-                                                            ? "Math Expert"
+                                                <div className="rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-blue p-2.5 sm:p-3 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] text-center">
+                                                    <div className="text-2xl sm:text-3xl mb-1">
+                                                        ⭐
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-cream text-lg sm:text-xl">
+                                                        {gameInfo.totalScore}
+                                                    </div>
+                                                    <div className="font-playful text-[10px] sm:text-xs text-tutor-cream/80 font-medium">
+                                                        Experience Points
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-green/15 p-2.5 sm:p-3 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A]">
+                                            <h3 className="mb-2 flex items-center gap-1.5 sm:gap-2 font-brutal text-[10px] sm:text-sm uppercase tracking-wide text-tutor-navy">
+                                                <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg border-2 border-tutor-navy bg-tutor-green text-tutor-cream shadow-[2px_2px_0_0_#071B3A]">
+                                                    📈
+                                                </span>
+                                                Character Stats
+                                            </h3>
+                                            <div className="grid grid-cols-2 gap-2 text-xs sm:gap-3 sm:text-sm">
+                                                <div className="text-center">
+                                                    <div className="font-playful font-semibold text-tutor-navy">
+                                                        Level
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-navy">
+                                                        {gameInfo.level}
+                                                    </div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="font-playful font-semibold text-tutor-navy">
+                                                        Math Rank
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-navy text-[10px] sm:text-xs">
+                                                        {gameInfo.level === 1
+                                                            ? gameInfo.badges >=
+                                                              10
+                                                                ? "Math Expert"
+                                                                : gameInfo.badges >=
+                                                                    5
+                                                                  ? "Problem Solver"
+                                                                  : "Beginner"
                                                             : gameInfo.badges >=
-                                                                5
-                                                              ? "Problem Solver"
-                                                              : "Beginner"
-                                                        : gameInfo.badges >= 20
-                                                          ? "Algebra Master"
-                                                          : gameInfo.badges >=
-                                                              15
-                                                            ? "Math Scholar"
-                                                            : "Math Student"}
+                                                                20
+                                                              ? "Algebra Master"
+                                                              : gameInfo.badges >=
+                                                                  15
+                                                                ? "Math Scholar"
+                                                                : "Math Student"}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-gray-700 font-semibold">
-                                                    Difficulty Level
+                                                <div className="text-center">
+                                                    <div className="font-playful font-semibold text-tutor-navy">
+                                                        Difficulty
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-navy">
+                                                        {gameInfo.level === 1
+                                                            ? "Basic"
+                                                            : "Intermediate"}
+                                                    </div>
                                                 </div>
-                                                <div className="text-gray-800 font-bold">
-                                                    {gameInfo.level === 1
-                                                        ? "Basic"
-                                                        : "Intermediate"}
-                                                </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-gray-700 font-semibold">
-                                                    Quiz Accuracy
-                                                </div>
-                                                <div className="text-gray-800 font-bold">
-                                                    {gameInfo.accuracy}
+                                                <div className="text-center">
+                                                    <div className="font-playful font-semibold text-tutor-navy">
+                                                        Accuracy
+                                                    </div>
+                                                    <div className="font-playful font-bold text-tutor-navy">
+                                                        {gameInfo.accuracy}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </section>
                             </div>
                         )}
                     </div>
@@ -1854,6 +1914,24 @@ function App() {
                 backgroundImage={currentMapBackground}
             />
 
+            {/* NPC Position Editor Modal */}
+            <NpcEditor
+                onClose={() => {
+                    audioManager.playEffect("menu-close");
+                    setShowNpcEditor(false);
+                }}
+                isVisible={showNpcEditor}
+                mapName={currentMapForEditor}
+                backgroundImage={currentMapBackground}
+                onNpcsPersisted={(mapName) => {
+                    // Tell the live scene to re-read the saved positions so the
+                    // NPCs jump to their new spots without a scene restart.
+                    phaserRef.current?.game?.events.emit("civika-npcs-saved", {
+                        mapName,
+                    });
+                }}
+            />
+
             {/* Achievement Celebration */}
             {showCelebration && (
                 <AchievementCelebration
@@ -1867,12 +1945,13 @@ function App() {
             )}
 
             {/* Debug Panel for Development */}
-            <GameDebugPanel />
+            {/* <GameDebugPanel /> */}
 
             {/* PWA Install Prompt */}
-            <PWAInstallPrompt />
+            {/* <PWAInstallPrompt /> */}
         </div>
     );
 }
 
 export default App;
+
