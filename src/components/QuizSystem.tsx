@@ -165,7 +165,7 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
                                     onClick={onClose}
                                     type="button"
                                     aria-label="Close quiz"
-                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] sm:h-10 sm:w-10"
+                                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>

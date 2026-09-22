@@ -124,11 +124,11 @@ export const Extras: React.FC<ExtrasProps> = ({ onClose, isVisible }) => {
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center pointer-events-auto z-50 p-4">
-            <div className="brutal-panel p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="brutal-panel relative p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
                     {/* Close button */}
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 w-10 h-10 bg-brutal-red border-2 border-black shadow-brutal-xs flex items-center justify-center text-white brutal-press z-20"
+                        className="absolute top-4 right-4 flex h-11 w-11 items-center justify-center bg-brutal-red border-2 border-black shadow-brutal-xs text-white brutal-press z-20"
                     >
                         ✕
                     </button>

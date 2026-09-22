@@ -45,27 +45,36 @@ export const AchievementCelebration: React.FC<AchievementCelebrationProps> = ({
     if (!show) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
-            {/* Confetti */}
-            {confettiPieces.map((piece) => (
-                <div
-                    key={piece.id}
-                    className={`absolute w-2 h-2 rounded-none ${piece.color} animate-confetti`}
-                    style={{
-                        left: `${piece.left}%`,
-                        top: "-20px",
-                        animationDelay: `${piece.delay}s`,
-                    }}
-                />
-            ))}
+        <div
+            className="fixed inset-0 z-[100] overflow-y-auto bg-black/40"
+            onClick={onComplete}
+        >
+            {/* Confetti layer (purely decorative, non-interactive) */}
+            <div
+                className="pointer-events-none fixed inset-0 overflow-hidden"
+                aria-hidden="true"
+            >
+                {confettiPieces.map((piece) => (
+                    <div
+                        key={piece.id}
+                        className={`absolute w-2 h-2 rounded-none ${piece.color} animate-confetti`}
+                        style={{
+                            left: `${piece.left}%`,
+                            top: "-20px",
+                            animationDelay: `${piece.delay}s`,
+                        }}
+                    />
+                ))}
+            </div>
 
             {/* Achievement Card */}
-            <div className="animate-slide-down pointer-events-auto mx-2 sm:mx-0">
-                <div className="bg-brutal-orange rounded-none p-1 sm:p-1.5 shadow-brutal-xl border-4 border-black">
-                    <div className="bg-brutal-bg rounded-none p-4 sm:p-6 md:p-8">
+            <div className="pointer-events-auto flex min-h-full items-center justify-center p-2 sm:p-4">
+                <div className="my-auto w-full max-w-sm sm:max-w-md animate-slide-down">
+                    <div className="bg-brutal-orange rounded-none p-1 sm:p-1.5 shadow-brutal-xl border-4 border-black">
+                        <div className="max-h-[calc(100dvh-24px)] overflow-y-auto overscroll-contain bg-brutal-bg rounded-none p-3 sm:p-5 md:p-6">
                         {/* Badge Icon with Celebration */}
                         <div className="text-center mb-3 sm:mb-4 animate-celebrate">
-                            <div className="text-4xl sm:text-6xl md:text-7xl mb-2 sm:mb-3">
+                            <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3">
                                 🏆
                             </div>
                             <div className="text-xl sm:text-2xl md:text-3xl font-brutal uppercase text-gray-900">
@@ -135,12 +144,7 @@ export const AchievementCelebration: React.FC<AchievementCelebrationProps> = ({
                     </div>
                 </div>
             </div>
-
-            {/* Tap to dismiss overlay */}
-            <div
-                className="absolute inset-0 bg-black/40"
-                onClick={onComplete}
-            />
+            </div>
         </div>
     );
 };

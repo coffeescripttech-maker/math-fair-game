@@ -581,37 +581,43 @@ export const Tutorial: React.FC<TutorialProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
-            <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
-                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                <section className="relative w-full min-[400px]:max-w-3xl max-w-[calc(100vw-8px)] animate-slide-up rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1.5 shadow-[8px_8px_0_0_#071B3A]">
-                    <div className="flex max-h-[calc(100dvh-20px)] flex-col gap-3 sm:gap-3 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-3 py-3 sm:px-4 sm:py-4">
+            <div className="flex min-h-full items-center justify-center p-0 sm:p-4">
+                {/* Tutor Town game window: navy outer frame, yellow inner frame.
+                    On mobile the card is a full-height sheet so the content
+                    scroll area gets all the leftover viewport space. */}
+                <section className="relative flex h-[100dvh] w-full flex-col rounded-none sm:h-auto sm:max-h-[calc(100dvh-20px)] sm:rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 max-w-full min-[400px]:max-w-3xl animate-slide-up shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2 sm:px-4 sm:py-4">
                         {/* Close / Skip Button */}
                         <button
                             onClick={handleSkip}
                             type="button"
                             aria-label="Skip tutorial"
-                            className="absolute right-2.5 top-2.5 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2.5 top-2.5 z-20 flex h-11 w-11 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
                             <X className="h-4 w-4 sm:h-5 sm:w-5" />
                         </button>
 
-                        {/* Header */}
-                        <div className="text-center">
-                            <div className="mx-auto mb-2 flex sm:mb-2.5 h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-[3px] border-tutor-navy bg-tutor-yellow text-2xl sm:text-3xl shadow-[3px_3px_0_0_#071B3A]">
-                                {currentTutorial.icon}
+                        {/* Header — compact one-row layout on mobile */}
+                        <div className="flex items-center justify-between gap-2 sm:block sm:text-center">
+                            <div className="flex items-center gap-2 sm:flex-col sm:gap-2">
+                                <div className="flex h-9 w-9 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border-[3px] border-tutor-navy bg-tutor-yellow text-xl sm:text-3xl shadow-[3px_3px_0_0_#071B3A]">
+                                    {currentTutorial.icon}
+                                </div>
+                                <div>
+                                    <h2 className="font-brutal text-lg sm:text-2xl md:text-3xl uppercase leading-tight tracking-wide text-tutor-navy">
+                                        How to Play
+                                    </h2>
+                                    <div className="mt-0.5 hidden items-center justify-center gap-2 sm:flex">
+                                        <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                        <Star
+                                            className="h-4 w-4 text-tutor-yellow"
+                                            fill={YELLOW}
+                                        />
+                                        <div className="h-1.5 w-8 rounded-full bg-tutor-orange" />
+                                    </div>
+                                </div>
                             </div>
-                            <h2 className="font-brutal text-xl sm:text-2xl md:text-3xl uppercase leading-tight tracking-wide text-tutor-navy">
-                                How to Play
-                            </h2>
-                            <div className="mt-1.5 flex items-center justify-center gap-2">
-                                <div className="h-1.5 w-6 sm:w-8 rounded-full bg-tutor-orange" />
-                                <Star
-                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-tutor-yellow"
-                                    fill={YELLOW}
-                                />
-                                <div className="h-1.5 w-6 sm:w-8 rounded-full bg-tutor-orange" />
-                            </div>
-                            <p className="mt-1.5 sm:mt-2.5 inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 sm:px-3 sm:py-1 font-playful text-[10px] sm:text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A]">
+                            <p className="inline-flex items-center gap-1.5 rounded-full border-2 border-tutor-navy bg-tutor-yellow px-2.5 py-1 sm:px-3 sm:py-1 font-playful text-[10px] sm:text-xs font-bold uppercase tracking-wide text-tutor-navy shadow-[2px_2px_0_0_#071B3A]">
                                 {currentTutorial.title}
                             </p>
                         </div>
@@ -633,7 +639,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                                         key={section.id}
                                         type="button"
                                         onClick={() => setCurrentSection(index)}
-                                        className={`flex shrink-0 items-center gap-1.5 rounded-lg border-[3px] whitespace-nowrap px-2.5 py-1.5 font-playful text-xs font-bold uppercase transition-all duration-150 ${
+                                        className={`flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-lg border-[3px] whitespace-nowrap px-2.5 py-1.5 font-playful text-xs font-bold uppercase transition-all duration-150 ${
                                             active
                                                 ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
                                                 : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100"
@@ -651,7 +657,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         </div>
 
                         {/* Content Area */}
-                        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto rounded-xl border-2 border-tutor-navy bg-[#F3EBDD] p-4 custom-scrollbar sm:p-5">
+                        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto rounded-xl border-2 border-tutor-navy bg-[#F3EBDD] p-3 custom-scrollbar sm:p-5">
                             {currentTutorial.content}
                         </div>
 
@@ -660,7 +666,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                             {/* Don't Show Again Checkbox (only for auto-start) */}
                             {autoStart && (
                                 <div className="mb-3 flex items-center justify-center">
-                                    <label className="flex cursor-pointer select-none items-center gap-2">
+                                    <label className="flex min-h-[44px] cursor-pointer select-none items-center gap-2">
                                         <input
                                             type="checkbox"
                                             checked={dontShowAgain}
@@ -684,7 +690,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                                     onClick={handlePrevious}
                                     type="button"
                                     disabled={currentSection === 0}
-                                    className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-4 py-2.5 font-brutal text-xs uppercase tracking-wide text-tutor-navy shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0_0_#071B3A]"
+                                    className="flex min-h-[44px] items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-4 py-2.5 font-brutal text-xs uppercase tracking-wide text-tutor-navy shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0_0_#071B3A]"
                                 >
                                     <ArrowLeft className="h-4 w-4" />
                                     Previous
@@ -700,8 +706,8 @@ export const Tutorial: React.FC<TutorialProps> = ({
                                     <button
                                         onClick={handleNext}
                                         type="button"
-                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-4 py-2.5 font-brutal text-xs uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[5px_5px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
-                                    >
+className="flex min-h-[44px] items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-4 py-2.5 font-brutal text-xs uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[5px_5px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                        >
                                         Next
                                         <ArrowRight className="h-4 w-4" />
                                     </button>
@@ -709,7 +715,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                                     <button
                                         onClick={handleComplete}
                                         type="button"
-                                        className="flex items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-green px-4 py-2.5 font-brutal text-xs uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[5px_5px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                        className="flex min-h-[44px] items-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-green px-4 py-2.5 font-brutal text-xs uppercase tracking-wider text-tutor-cream shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[5px_5px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                     >
                                         <Check className="h-4 w-4" />
                                         Got It!

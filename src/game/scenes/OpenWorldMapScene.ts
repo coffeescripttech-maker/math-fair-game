@@ -91,6 +91,7 @@ export abstract class OpenWorldMapScene extends Scene {
     // arrays are never mutated.
     protected npcPositionOverrides: Map<number, NpcPosition> | null = null;
     protected npcEditorListenerRegistered: boolean = false;
+    protected globalListenersRegistered: boolean = false;
     npcNameLabels: Map<number, any> = new Map();
     missionNumberLabels: Map<number, any> = new Map();
     protected DEBUG_BYPASS_PREREQUISITES: boolean = false;
@@ -197,7 +198,9 @@ export abstract class OpenWorldMapScene extends Scene {
     createMinimap() {
         const minimapSize = this.isMobile ? 100 : 150;
         const minimapX = this.isMobile ? 70 : 90;
-        const minimapY = this.cameras.main.height - (this.isMobile ? 120 : 170);
+        // On mobile keep the minimap above the React virtual joystick (bottom-left).
+        const minimapY =
+            this.cameras.main.height - (this.isMobile ? 210 : 170);
 
         this.minimap = this.add.container(minimapX, minimapY);
         this.minimap!.setScrollFactor(0);
@@ -535,15 +538,6 @@ export abstract class OpenWorldMapScene extends Scene {
             this.createMinimap();
         });
 
-        // Listen for mobile interaction events from React
-        this.game.events.on("mobile-interact", () => {
-            if (this.dialogueActive) {
-                this.advanceDialogue();
-            } else {
-                this.interactWithNearbyNPC();
-            }
-        });
-
         // 🧍 NPC Position Editor — React emits this after a Save / Reset so the
         // active scene repositions its NPCs live (no scene restart needed).
         if (!this.npcEditorListenerRegistered) {
@@ -555,9 +549,24 @@ export abstract class OpenWorldMapScene extends Scene {
             this.npcEditorListenerRegistered = true;
         }
 
-        // Add resize handler
-        this.scale.on("resize", this.handleResize, this);
-        this.scale.on("orientationchange", this.handleResize, this);
+        // Global (game/scale) listeners outlive this scene's input plugin, so
+        // guard against duplicate registration across same-scene restarts.
+        if (!this.globalListenersRegistered) {
+            // Listen for mobile interaction events from React
+            this.game.events.on("mobile-interact", () => {
+                if (this.dialogueActive) {
+                    this.advanceDialogue();
+                } else {
+                    this.interactWithNearbyNPC();
+                }
+            });
+
+            // Reposition UI on resize / rotation
+            this.scale.on("resize", this.handleResize, this);
+            this.scale.on("orientationchange", this.handleResize, this);
+
+            this.globalListenersRegistered = true;
+        }
 
         EventBus.emit("current-scene-ready", this);
     }
@@ -2027,7 +2036,11 @@ export abstract class OpenWorldMapScene extends Scene {
 
         const cam = this.cameras.main;
         const boxWidth = Math.min(cam.width * 0.85, 700);
-        const boxHeight = Math.max(cam.height * 0.28, 110);
+        // Mobile landscape has little vertical room; give the text block a
+        // taller floor (capped) so lines aren't clipped.
+        const boxHeight = this.isMobile
+            ? Math.min(Math.max(cam.height * 0.4, 150), 240)
+            : Math.max(cam.height * 0.28, 110);
         const pad = 16;
         // On mobile, lift the box above the home-indicator/safe area.
         const bottomPad = this.isMobile ? 34 : 12;
@@ -2361,7 +2374,9 @@ export abstract class OpenWorldMapScene extends Scene {
         if (!this.dialogueBox || !this.dialogueBgRect) return;
         const cam = this.cameras.main;
         const boxWidth = Math.min(cam.width * 0.85, 700);
-        const boxHeight = Math.max(cam.height * 0.28, 110);
+        const boxHeight = this.isMobile
+            ? Math.min(Math.max(cam.height * 0.4, 150), 240)
+            : Math.max(cam.height * 0.28, 110);
         const pad = 16;
 
         this.dialogueBox.setPosition(
@@ -2858,6 +2873,15 @@ export abstract class OpenWorldMapScene extends Scene {
 
         // Keep the dialogue box pinned to the viewport bottom.
         this.repositionDialogueBox();
+
+        // Keep the minimap pinned clear of the mobile joystick after rotates/resizes.
+        if (this.minimap) {
+            const size = this.isMobile ? 100 : 150;
+            const x = this.isMobile ? 70 : 90;
+            const y =
+                this.cameras.main.height - (this.isMobile ? 210 : 170);
+            this.minimap.setPosition(x, y);
+        }
     }
 
     createPlayer() {

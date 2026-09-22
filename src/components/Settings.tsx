@@ -121,7 +121,7 @@ const ToggleControl: React.FC<{
     checked: boolean;
     onChange: (v: boolean) => void;
 }> = ({ checked, onChange }) => (
-    <label className="flex shrink-0 cursor-pointer select-none items-center gap-2">
+    <label className="flex min-h-[44px] shrink-0 cursor-pointer select-none items-center gap-2">
         <input
             type="checkbox"
             checked={checked}
@@ -257,14 +257,14 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
             <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
                 {/* Tutor Town game window: navy outer frame, yellow inner frame */}
-                <section className="relative w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
-                    <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain space-y-3 sm:space-y-4 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
+                <section className="relative flex max-h-[calc(100dvh-20px)] w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up flex-col rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
+                    <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-3 sm:space-y-4 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
                         {/* Close button */}
                         <button
                             onClick={onClose}
                             type="button"
                             aria-label="Close settings"
-                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
                             <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </button>
@@ -302,7 +302,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                             );
                                             setActiveTab(tab.id);
                                         }}
-                                        className={`flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] px-2.5 sm:px-4 py-1.5 sm:py-2 font-brutal text-[10px] uppercase tracking-wide transition-all duration-150 sm:text-sm ${
+                                        className={`flex min-h-[44px] items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl border-[3px] px-2.5 sm:px-4 py-1.5 sm:py-2 font-brutal text-[10px] uppercase tracking-wide transition-all duration-150 sm:text-sm ${
                                             active
                                                 ? "-translate-y-0.5 border-tutor-navy bg-tutor-navy text-tutor-cream shadow-[0_0_0_2px_#FFD84D,4px_4px_0_0_#071B3A] sm:shadow-[0_0_0_3px_#FFD84D,5px_5px_0_0_#071B3A]"
                                                 : "border-tutor-navy bg-tutor-cream text-tutor-navy opacity-80 shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[3px_3px_0_0_#071B3A] sm:hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
@@ -463,7 +463,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                                     e.target.value,
                                                 )
                                             }
-                                            className="cursor-pointer rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-3 py-2 font-playful text-sm font-bold text-tutor-navy shadow-[2px_2px_0_0_#071B3A] transition-colors focus:border-tutor-orange focus:outline-none"
+                                            className="min-h-[44px] cursor-pointer rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-3 py-2 font-playful text-sm font-bold text-tutor-navy shadow-[2px_2px_0_0_#071B3A] transition-colors focus:border-tutor-orange focus:outline-none"
                                         >
                                             <option value="en">
                                                 🇺🇸 English
@@ -492,7 +492,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                                                     e.target.value,
                                                 )
                                             }
-                                            className="cursor-pointer rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-3 py-2 font-playful text-sm font-bold text-tutor-navy shadow-[2px_2px_0_0_#071B3A] transition-colors focus:border-tutor-orange focus:outline-none"
+                                            className="min-h-[44px] cursor-pointer rounded-lg border-[3px] border-tutor-navy bg-tutor-cream px-3 py-2 font-playful text-sm font-bold text-tutor-navy shadow-[2px_2px_0_0_#071B3A] transition-colors focus:border-tutor-orange focus:outline-none"
                                         >
                                             <option value="easy">
                                                 😊 Easy
@@ -529,11 +529,11 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-between">
+                    <div className="flex flex-col-reverse gap-2 border-t-2 border-tutor-yellow pt-2 sm:flex-row sm:justify-between sm:gap-3 sm:pt-3">
                         <button
                             onClick={resetToDefaults}
                             type="button"
-                            className="group flex items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-5 py-3.5 font-brutal text-sm uppercase tracking-wide text-tutor-navy shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
+                            className="group flex min-h-[44px] items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-cream px-5 py-3 font-brutal text-sm uppercase tracking-wide text-tutor-navy shadow-[4px_4px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
                         >
                             <span className="flex h-7 w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-red text-tutor-cream">
                                 <RotateCcw className="h-3.5 w-3.5" />
@@ -543,7 +543,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
                         <button
                             onClick={onClose}
                             type="button"
-                            className="flex items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-6 py-3.5 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
+                            className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border-[3px] border-tutor-navy bg-tutor-orange px-6 py-3 font-brutal text-sm uppercase tracking-wider text-tutor-cream shadow-[5px_5px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-1 hover:brightness-105 hover:shadow-[7px_7px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[2px_2px_0_0_#071B3A]"
                         >
                             <Check className="h-5 w-5" />
                             Apply & Close

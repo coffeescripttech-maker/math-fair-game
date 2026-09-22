@@ -156,7 +156,11 @@ export const CharacterCreation: React.FC<CharacterCreationProps> = ({
                     type="button"
                     onClick={handleBack}
                     aria-label="Back to main menu"
-                    className="fixed left-3 top-3 z-20 flex items-center gap-1.5 rounded-xl border-2 border-tutor-navy bg-tutor-cream px-3 py-2 font-brutal text-xs uppercase tracking-wider text-tutor-navy shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                    className="fixed left-3 top-3 z-20 flex min-h-[44px] items-center gap-1.5 rounded-xl border-2 border-tutor-navy bg-tutor-cream px-3 py-2 font-brutal text-xs uppercase tracking-wider text-tutor-navy shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                    style={{
+                        top: "calc(12px + env(safe-area-inset-top, 0px))",
+                        left: "calc(12px + env(safe-area-inset-left, 0px))",
+                    }}
                 >
                     <ArrowLeft className="h-4 w-4 text-tutor-orange" />
                     Back

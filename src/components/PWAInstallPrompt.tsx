@@ -95,13 +95,21 @@ export const PWAInstallPrompt: React.FC = () => {
     }
 
     return (
-        <div className="fixed bottom-4 right-4 z-[9999] pointer-events-auto animate-bounce">
-            <div className="brutal-panel p-4 max-w-xs sm:max-w-sm relative">
+        <div
+            className="fixed z-[9999] pointer-events-auto"
+            style={{
+                bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+                right: "calc(16px + env(safe-area-inset-right, 0px))",
+                left: "calc(16px + env(safe-area-inset-left, 0px))",
+            }}
+        >
+            <div className="brutal-panel relative max-h-[calc(100dvh-32px)] w-full max-w-xs overflow-y-auto p-4 sm:max-w-sm">
                 {/* Content */}
                 <div className="bg-white rounded-none p-4 relative">
                     <button
                         onClick={handleDismiss}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-brutal-red border-2 border-black flex items-center justify-center text-white text-xs shadow-brutal-xs brutal-press"
+                        aria-label="Dismiss install prompt"
+                        className="absolute -top-2 -right-2 flex h-9 w-9 items-center justify-center bg-brutal-red border-2 border-black text-white text-xs shadow-brutal-xs brutal-press"
                     >
                         ✕
                     </button>
@@ -110,7 +118,7 @@ export const PWAInstallPrompt: React.FC = () => {
                         <img
                             src="/logo.jpg"
                             alt="Tutor Town Logo"
-                            className="w-8 h-8 drop-shadow-lg"
+                            className="w-8 h-8 drop-shadow-lg animate-pulse"
                         />
                         <div>
                             <h3 className="font-brutal uppercase text-gray-900 text-sm">
@@ -136,13 +144,13 @@ export const PWAInstallPrompt: React.FC = () => {
                     <div className="flex space-x-2">
                         <button
                             onClick={handleInstallClick}
-                            className="flex-1 game-button-frame py-2 px-4 rounded-none font-bold text-white text-xs"
+                            className="flex-1 game-button-frame min-h-[44px] px-4 rounded-none font-bold text-white text-xs"
                         >
                             📥 Install Now
                         </button>
                         <button
                             onClick={handleDismiss}
-                            className="px-3 py-2 bg-white border-2 border-black rounded-none font-bold text-gray-800 text-xs brutal-press"
+                            className="min-h-[44px] px-3 bg-white border-2 border-black rounded-none font-bold text-gray-800 text-xs brutal-press"
                         >
                             Later
                         </button>

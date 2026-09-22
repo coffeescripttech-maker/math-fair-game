@@ -163,15 +163,17 @@ export const VirtualJoystick: React.FC<VirtualJoystickProps> = ({
 
     return (
         <div
-            className="fixed left-4 z-50 pointer-events-auto"
+            className="fixed z-30 pointer-events-auto"
             style={{
                 bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+                left: "calc(16px + env(safe-area-inset-left, 0px))",
             }}
         >
             {/* Joystick Base */}
             <div
                 ref={joystickRef}
                 className="relative w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-full bg-brutal-blue bg-opacity-40 border-[3px] border-black shadow-brutal"
+            style={{ touchAction: "none" }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}

@@ -12,7 +12,7 @@ export const MobileInteractionButton: React.FC<
 
     return (
         <div
-            className="fixed z-50 pointer-events-auto"
+            className="fixed z-30 pointer-events-auto"
             style={{
                 bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
                 right: "calc(16px + env(safe-area-inset-right, 0px))",

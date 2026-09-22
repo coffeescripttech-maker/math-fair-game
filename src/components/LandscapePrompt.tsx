@@ -54,25 +54,25 @@ export const LandscapePrompt: React.FC = () => {
             {/* Main content */}
             <div className="relative text-center px-6 py-8 max-w-sm">
                 {/* Tutor Town Logo */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                     <img
                         src="/logo.jpg"
                         alt="Tutor Town Logo"
                         className="w-20 h-20 mx-auto drop-shadow-2xl animate-pulse"
                     />
-                </div>
+                </div> */}
 
                 {/* Rotating phone icon */}
-                <div className="mb-8 animate-bounce">
+                {/* <div className="mb-8 animate-bounce">
                     <div className="inline-block text-6xl transform rotate-90 animate-pulse">
                         📱
                     </div>
                 </div>
 
                 {/* Rotation arrows animation */}
-                <div className="mb-6 flex justify-center items-center space-x-4">
+                {/* <div className="mb-6 flex justify-center items-center space-x-4">
                     <div className="text-6xl animate-spin-slow">🔄</div>
-                </div>
+                </div> */}
 
                 {/* Message */}
                 <div className="brutal-panel p-6">

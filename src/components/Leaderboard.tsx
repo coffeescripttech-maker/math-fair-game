@@ -208,7 +208,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                             onClick={onClose}
                             type="button"
                             aria-label="Close leaderboard"
-                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[4px_4px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
                             <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </button>
@@ -317,19 +317,19 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto pb-1">
-                                    <table className="w-full min-w-[500px] border-2 border-tutor-navy shadow-[3px_3px_0_0_#071B3A]">
+                                    <table className="w-full border-2 border-tutor-navy shadow-[3px_3px_0_0_#071B3A]">
                                         <thead className="sticky top-0 bg-tutor-navy">
                                             <tr className="font-brutal text-[11px] uppercase tracking-wide text-tutor-cream sm:text-xs">
-                                                <th className="p-2.5 text-center">
+                                                <th className="p-2 text-center sm:p-2.5">
                                                     Rank
                                                 </th>
-                                                <th className="p-2.5 text-left">
+                                                <th className="p-2 text-left sm:p-2.5">
                                                     Player
                                                 </th>
-                                                <th className="p-2.5 text-center">
+                                                <th className="p-2 text-center sm:p-2.5">
                                                     Score
                                                 </th>
-                                                <th className="p-2.5 text-center">
+                                                <th className="hidden p-2.5 text-center sm:table-cell">
                                                     Badges
                                                 </th>
                                                 {selectedTab ===
@@ -394,7 +394,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                                                             <td className="p-2.5 text-center font-semibold text-tutor-navy">
                                                                 {entry.total_score.toLocaleString()}
                                                             </td>
-                                                            <td className="p-2.5 text-center">
+                                                            <td className="hidden p-2.5 text-center sm:table-cell">
                                                                 <span className="inline-flex items-center gap-1 rounded-md border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 font-brutal text-xs text-tutor-navy">
                                                                     <Trophy className="h-3 w-3" />
                                                                     {
@@ -442,7 +442,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                         </div>
 
                         {/* Footer */}
-                        <div className="mt-4 flex items-center justify-center gap-1 text-center font-playful text-xs text-tutor-navy/60">
+                        <div className="mt-4 flex flex-wrap items-center justify-center gap-1 text-center font-playful text-xs text-tutor-navy/60">
                             {leaderboardService.isEnabled() ? (
                                 <>
                                     <RefreshCw className="h-3.5 w-3.5" />

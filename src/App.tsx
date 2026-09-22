@@ -117,6 +117,7 @@ function App() {
         "/assets/barangay-background.png",
     );
     const [showCelebration, setShowCelebration] = useState(false);
+    const [isDialogueActive, setIsDialogueActive] = useState(false);
     const [celebrationData, setCelebrationData] = useState({
         badge: "",
         coins: 0,
@@ -855,19 +856,53 @@ function App() {
             shopService.current.updateChallengeProgress(data.type, data.amount);
         };
 
+        const handleDialogueStarted = () => {
+            setIsDialogueActive(true);
+        };
+
+        const handleDialogueEnded = () => {
+            setIsDialogueActive(false);
+        };
+
         // Listen for events using EventBus
         EventBus.on("show-mission", handleShowMission);
         EventBus.on("show-notification", handleGameNotification);
         EventBus.on("open-quest-log", handleOpenQuestLog);
         EventBus.on("update-daily-challenge", handleDailyChallengeUpdate);
+        EventBus.on("dialogue-started", handleDialogueStarted);
+        EventBus.on("dialogue-ended", handleDialogueEnded);
 
         return () => {
             EventBus.off("show-mission", handleShowMission);
             EventBus.off("show-notification", handleGameNotification);
             EventBus.off("open-quest-log", handleOpenQuestLog);
             EventBus.off("update-daily-challenge", handleDailyChallengeUpdate);
+            EventBus.off("dialogue-started", handleDialogueStarted);
+            EventBus.off("dialogue-ended", handleDialogueEnded);
         };
     }, []);
+
+    const showMobileControls =
+        isMobile &&
+        !showMainMenu &&
+        !showCharacterCreation &&
+        !showQuiz &&
+        !showMission &&
+        !showPauseMenu &&
+        !showShop &&
+        !showQuestLog &&
+        !showInventory &&
+        !showSettings &&
+        !showExtras &&
+        !showCredits &&
+        !showLeaderboard &&
+        !showTutorial &&
+        !showDailyChallenges &&
+        !showSecretQuests &&
+        !showCelebration &&
+        !showCollisionEditor &&
+        !showNpcEditor &&
+        !isDialogueActive;
 
     return (
         <div className="relative w-full h-dvh overflow-hidden bg-sky-300">
@@ -926,11 +961,7 @@ function App() {
             )}
 
             {/* Mobile Controls - React Overlay */}
-            {isMobile &&
-                !showMainMenu &&
-                !showCharacterCreation &&
-                !showQuiz &&
-                !showMission && (
+            {showMobileControls && (
                     <>
                         <VirtualJoystick
                             onMove={(direction) =>
@@ -963,7 +994,13 @@ function App() {
                         style={{ zIndex: 10 }}
                     >
                         {/* HUD - Top Left - Player Card */}
-                        <div className="absolute sm:top-2 sm:left-2 top-1 left-1 pointer-events-auto max-w-[calc(100vw-10px)]">
+                        <div
+                            className="absolute pointer-events-auto max-w-[calc(100vw-10px)]"
+                            style={{
+                                top: "calc(8px + env(safe-area-inset-top, 0px))",
+                                left: "calc(8px + env(safe-area-inset-left, 0px))",
+                            }}
+                        >
                             <div className="flex flex-col gap-0.5 rounded-lg border-2 border-tutor-navy bg-tutor-cream/95 p-1 shadow-[2px_2px_0_0_#071B3A]">
                                 <div className="flex gap-1">
                                     {/* Player Name */}
@@ -1013,13 +1050,19 @@ function App() {
                         </div>
 
                         {/* Quick Actions - Top Right */}
-                        <div className="absolute top-2 right-2 pointer-events-auto max-w-[calc(100vw-180px)] sm:max-w-none">
+                        <div
+                            className="absolute pointer-events-auto max-w-[calc(100vw-170px)] sm:max-w-none"
+                            style={{
+                                top: "calc(8px + env(safe-area-inset-top, 0px))",
+                                right: "calc(8px + env(safe-area-inset-right, 0px))",
+                            }}
+                        >
                             <div className="flex flex-wrap justify-end gap-1 sm:gap-1.5">
                                 <button
                                     onClick={() =>
                                         setShowQuestLog(!showQuestLog)
                                     }
-                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[44px] min-w-[44px]"
                                 >
                                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
                                         <ClipboardList className="h-3.5 w-3.5" />
@@ -1030,7 +1073,7 @@ function App() {
                                 </button>
                                 <button
                                     onClick={() => setShowShop(!showShop)}
-                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[44px] min-w-[44px]"
                                 >
                                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-yellow text-tutor-navy">
                                         <Store className="h-3.5 w-3.5" />
@@ -1045,7 +1088,7 @@ function App() {
                                             !showDailyChallenges,
                                         )
                                     }
-                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[44px] min-w-[44px]"
                                 >
                                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-green text-tutor-cream">
                                         <CalendarDays className="h-3.5 w-3.5" />
@@ -1058,7 +1101,7 @@ function App() {
                                     onClick={() =>
                                         setShowSecretQuests(!showSecretQuests)
                                     }
-                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[44px] min-w-[44px]"
                                 >
                                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-purple text-tutor-cream">
                                         <Lock className="h-3.5 w-3.5" />
@@ -1071,7 +1114,7 @@ function App() {
                                     onClick={() =>
                                         setShowPauseMenu(!showPauseMenu)
                                     }
-                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[34px]"
+                                    className="flex items-center gap-1 rounded-lg border-2 border-tutor-navy bg-tutor-cream px-1.5 py-1 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] min-h-[44px] min-w-[44px]"
                                 >
                                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-navy text-tutor-cream">
                                         <Pause className="h-3.5 w-3.5" />
@@ -1096,7 +1139,7 @@ function App() {
                                             }
                                             type="button"
                                             aria-label="Close pause menu"
-                                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         >
                                             <X className="h-4 w-4 sm:h-5 sm:w-5" />
                                         </button>
@@ -1501,7 +1544,7 @@ function App() {
                                             }
                                             type="button"
                                             aria-label="Close quest log"
-                                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         >
                                             <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                                         </button>
@@ -1680,7 +1723,7 @@ function App() {
                                             }
                                             type="button"
                                             aria-label="Close inventory"
-                                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                                         >
                                             <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                                         </button>

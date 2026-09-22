@@ -140,7 +140,7 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                             onClick={onClose}
                             type="button"
                             aria-label="Close shop"
-                            className="absolute right-2 top-2 z-20 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                            className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:shadow-[3px_3px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[3px_3px_0_0_#071B3A] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
                         >
                             <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </button>
@@ -397,7 +397,7 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
                                                                     !unlocked
                                                                 }
                                                                 type="button"
-                                                                className={`flex items-center rounded-lg border-[3px] border-tutor-navy px-4 py-2 font-brutal text-xs uppercase tracking-wider transition-all duration-150 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] ${
+                                                                className={`flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border-[3px] border-tutor-navy px-4 py-2 font-brutal text-xs uppercase tracking-wider transition-all duration-150 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A] ${
                                                                     !unlocked
                                                                         ? "cursor-not-allowed bg-[#E5DCC9] text-tutor-navy/50 shadow-[2px_2px_0_0_#071B3A]"
                                                                         : affordable
