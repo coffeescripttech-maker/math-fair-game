@@ -1544,15 +1544,9 @@ export class BarangayMap extends OpenWorldMapScene {
             EventBus.emit("show-notification", {
                 type: "success",
                 title: `${itemData.name} Collected! ✨`,
-                message: `You found a ${itemData.name}! +${itemData.value} coins, +${itemData.points} points`,
+                message: `+${itemData.value} coins · +${itemData.points} points`,
                 icon: itemData.icon,
-                actions: [
-                    {
-                        label: "Continue Exploring",
-                        action: () => {},
-                        style: "primary",
-                    },
-                ],
+                presentation: "toast",
             });
 
             console.log(

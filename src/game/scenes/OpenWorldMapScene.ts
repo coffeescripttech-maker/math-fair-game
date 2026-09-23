@@ -1708,15 +1708,9 @@ export abstract class OpenWorldMapScene extends Scene {
             EventBus.emit("show-notification", {
                 type: "success",
                 title: `${itemData.name} Collected! ✨`,
-                message: `You found a ${itemData.name}! +${itemData.value} coins, +${itemData.points} points`,
+                message: `+${itemData.value} coins · +${itemData.points} points`,
                 icon: itemData.icon,
-                actions: [
-                    {
-                        label: "Continue Exploring",
-                        action: () => {},
-                        style: "primary",
-                    },
-                ],
+                presentation: "toast",
             });
         }
     }
@@ -2422,7 +2416,7 @@ export abstract class OpenWorldMapScene extends Scene {
         if (allItemsCollected) {
             EventBus.emit("show-notification", {
                 type: "success",
-                title: "🏆 ${title} Master Collector! 🏆",
+                title: `🏆 ${title} Master Collector! 🏆`,
                 message: `Incredible! You've collected all ${totalItems} items in the ${title}! You've earned the "${this.getTreasureHunterBadge()} Treasure Hunter" badge and a bonus of 100 coins + 200 points!`,
                 icon: "🎖️",
                 actions: [
@@ -2436,7 +2430,7 @@ export abstract class OpenWorldMapScene extends Scene {
 
             gameStateManager.addCoins(
                 100,
-                "${title} Master Collector Achievement",
+                `${title} Master Collector Achievement`,
             );
             const progress = gameStateManager.getProgress();
             if (progress) {
@@ -2444,7 +2438,7 @@ export abstract class OpenWorldMapScene extends Scene {
                 gameStateManager.updatePlaytime(0);
             }
 
-            console.log("🏆 ${title} Master Collector Achievement unlocked!");
+            console.log(`🏆 ${title} Master Collector Achievement unlocked!`);
         }
     }
 

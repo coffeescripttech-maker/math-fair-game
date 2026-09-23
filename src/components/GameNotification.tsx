@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     X,
     Star,
@@ -8,11 +8,14 @@ import {
     XCircle,
 } from "lucide-react";
 
+export type NotificationPresentation = "modal" | "toast";
+
 export interface NotificationData {
     type: "success" | "warning" | "info" | "error";
     title: string;
     message: string;
     icon?: string;
+    presentation?: NotificationPresentation;
     actions?: Array<{
         label: string;
         action: () => void;
@@ -28,11 +31,21 @@ interface GameNotificationProps {
 
 const YELLOW = "#FFD84D";
 
+// How long a toast stays on screen before auto-dismissing.
+const TOAST_DURATION_MS = 3000;
+
 export const GameNotification: React.FC<GameNotificationProps> = ({
     notification,
     onClose,
     isVisible,
 }) => {
+    // Toasts auto-dismiss after a short while; modals wait for the player.
+    useEffect(() => {
+        if (!notification || notification.presentation !== "toast") return;
+        const timer = setTimeout(onClose, TOAST_DURATION_MS);
+        return () => clearTimeout(timer);
+    }, [notification, onClose]);
+
     if (!notification || !isVisible) return null;
 
     const getTypeStyles = (): { tile: string; icon: React.ReactNode } => {
@@ -90,6 +103,52 @@ export const GameNotification: React.FC<GameNotificationProps> = ({
     };
 
     const iconToShow = notification.icon || getTypeStyles().icon;
+
+    // Non-blocking toast: stays out of the way, gameplay continues.
+    if (notification.presentation === "toast") {
+        return (
+            <div
+                className="pointer-events-none fixed inset-x-0 top-0 z-[70] flex justify-center"
+                style={{
+                    paddingTop: "calc(8px + env(safe-area-inset-top, 0px))",
+                    paddingLeft:
+                        "calc(8px + env(safe-area-inset-left, 0px))",
+                    paddingRight:
+                        "calc(8px + env(safe-area-inset-right, 0px))",
+                }}
+            >
+                <div className="pointer-events-auto flex w-full max-w-md items-center gap-2 sm:gap-3 animate-slide-down rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-1.5 sm:p-2 px-2 sm:px-3 shadow-[4px_4px_0_0_#071B3A] sm:shadow-[6px_6px_0_0_#071B3A]">
+                    <span
+                        className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy shadow-[2px_2px_0_0_#071B3A] ${getTypeStyles().tile}`}
+                    >
+                        {typeof iconToShow === "string" ? (
+                            <span className="text-xl leading-none">
+                                {iconToShow}
+                            </span>
+                        ) : (
+                            iconToShow
+                        )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                        <p className="truncate font-brutal text-xs sm:text-sm uppercase leading-snug tracking-wide text-tutor-navy">
+                            {notification.title}
+                        </p>
+                        <p className="font-playful text-xs sm:text-sm leading-snug text-tutor-navy/80">
+                            {notification.message}
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        type="button"
+                        aria-label="Dismiss notification"
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-[3px] border-tutor-navy bg-tutor-red text-tutor-cream shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-black/60 p-1.5 sm:p-4">
