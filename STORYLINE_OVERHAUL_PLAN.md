@@ -64,7 +64,7 @@
 - All 50 quiz questions in App.tsx verified present and unique.
 - UI text updated: Tutorial, MainMenu, LandscapePrompt, PWAInstallPrompt, Credits, CharacterCreation, Extras.
 - Map lockout messages and area names updated to tutoring theme.
-- Package name and metadata updated to "tutor-town".
+- Package name and metadata updated to "mathtuto".
 - Build passes successfully with `npm run build-nolog`.
 
 

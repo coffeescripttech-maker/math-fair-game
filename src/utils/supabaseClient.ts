@@ -1,5 +1,5 @@
 /**
- * Supabase Client Configuration for CIVIKA
+ * Supabase Client Configuration for MathTuto
  *
  * This file initializes the Supabase client for database operations.
  * Make sure to set up environment variables in .env.local:

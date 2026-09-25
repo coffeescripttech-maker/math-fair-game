@@ -1,5 +1,5 @@
 /**
- * Secret Quests Component for CIVIKA
+ * Secret Quests Component for MathTuto
  * Displays discovered secret quests, player titles, and hidden achievements
  */
 
@@ -122,7 +122,7 @@ export const SecretQuests: React.FC<SecretQuestsProps> = ({
             className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-1.5 sm:p-4 pointer-events-auto"
             onClick={handleBackdropClick}
         >
-            {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+            {/* MathTuto game window: navy outer frame, yellow inner frame */}
             <section
                 className="relative w-full min-[420px]:max-w-3xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]"
                 onClick={handleContentClick}

@@ -36,6 +36,7 @@ export class BarangayMap extends OpenWorldMapScene {
     lastDirection: string = "front"; // Track last direction for idle sprites
 
     collectibleItems: Map<string, any> = new Map(); // Store collectible sprites by ID
+    masterCollectorAwarded: boolean = false; // Once-a-level full-collection bonus
 
     // Collision system
 
@@ -144,9 +145,6 @@ export class BarangayMap extends OpenWorldMapScene {
 
         // Note: Tile textures and tile map are disabled since we're using background image
 
-        // Create collision areas for buildings (since we're not using tiles)
-        // this.createCollisionAreas();
-
         // Create player with collision (will be positioned relative to background)
         this.createPlayer();
 
@@ -243,13 +241,6 @@ export class BarangayMap extends OpenWorldMapScene {
         }
     }
 
-    // Method to ensure camera follows player
-    ensureCameraFollowing() {
-        if (this.player && (this.cameras.main as any).follow !== this.player) {
-            console.log("Restarting camera follow...");
-            this.cameras.main.startFollow(this.player);
-        }
-    }
 
     // Open world camera scrolling optimization
     // Handle background scaling for orientation changes
@@ -455,509 +446,6 @@ export class BarangayMap extends OpenWorldMapScene {
         }
     }
 
-    createCollisionAreas() {
-        console.log("Creating collision areas for buildings...");
-
-        // Create invisible collision rectangles for buildings
-        // These should match the building positions in your background image
-        const buildingCollisions = [
-            // Barangay Hall (center)
-            {
-                x: 16 * this.tileSize,
-                y: 8 * this.tileSize,
-                width: 4 * this.tileSize,
-                height: 3 * this.tileSize,
-            },
-            // Health Center (top-left)
-            {
-                x: 4 * this.tileSize,
-                y: 4 * this.tileSize,
-                width: 3 * this.tileSize,
-                height: 2 * this.tileSize,
-            },
-            // School (top-right)
-            {
-                x: 24 * this.tileSize,
-                y: 4 * this.tileSize,
-                width: 4 * this.tileSize,
-                height: 3 * this.tileSize,
-            },
-            // Market (bottom-left)
-            {
-                x: 4 * this.tileSize,
-                y: 16 * this.tileSize,
-                width: 3 * this.tileSize,
-                height: 2 * this.tileSize,
-            },
-            // Library (bottom-right)
-            {
-                x: 24 * this.tileSize,
-                y: 16 * this.tileSize,
-                width: 3 * this.tileSize,
-                height: 2 * this.tileSize,
-            },
-            // Residential areas
-            {
-                x: 8 * this.tileSize,
-                y: 12 * this.tileSize,
-                width: 2 * this.tileSize,
-                height: 2 * this.tileSize,
-            },
-            {
-                x: 20 * this.tileSize,
-                y: 12 * this.tileSize,
-                width: 2 * this.tileSize,
-                height: 2 * this.tileSize,
-            },
-        ];
-
-        // buildingCollisions.forEach((building, index) => {
-        //     const collision = this.add.rectangle(
-        //         building.x + building.width / 2,
-        //         building.y + building.height / 2,
-        //         building.width,
-        //         building.height,
-        //         0x000000,
-        //         0 // Invisible
-        //     );
-        //     this.physics.add.existing(collision, true);
-        //     collision.body.setSize(building.width, building.height);
-        //     console.log(
-        //         `Building collision ${index + 1} created at (${building.x}, ${
-        //             building.y
-        //         })`
-        //     );
-        // });
-    }
-
-    createTileTextures() {
-        // Create individual tile textures
-
-        // Grass tile
-        const grassGraphics = this.add.graphics();
-        grassGraphics.fillStyle(0x90ee90);
-        grassGraphics.fillRect(0, 0, 32, 32);
-        grassGraphics.strokeRect(0, 0, 32, 32);
-        grassGraphics.generateTexture("grass", 32, 32);
-        grassGraphics.destroy();
-
-        // Path tile
-        const pathGraphics = this.add.graphics();
-        pathGraphics.fillStyle(0xd2b48c);
-        pathGraphics.fillRect(0, 0, 32, 32);
-        pathGraphics.strokeRect(0, 0, 32, 32);
-        pathGraphics.generateTexture("path", 32, 32);
-        pathGraphics.destroy();
-
-        // Water tile
-        const waterGraphics = this.add.graphics();
-        waterGraphics.fillStyle(0x87ceeb);
-        waterGraphics.fillRect(0, 0, 32, 32);
-        waterGraphics.strokeRect(0, 0, 32, 32);
-        waterGraphics.generateTexture("water", 32, 32);
-        waterGraphics.destroy();
-
-        // Tree tile
-        const treeGraphics = this.add.graphics();
-        treeGraphics.fillStyle(0x228b22);
-        treeGraphics.fillRect(0, 0, 32, 32);
-        treeGraphics.strokeRect(0, 0, 32, 32);
-        treeGraphics.generateTexture("tree", 32, 32);
-        treeGraphics.destroy();
-
-        // Create building icons
-        this.createBuildingIcons();
-    }
-
-    createBuildingIcons() {
-        // Barangay Hall (🏛️)
-        const barangayHallGraphics = this.add.graphics();
-        barangayHallGraphics.fillStyle(0x4169e1);
-        barangayHallGraphics.fillRect(0, 0, 32, 32);
-        barangayHallGraphics.strokeRect(0, 0, 32, 32);
-        // Add building details
-        barangayHallGraphics.fillStyle(0xffffff);
-        barangayHallGraphics.fillRect(4, 8, 24, 16);
-        barangayHallGraphics.fillStyle(0x4169e1);
-        barangayHallGraphics.fillRect(6, 10, 20, 12);
-        barangayHallGraphics.generateTexture("barangay_hall", 32, 32);
-        barangayHallGraphics.destroy();
-
-        // Health Center (🏥)
-        const healthCenterGraphics = this.add.graphics();
-        healthCenterGraphics.fillStyle(0xff6b6b);
-        healthCenterGraphics.fillRect(0, 0, 32, 32);
-        healthCenterGraphics.strokeRect(0, 0, 32, 32);
-        // Add cross symbol
-        healthCenterGraphics.fillStyle(0xffffff);
-        healthCenterGraphics.fillRect(14, 8, 4, 16);
-        healthCenterGraphics.fillRect(8, 14, 16, 4);
-        healthCenterGraphics.generateTexture("health_center", 32, 32);
-        healthCenterGraphics.destroy();
-
-        // Library (📚)
-        const libraryGraphics = this.add.graphics();
-        libraryGraphics.fillStyle(0x8b4513);
-        libraryGraphics.fillRect(0, 0, 32, 32);
-        libraryGraphics.strokeRect(0, 0, 32, 32);
-        // Add book details
-        libraryGraphics.fillStyle(0xffd700);
-        libraryGraphics.fillRect(6, 8, 4, 16);
-        libraryGraphics.fillRect(12, 8, 4, 16);
-        libraryGraphics.fillRect(18, 8, 4, 16);
-        libraryGraphics.fillRect(24, 8, 4, 16);
-        libraryGraphics.generateTexture("library", 32, 32);
-        libraryGraphics.destroy();
-
-        // Market (🏪)
-        const marketGraphics = this.add.graphics();
-        marketGraphics.fillStyle(0xffa500);
-        marketGraphics.fillRect(0, 0, 32, 32);
-        marketGraphics.strokeRect(0, 0, 32, 32);
-        // Add market details
-        marketGraphics.fillStyle(0xffffff);
-        marketGraphics.fillRect(4, 12, 24, 8);
-        marketGraphics.fillStyle(0xffa500);
-        marketGraphics.fillRect(6, 14, 4, 4);
-        marketGraphics.fillRect(12, 14, 4, 4);
-        marketGraphics.fillRect(18, 14, 4, 4);
-        marketGraphics.fillRect(24, 14, 4, 4);
-        marketGraphics.generateTexture("market", 32, 32);
-        marketGraphics.destroy();
-
-        // Park (🌳)
-        const parkGraphics = this.add.graphics();
-        parkGraphics.fillStyle(0x228b22);
-        parkGraphics.fillRect(0, 0, 32, 32);
-        parkGraphics.strokeRect(0, 0, 32, 32);
-        // Add tree details
-        parkGraphics.fillStyle(0x8b4513);
-        parkGraphics.fillRect(14, 16, 4, 12);
-        parkGraphics.fillStyle(0x32cd32);
-        parkGraphics.fillCircle(16, 12, 8);
-        parkGraphics.generateTexture("park", 32, 32);
-        parkGraphics.destroy();
-
-        // Covered Court (🏟️)
-        const courtGraphics = this.add.graphics();
-        courtGraphics.fillStyle(0x708090);
-        courtGraphics.fillRect(0, 0, 32, 32);
-        courtGraphics.strokeRect(0, 0, 32, 32);
-        // Add court lines
-        courtGraphics.fillStyle(0xffffff);
-        courtGraphics.fillRect(2, 2, 28, 2);
-        courtGraphics.fillRect(2, 28, 28, 2);
-        courtGraphics.fillRect(2, 2, 2, 28);
-        courtGraphics.fillRect(28, 2, 2, 28);
-        courtGraphics.fillRect(14, 2, 2, 28);
-        courtGraphics.generateTexture("covered_court", 32, 32);
-        courtGraphics.destroy();
-
-        // Mediation Kubo (🏠)
-        const kuboGraphics = this.add.graphics();
-        kuboGraphics.fillStyle(0x8b4513);
-        kuboGraphics.fillRect(0, 0, 32, 32);
-        kuboGraphics.strokeRect(0, 0, 32, 32);
-        // Add roof
-        kuboGraphics.fillStyle(0xdc143c);
-        kuboGraphics.fillTriangle(16, 4, 4, 16, 28, 16);
-        kuboGraphics.fillStyle(0x8b4513);
-        kuboGraphics.fillRect(6, 16, 20, 12);
-        kuboGraphics.generateTexture("mediation_kubo", 32, 32);
-        kuboGraphics.destroy();
-
-        // Sari-Sari Store (🏪)
-        const storeGraphics = this.add.graphics();
-        storeGraphics.fillStyle(0xffd700);
-        storeGraphics.fillRect(0, 0, 32, 32);
-        storeGraphics.strokeRect(0, 0, 32, 32);
-        // Add store details
-        storeGraphics.fillStyle(0xffffff);
-        storeGraphics.fillRect(4, 8, 24, 16);
-        storeGraphics.fillStyle(0xffd700);
-        storeGraphics.fillRect(6, 10, 4, 4);
-        storeGraphics.fillRect(12, 10, 4, 4);
-        storeGraphics.fillRect(18, 10, 4, 4);
-        storeGraphics.fillRect(24, 10, 4, 4);
-        storeGraphics.generateTexture("sari_sari_store", 32, 32);
-        storeGraphics.destroy();
-
-        // Residential Area (🏘️)
-        const residentialGraphics = this.add.graphics();
-        residentialGraphics.fillStyle(0x87ceeb);
-        residentialGraphics.fillRect(0, 0, 32, 32);
-        residentialGraphics.strokeRect(0, 0, 32, 32);
-        // Add house details
-        residentialGraphics.fillStyle(0xffffff);
-        residentialGraphics.fillRect(6, 12, 8, 12);
-        residentialGraphics.fillRect(18, 12, 8, 12);
-        residentialGraphics.fillStyle(0xdc143c);
-        residentialGraphics.fillTriangle(10, 8, 6, 12, 14, 12);
-        residentialGraphics.fillTriangle(22, 8, 18, 12, 26, 12);
-        residentialGraphics.generateTexture("residential", 32, 32);
-        residentialGraphics.destroy();
-
-        // Basura Zone (🗑️)
-        const basuraGraphics = this.add.graphics();
-        basuraGraphics.fillStyle(0x696969);
-        basuraGraphics.fillRect(0, 0, 32, 32);
-        basuraGraphics.strokeRect(0, 0, 32, 32);
-        // Add trash can details
-        basuraGraphics.fillStyle(0xffffff);
-        basuraGraphics.fillRect(12, 8, 8, 16);
-        basuraGraphics.fillStyle(0x696969);
-        basuraGraphics.fillRect(13, 9, 6, 14);
-        basuraGraphics.fillStyle(0xff0000);
-        basuraGraphics.fillRect(14, 10, 4, 2);
-        basuraGraphics.generateTexture("basura_zone", 32, 32);
-        basuraGraphics.destroy();
-    }
-
-    createTileMap() {
-        // Create a simple tilemap using individual tile sprites
-        // this.createSimpleTileMap();
-        // // Add building labels
-        // this.addBuildingLabels();
-    }
-
-    createSimpleTileMap() {
-        // Create ground tiles
-        for (let y = 0; y < this.mapHeight; y++) {
-            for (let x = 0; x < this.mapWidth; x++) {
-                const worldX = x * this.tileSize;
-                const worldY = y * this.tileSize;
-
-                // Determine tile type
-                let tileType = "grass";
-                let isCollision = false;
-
-                // Create paths
-                if (
-                    x === 0 ||
-                    x === this.mapWidth - 1 ||
-                    y === 0 ||
-                    y === this.mapHeight - 1
-                ) {
-                    tileType = "path";
-                } else if (x % 4 === 0 || y % 4 === 0) {
-                    tileType = "path";
-                }
-
-                // Place buildings
-                const buildingType = this.isBuildingLocation(x, y);
-                if (buildingType) {
-                    tileType = buildingType;
-                    isCollision = true;
-                }
-
-                // Add some trees
-                if (
-                    Math.random() < 0.05 &&
-                    tileType === "grass" &&
-                    !isCollision
-                ) {
-                    tileType = "tree";
-                    isCollision = true;
-                }
-
-                // Create tile sprite
-                const tile = this.add.sprite(
-                    worldX + this.tileSize / 2,
-                    worldY + this.tileSize / 2,
-                    tileType
-                );
-                tile.setOrigin(0.5);
-
-                // Add collision for buildings and trees
-                if (isCollision) {
-                    this.physics.add.existing(tile, true);
-                    if (tile.body) { (tile.body as Phaser.Physics.Arcade.StaticBody).setSize(this.tileSize, this.tileSize); }
-                }
-            }
-        }
-    }
-
-    generateMapData() {
-        // Create a 32x24 tile map
-        const mapData = [];
-
-        for (let y = 0; y < this.mapHeight; y++) {
-            const row = [];
-            for (let x = 0; x < this.mapWidth; x++) {
-                // Ground layer (0 = grass, 1 = path, 2 = water)
-                let groundTile = 0; // Default to grass
-
-                // Create paths
-                if (
-                    x === 0 ||
-                    x === this.mapWidth - 1 ||
-                    y === 0 ||
-                    y === this.mapHeight - 1
-                ) {
-                    groundTile = 1; // Path around edges
-                } else if (x % 4 === 0 || y % 4 === 0) {
-                    groundTile = 1; // Path grid
-                }
-
-                // Buildings layer (0 = empty, 3 = building, 4 = tree)
-                let buildingTile = 0;
-
-                // Collision layer (0 = walkable, 1 = blocked)
-                let collisionTile = 0;
-
-                // Place buildings based on mission locations
-                if (this.isBuildingLocation(x, y)) {
-                    buildingTile = 3; // Building tile
-                    collisionTile = 1;
-                }
-
-                // Add some trees for decoration
-                if (
-                    Math.random() < 0.05 &&
-                    groundTile === 0 &&
-                    buildingTile === 0
-                ) {
-                    buildingTile = 4; // Tree tile
-                    collisionTile = 1;
-                }
-
-                row.push([groundTile, buildingTile, collisionTile]);
-            }
-            mapData.push(row);
-        }
-
-        return mapData;
-    }
-
-    isBuildingLocation(x: number, y: number) {
-        // Define building locations based on mission locations
-        const buildingLocations = [
-            {
-                x: 6,
-                y: 9,
-                width: 3,
-                height: 2,
-                name: "Basura Zone",
-                type: "basura_zone",
-            },
-            {
-                x: 12,
-                y: 6,
-                width: 3,
-                height: 2,
-                name: "Sari-Sari Store",
-                type: "sari_sari_store",
-            },
-            {
-                x: 18,
-                y: 12,
-                width: 3,
-                height: 2,
-                name: "Residential Area",
-                type: "residential",
-            },
-            {
-                x: 9,
-                y: 15,
-                width: 3,
-                height: 2,
-                name: "Public Market",
-                type: "market",
-            },
-            { x: 21, y: 6, width: 3, height: 2, name: "Park", type: "park" },
-            {
-                x: 3,
-                y: 18,
-                width: 3,
-                height: 2,
-                name: "Covered Court",
-                type: "covered_court",
-            },
-            {
-                x: 15,
-                y: 18,
-                width: 3,
-                height: 2,
-                name: "Mediation Kubo",
-                type: "mediation_kubo",
-            },
-            {
-                x: 25,
-                y: 12,
-                width: 3,
-                height: 2,
-                name: "Community Library",
-                type: "library",
-            },
-            {
-                x: 20,
-                y: 3,
-                width: 3,
-                height: 2,
-                name: "Health Center",
-                type: "health_center",
-            },
-            {
-                x: 12,
-                y: 12,
-                width: 4,
-                height: 3,
-                name: "Barangay Hall",
-                type: "barangay_hall",
-            },
-        ];
-
-        for (const building of buildingLocations) {
-            if (
-                x >= building.x &&
-                x < building.x + building.width &&
-                y >= building.y &&
-                y < building.y + building.height
-            ) {
-                return building.type;
-            }
-        }
-        return false;
-    }
-
-    addBuildingLabels() {
-        const buildingLocations = [
-            { x: 6, y: 9, name: "Basura Zone" },
-            { x: 12, y: 6, name: "Sari-Sari Store" },
-            { x: 18, y: 12, name: "Residential Area" },
-            { x: 9, y: 15, name: "Public Market" },
-            { x: 21, y: 6, name: "Park" },
-            { x: 3, y: 18, name: "Covered Court" },
-            { x: 15, y: 18, name: "Mediation Kubo" },
-            { x: 25, y: 12, name: "Community Library" },
-            { x: 20, y: 3, name: "Health Centerdexmiranda" },
-            { x: 12, y: 12, name: "Barangay Hall" },
-        ];
-
-        buildingLocations.forEach((building) => {
-            const worldX = building.x * this.tileSize + this.tileSize / 2;
-            const worldY = building.y * this.tileSize - 10;
-
-            this.add
-                .text(worldX, worldY, building.name, {
-                    fontFamily: "Arial Black",
-                    fontSize: 12,
-                    color: "#FFFFFF",
-                    stroke: "#000000",
-                    strokeThickness: 2,
-                    align: "center",
-                    shadow: {
-                        offsetX: 1,
-                        offsetY: 1,
-                        color: "#000000",
-                        blur: 2,
-                        fill: true,
-                    },
-                })
-                .setOrigin(0.5)
-                .setDepth(100);
-        });
-    }
 
     createPlayer() {
         // Check if student sprite texture exists, otherwise use a fallback
@@ -1443,6 +931,9 @@ export class BarangayMap extends OpenWorldMapScene {
             );
             glow.setDepth(199); // Just below collectible
             glow.setScrollFactor(1); // Follow camera
+            // Stash the glow on the collectible so it can be cleaned up
+            // when the player picks the item up.
+            collectible.setData("glow", glow);
 
             // Pulsing glow animation
             this.tweens.add({
@@ -1499,6 +990,15 @@ export class BarangayMap extends OpenWorldMapScene {
         );
 
         if (collected) {
+            // Kill the ambient bob/glow tweens and destroy the pulsing glow
+            // so nothing is left orphaned at the pickup spot.
+            this.tweens.killTweensOf(collectible);
+            const glow = collectible.getData("glow");
+            if (glow) {
+                this.tweens.killTweensOf(glow);
+                glow.destroy();
+            }
+
             // Create particle effect (sparkles) at collection point
             this.createCollectionParticles(
                 collectible.x,
@@ -1571,12 +1071,17 @@ export class BarangayMap extends OpenWorldMapScene {
             (item) => gameStateManager.isItemCollected(item.id)
         );
 
-        if (allBarangayItemsCollected && collectedCount > 0) {
+        if (
+            allBarangayItemsCollected &&
+            collectedCount > 0 &&
+            !this.masterCollectorAwarded
+        ) {
+            this.masterCollectorAwarded = true;
             // Award special achievement badge
             EventBus.emit("show-notification", {
                 type: "success",
                 title: "🏆 Master Collector Achievement! 🏆",
-                message: `Congratulations! You've collected all ${totalItems} items in the Barangay! You've earned the "Treasure Hunter" badge and a bonus of 50 coins + 100 points!`,
+                message: `Congratulations! You've collected all ${totalItems} items in the Barangay! You've earned the "Treasure Hunter" badge and a bonus of 100 coins + 200 points!`,
                 icon: "🎖️",
                 actions: [
                     {
@@ -1588,10 +1093,10 @@ export class BarangayMap extends OpenWorldMapScene {
             });
 
             // Award bonus coins and points for completing collection
-            gameStateManager.addCoins(50, "Master Collector Achievement");
+            gameStateManager.addCoins(100, "Master Collector Achievement");
             const progress = gameStateManager.getProgress();
             if (progress) {
-                progress.totalScore += 100;
+                progress.totalScore += 200;
                 gameStateManager.updatePlaytime(0); // Trigger save
             }
 
@@ -1599,180 +1104,6 @@ export class BarangayMap extends OpenWorldMapScene {
         }
     }
 
-    createMobileControls() {
-        console.log("Creating mobile controls...");
-        console.log(
-            "Screen size for controls:",
-            this.cameras.main.width,
-            "x",
-            this.cameras.main.height
-        );
-
-        // Create virtual joystick
-        this.createVirtualJoystick();
-
-        // Create interaction button
-        this.createInteractionButton();
-
-        // Update interaction prompt for mobile
-        this.interactionPrompt.setText("Tap to interact");
-
-        console.log("Mobile controls created successfully");
-    }
-
-    createVirtualJoystick() {
-        // Get screen dimensions for responsive positioning
-        const screenWidth = this.cameras.main.width;
-        const screenHeight = this.cameras.main.height;
-
-        // Position joystick in bottom-left corner with proper margins
-        // Use percentage-based positioning for better responsiveness
-        const joystickX = Math.max(60, screenWidth * 0.08); // 8% from left edge, minimum 60px
-        const joystickY = Math.min(screenHeight - 60, screenHeight * 0.9); // 90% from top, maximum 60px from bottom
-
-        console.log("Creating joystick at position:", joystickX, joystickY);
-        console.log("Screen dimensions:", screenWidth, "x", screenHeight);
-        console.log("Landscape mode:", screenWidth > screenHeight);
-
-        // Create joystick base (outer circle) - use camera-relative positioning
-        const joystickBase = this.add.circle(
-            joystickX,
-            joystickY,
-            50,
-            0x000000,
-            0.3
-        );
-        joystickBase.setDepth(2000);
-        joystickBase.setScrollFactor(0); // Don't scroll with camera
-
-        // Create joystick knob (inner circle) - use camera-relative positioning
-        const joystickKnob = this.add.circle(
-            joystickX,
-            joystickY,
-            25,
-            0xffffff,
-            0.8
-        );
-        joystickKnob.setDepth(2001);
-        joystickKnob.setScrollFactor(0); // Don't scroll with camera
-
-        // Store joystick components
-        this.virtualJoystick = {
-            base: joystickBase,
-            knob: joystickKnob,
-            baseX: joystickX,
-            baseY: joystickY,
-            knobX: joystickX,
-            knobY: joystickY,
-            isActive: false,
-            maxDistance: 40,
-        };
-
-        // Make joystick interactive
-        joystickBase.setInteractive();
-        joystickKnob.setInteractive();
-
-        // Touch events for joystick
-        joystickBase.on("pointerdown", (pointer: any) => {
-            this.virtualJoystick.isActive = true;
-            this.updateJoystickPosition(pointer.x, pointer.y);
-        });
-
-        this.input.on("pointermove", (pointer: any) => {
-            if (this.virtualJoystick.isActive) {
-                this.updateJoystickPosition(pointer.x, pointer.y);
-            }
-        });
-
-        this.input.on("pointerup", () => {
-            this.virtualJoystick.isActive = false;
-            this.resetJoystick();
-        });
-    }
-
-    updateJoystickPosition(x: number, y: number) {
-        const dx = x - this.virtualJoystick.baseX;
-        const dy = y - this.virtualJoystick.baseY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance <= this.virtualJoystick.maxDistance) {
-            this.virtualJoystick.knobX = x;
-            this.virtualJoystick.knobY = y;
-        } else {
-            const angle = Math.atan2(dy, dx);
-            this.virtualJoystick.knobX =
-                this.virtualJoystick.baseX +
-                Math.cos(angle) * this.virtualJoystick.maxDistance;
-            this.virtualJoystick.knobY =
-                this.virtualJoystick.baseY +
-                Math.sin(angle) * this.virtualJoystick.maxDistance;
-        }
-
-        this.virtualJoystick.knob.setPosition(
-            this.virtualJoystick.knobX,
-            this.virtualJoystick.knobY
-        );
-    }
-
-    resetJoystick() {
-        this.virtualJoystick.knobX = this.virtualJoystick.baseX;
-        this.virtualJoystick.knobY = this.virtualJoystick.baseY;
-        this.virtualJoystick.knob.setPosition(
-            this.virtualJoystick.knobX,
-            this.virtualJoystick.knobY
-        );
-    }
-
-    createInteractionButton() {
-        // Get screen dimensions for responsive positioning
-        const screenWidth = this.cameras.main.width;
-        const screenHeight = this.cameras.main.height;
-
-        // Position interaction button in bottom-right corner
-        // Use percentage-based positioning for better responsiveness
-        const buttonX = Math.min(screenWidth - 60, screenWidth * 0.92); // 92% from left edge, maximum 60px from right
-        const buttonY = Math.min(screenHeight - 60, screenHeight * 0.9); // 90% from top, maximum 60px from bottom
-
-        console.log(
-            "Creating interaction button at position:",
-            buttonX,
-            buttonY
-        );
-        console.log("Landscape mode:", screenWidth > screenHeight);
-
-        // Create interaction button for mobile
-        const interactionButton = this.add.circle(
-            buttonX,
-            buttonY,
-            40,
-            0x00ff00,
-            0.7
-        );
-        interactionButton.setDepth(2000);
-        interactionButton.setScrollFactor(0); // Don't scroll with camera
-        interactionButton.setInteractive();
-
-        const buttonText = this.add
-            .text(buttonX, buttonY, "TAP", {
-                fontFamily: "Arial Black",
-                fontSize: 12,
-                color: "#000000",
-                align: "center",
-            })
-            .setOrigin(0.5)
-            .setDepth(2001)
-            .setScrollFactor(0); // Don't scroll with camera
-
-        interactionButton.on("pointerdown", () => {
-            this.interactWithNearbyNPC();
-        });
-
-        // Store button reference
-        this.touchControls = {
-            interactionButton: interactionButton,
-            buttonText: buttonText,
-        };
-    }
 
 
 
@@ -1974,36 +1305,6 @@ export class BarangayMap extends OpenWorldMapScene {
 
 
 
-    showMessage(text: string) {
-        const messageBox = this.add.rectangle(
-            512,
-            600,
-            800,
-            100,
-            0x000000,
-            0.8
-        );
-        const messageText = this.add
-            .text(512, 600, text, {
-                fontFamily: "Arial",
-                fontSize: 16,
-                color: "#FFFFFF",
-                align: "center",
-                wordWrap: { width: 750 },
-            })
-            .setOrigin(0.5);
-
-        // Auto-remove after 3 seconds
-        this.time.delayedCall(3000, () => {
-            messageBox.destroy();
-            messageText.destroy();
-        });
-    }
-
-    toggleMap() {
-        this.isUIVisible = !this.isUIVisible;
-        this.ui.setVisible(this.isUIVisible);
-    }
 
     async loadCollisions() {
         // Load collision data from collision editor

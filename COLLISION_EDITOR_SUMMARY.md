@@ -496,8 +496,8 @@ percentY → worldY = bgTop + (percentY / 100) * bgHeight
 
 **LocalStorage** (Development):
 ```
-Key: civika-collision-BarangayMap
-Key: civika-collision-CityMap
+Key: mathtuto-collision-BarangayMap
+Key: mathtuto-collision-CityMap
 ```
 
 **JSON Files** (Production):

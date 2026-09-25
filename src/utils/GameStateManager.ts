@@ -1,9 +1,10 @@
 /**
- * Tutor Town Game State Manager
+ * MathTuto Game State Manager
  * Centralized game state management with validation and persistence
  */
 
 import { GameValidation, GameProgress, QuizResult } from "./GameValidation";
+import ShopService from "../services/ShopService";
 
 export class GameStateManager {
     private static instance: GameStateManager;
@@ -85,6 +86,21 @@ export class GameStateManager {
             timeSpent
         );
 
+        // Apply Score Booster to correct answers (consumes one charge per quiz)
+        if (quizResult.isCorrect) {
+            const scoreMultiplier = ShopService.getInstance()
+                .getScoreBoostMultiplier();
+            if (scoreMultiplier > 1) {
+                ShopService.getInstance().consumeScoreBoostCharge();
+                quizResult.points = Math.round(
+                    quizResult.points * scoreMultiplier
+                );
+                console.log(
+                    `📈 Score Booster: points boosted x${scoreMultiplier} → +${quizResult.points}`
+                );
+            }
+        }
+
         console.log("Quiz result:", quizResult);
 
         // Update progress if answer is correct
@@ -164,16 +180,23 @@ export class GameStateManager {
             this.gameProgress.totalCoinsEarned = this.gameProgress.coins;
         }
 
+        // Coin Magnet doubles coins earned while active
+        const coinMultiplier = ShopService.getInstance().getActiveMultiplier(
+            "coin_multiplier"
+        );
+        const boostedAmount = Math.round(amount * coinMultiplier);
+
         this.gameProgress = {
             ...this.gameProgress,
-            coins: this.gameProgress.coins + amount,
-            totalCoinsEarned: this.gameProgress.totalCoinsEarned + amount,
+            coins: this.gameProgress.coins + boostedAmount,
+            totalCoinsEarned:
+                this.gameProgress.totalCoinsEarned + boostedAmount,
             lastPlayedDate: new Date().toISOString(),
         };
 
         this.saveProgress();
         this.notifyListeners();
-        console.log(`Added ${amount} coins for: ${reason}`);
+        console.log(`Added ${boostedAmount} coins for: ${reason}`);
     }
 
     /**
@@ -348,12 +371,19 @@ export class GameStateManager {
         // Add item to collected list
         this.gameProgress.collectedItems.push(itemId);
         this.gameProgress.totalItemsCollected += 1;
-        this.gameProgress.coins += coins;
+
+        // Coin Magnet doubles coins from collectibles while active
+        const coinMultiplier = ShopService.getInstance().getActiveMultiplier(
+            "coin_multiplier"
+        );
+        const boostedCoins = Math.round(coins * coinMultiplier);
+
+        this.gameProgress.coins += boostedCoins;
         this.gameProgress.totalScore += points;
         this.gameProgress.lastPlayedDate = new Date().toISOString();
 
         console.log(
-            `Collected item ${itemId}: +${coins} coins, +${points} points`
+            `Collected item ${itemId}: +${boostedCoins} coins, +${points} points`
         );
 
         // Save and notify

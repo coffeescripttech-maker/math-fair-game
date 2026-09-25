@@ -1,10 +1,10 @@
-// PWA Icon Generator for CIVIKA
+// PWA Icon Generator for MathTuto
 // Run: node create-pwa-icons.js
 
 const fs = require("fs");
 const path = require("path");
 
-console.log("🎨 CIVIKA PWA Icon Generator");
+console.log("🎨 MathTuto PWA Icon Generator");
 console.log("================================\n");
 
 // Check if sharp is installed

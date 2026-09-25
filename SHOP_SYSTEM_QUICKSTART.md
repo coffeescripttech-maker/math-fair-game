@@ -1,8 +1,8 @@
-# 🏪 CIVIKA Shop & Reward System - Quick Start
+# 🏪 MathTuto Shop & Reward System - Quick Start
 
 ## ✅ Implementation Complete!
 
-The complete shop and reward system has been fully implemented and integrated into CIVIKA!
+The complete shop and reward system has been fully implemented and integrated into MathTuto!
 
 ---
 

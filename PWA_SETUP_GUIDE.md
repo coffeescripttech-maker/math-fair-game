@@ -1,8 +1,8 @@
-# 📱 CIVIKA PWA Setup Guide - Landscape Mobile Game
+# 📱 MathTuto PWA Setup Guide - Landscape Mobile Game
 
 ## ✅ **What I've Implemented**
 
-Your CIVIKA game is now configured as a **Progressive Web App (PWA)** with **landscape orientation lock** for mobile devices!
+Your MathTuto game is now configured as a **Progressive Web App (PWA)** with **landscape orientation lock** for mobile devices!
 
 ---
 
@@ -10,7 +10,7 @@ Your CIVIKA game is now configured as a **Progressive Web App (PWA)** with **lan
 
 ### ✅ **1. PWA Manifest** (`public/manifest.json`)
 
--   App name: "CIVIKA - Civic Education Adventure"
+-   App name: "MathTuto - Civic Education Adventure"
 -   Display mode: `standalone` (full-screen app)
 -   Orientation: `landscape` (locked to landscape)
 -   Theme color: Amber/Gold (#F59E0B)
@@ -173,8 +173,8 @@ Shows a rotated message when device is in portrait mode:
 
 ### **On Android (Chrome/Edge):**
 
-1. Open CIVIKA in Chrome/Edge browser
-2. After 10 seconds, see "Install CIVIKA" prompt
+1. Open MathTuto in Chrome/Edge browser
+2. After 10 seconds, see "Install MathTuto" prompt
 3. Click "📥 Install Now"
 4. App installs to home screen
 5. Launch from home screen in landscape mode!
@@ -188,7 +188,7 @@ Shows a rotated message when device is in portrait mode:
 
 ### **On iOS (Safari):**
 
-1. Open CIVIKA in Safari
+1. Open MathTuto in Safari
 2. Tap Share button (📤)
 3. Scroll down, tap "Add to Home Screen"
 4. Edit name if desired
@@ -197,7 +197,7 @@ Shows a rotated message when device is in portrait mode:
 
 ### **On Desktop (Chrome/Edge):**
 
-1. Open CIVIKA in browser
+1. Open MathTuto in browser
 2. Look for install icon (➕) in address bar
 3. Click "Install"
 4. App opens in standalone window!
@@ -249,8 +249,8 @@ Shows a rotated message when device is in portrait mode:
 
 ```json
 {
-    "name": "CIVIKA - Civic Education Adventure",
-    "short_name": "CIVIKA",
+    "name": "MathTuto - Civic Education Adventure",
+    "short_name": "MathTuto",
     "orientation": "landscape",
     "display": "standalone",
     "start_url": "/",
@@ -261,7 +261,7 @@ Shows a rotated message when device is in portrait mode:
 ### **2. sw.js** (Service Worker - Public folder)
 
 ```javascript
-const CACHE_NAME = "civika-v1.0.0";
+const CACHE_NAME = "mathtuto-v1.0.0";
 // Caches: /, /index.html, /manifest.json, backgrounds, etc.
 ```
 
@@ -310,7 +310,7 @@ screen.orientation.lock("landscape");
 ```
 ┌────────────────────────────────┐
 │                                │
-│   🏛️ CIVIKA Game Running      │
+│   🏛️ MathTuto Game Running      │
 │   Full Landscape Experience    │
 │                                │
 └────────────────────────────────┘
@@ -367,7 +367,7 @@ screen.orientation.lock("landscape");
 ```
 1. Open in Chrome/Edge on mobile
 2. Wait 10 seconds
-3. See "Install CIVIKA" prompt ✅
+3. See "Install MathTuto" prompt ✅
 4. Click "Install Now"
 5. App installs to home screen ✅
 6. Launch app → Runs in landscape ✅
@@ -399,14 +399,14 @@ screen.orientation.lock("landscape");
 
 ### **First Visit (Browser):**
 
-1. User opens CIVIKA URL
+1. User opens MathTuto URL
 2. Game loads normally
 3. After 10 seconds → Install prompt appears
 4. User can install or dismiss
 
 ### **Installed PWA:**
 
-1. User taps CIVIKA icon on home screen
+1. User taps MathTuto icon on home screen
 2. App launches in fullscreen (no browser UI)
 3. Orientation locked to landscape
 4. Offline gameplay available
@@ -429,7 +429,7 @@ When you make changes:
 
 ```javascript
 // In public/sw.js
-const CACHE_NAME = "civika-v1.0.1"; // ← Increment version
+const CACHE_NAME = "mathtuto-v1.0.1"; // ← Increment version
 ```
 
 ### **Users Get Update:**
@@ -554,9 +554,9 @@ node create-pwa-icons.js
 
 1. User opens game in Chrome
 2. Plays for 10 seconds
-3. Sees "Install CIVIKA" prompt (bottom-right)
+3. Sees "Install MathTuto" prompt (bottom-right)
 4. Clicks "Install Now"
-5. CIVIKA icon appears on home screen
+5. MathTuto icon appears on home screen
 6. Launches app → **Landscape fullscreen** ✅
 7. No browser UI, feels like native app!
 8. Works offline after first load!
@@ -565,7 +565,7 @@ node create-pwa-icons.js
 
 1. User opens game in Safari
 2. Taps Share → "Add to Home Screen"
-3. CIVIKA icon on home screen
+3. MathTuto icon on home screen
 4. Launches app → **Landscape mode** ✅
 5. Fullscreen web app experience
 6. Cached for fast loading!
@@ -679,7 +679,7 @@ setTimeout(() => {
 ### **Android Instructions:**
 
 ```
-1. Open CIVIKA in Chrome
+1. Open MathTuto in Chrome
 2. Tap "Install" when prompted
    OR
    Tap menu (⋮) → "Install app"
@@ -690,7 +690,7 @@ setTimeout(() => {
 ### **iOS Instructions:**
 
 ```
-1. Open CIVIKA in Safari
+1. Open MathTuto in Safari
 2. Tap Share button (📤)
 3. Tap "Add to Home Screen"
 4. Tap "Add"
@@ -802,7 +802,7 @@ setTimeout(() => {
 
 ## 🎉 **Congratulations!**
 
-Your CIVIKA game is now a **fully-functional PWA** with:
+Your MathTuto game is now a **fully-functional PWA** with:
 
 -   ✅ Installable on mobile devices
 -   ✅ Landscape orientation lock
@@ -823,4 +823,4 @@ Your CIVIKA game is now a **fully-functional PWA** with:
 
 ---
 
-**Your CIVIKA game is now PWA-ready for landscape mobile gaming!** 📱🎮✨
+**Your MathTuto game is now PWA-ready for landscape mobile gaming!** 📱🎮✨

@@ -156,7 +156,7 @@ console.log("Items:", gsm.getCollectedItems());
 GameStateManager.getInstance().resetProgress();
 
 // Or in browser console:
-localStorage.removeItem("civika-game-progress");
+localStorage.removeItem("mathtuto-game-progress");
 location.reload();
 ```
 

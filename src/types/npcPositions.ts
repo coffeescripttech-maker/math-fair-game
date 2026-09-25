@@ -1,5 +1,5 @@
 /**
- * NPC Position System Type Definitions for CIVIKA
+ * NPC Position System Type Definitions for MathTuto
  * Background-relative NPC positions (overrides of the default mission-location spots)
  */
 

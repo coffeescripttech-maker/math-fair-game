@@ -4,7 +4,7 @@
 "Algebra Adventure: Math in Motion" is an educational RPG that transforms algebraic concepts into engaging gameplay mechanics, set in a vibrant world where math is the key to solving real-world problems.
 
 ## Core Premise
-Players navigate through various environments (starting from their local barangay to the bustling city), solving algebraic challenges that mirror real-life situations. The game maintains CIVIKA's structure while adapting its mechanics to teach and reinforce algebraic thinking.
+Players navigate through various environments (starting from their local barangay to the bustling city), solving algebraic challenges that mirror real-life situations. The game maintains MathTuto's structure while adapting its mechanics to teach and reinforce algebraic thinking.
 
 # Game Mechanics: Algebra Adventure
 

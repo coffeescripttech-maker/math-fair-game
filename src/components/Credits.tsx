@@ -15,7 +15,7 @@ export const Credits: React.FC<CreditsProps> = ({ onClose, isVisible }) => {
         },
         {
             role: "Game Designer",
-            name: "Tutor Town Development Team",
+            name: "MathTuto Development Team",
             description: "Game mechanics and educational content design",
             icon: "🎮",
         },
@@ -123,11 +123,11 @@ export const Credits: React.FC<CreditsProps> = ({ onClose, isVisible }) => {
                     <div className="flex items-center justify-center mb-4">
                         <img
                             src="/logo.jpg"
-                            alt="Tutor Town Logo"
+                            alt="MathTuto Logo"
                             className="w-16 h-16 mr-4 drop-shadow-lg"
                         />
                         <div className="text-gray-900 text-lg font-brutal uppercase">
-                            Tutor Town - Radicals & Inverse Functions
+                            MathTuto - Radicals & Inverse Functions
                         </div>
                     </div>
                     <div className="text-gray-600 text-sm mt-2">
@@ -235,7 +235,7 @@ export const Credits: React.FC<CreditsProps> = ({ onClose, isVisible }) => {
                         </h3>
                         <div className="rounded-none p-6 bg-brutal-yellow border-[3px] border-black shadow-brutal-sm">
                             <p className="text-gray-700 text-center leading-relaxed">
-                                <strong>Tutor Town</strong> was created as a
+                                <strong>MathTuto</strong> was created as a
                                 capstone project to teach algebra through
                                 interactive gameplay and real-world problem
                                 solving. Filipino students explore their
@@ -270,7 +270,7 @@ export const Credits: React.FC<CreditsProps> = ({ onClose, isVisible }) => {
                     <section>
                         <div className="text-center p-4 border-t-2 border-gray-800">
                             <div className="text-gray-700 text-sm mb-2">
-                                © 2025 Tutor Town Development Team. Created for
+                                © 2025 MathTuto Development Team. Created for
                                 educational purposes.
                             </div>
                             <div className="text-gray-200 text-xs">

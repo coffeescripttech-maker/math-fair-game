@@ -1,4 +1,4 @@
-# 🏆 CIVIKA Leaderboard - Quick Start (5 Minutes!)
+# 🏆 MathTuto Leaderboard - Quick Start (5 Minutes!)
 
 ## ✅ Implementation Status
 
@@ -32,7 +32,7 @@ This will fix the TypeScript import error for `@supabase/supabase-js`.
 3. Sign up with GitHub or email
 4. Create a new organization (use any name)
 5. Create a new project:
-    - **Name**: `civika-game`
+    - **Name**: `mathtuto-game`
     - **Database Password**: Create a strong password (save it!)
     - **Region**: Choose closest to your location
     - **Plan**: Select **Free** (more than enough!)

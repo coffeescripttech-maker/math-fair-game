@@ -38,7 +38,7 @@ export class Preloader extends Scene {
         this.load.image("logo", "logo.jpg");
         this.load.image("star", "star.png");
 
-        // CIVIKA game assets
+        // MathTuto game assets
         this.load.image("background", "bg.png");
 
         // Load barangay background image (optional) - try different paths
@@ -329,8 +329,10 @@ export class Preloader extends Scene {
                 this.load.image(key, `assets/LEVEL3/${key}.png`);
             });
 
-            // Start the loader
-            this.load.start();
+            // NOTE: do NOT call this.load.start() here. Starting the loader
+            // mid-preload made everything queued afterwards (Levels 4 & 5 NPC
+            // images, placeholder sprites) depend on lucky timing. Phaser's
+            // scene loader runs everything queued during preload() automatically.
         } else {
             console.log("All Level 3 NPC images are already loaded");
         }
@@ -339,46 +341,49 @@ export class Preloader extends Scene {
     loadLevel4NPCImages() {
         console.log("Loading Level 4 region NPC images from LEVEL4 folder...");
 
-        // Load all Level 4 NPC images - Regional directors
+        // Load all Level 4 NPC images - Regional officials.
+        // Keys must match RegionMap's imageFileMap values so the scene finds
+        // them preloaded (any mismatch silently falls back to a generic
+        // student sprite). URLs must match files that exist in public/.
         this.load.image(
             "regional-math-director",
-            "assets/LEVEL4/regional-development-council-director.png",
+            "assets/LEVEL4/regional-math-director.png",
         );
         this.load.image(
             "regional-analyst",
-            "assets/LEVEL4/neda-regional-director.png",
+            "assets/LEVEL4/regional-analyst.png",
         );
         this.load.image(
             "regional-coordinator",
-            "assets/LEVEL4/deped-regional-director.png",
+            "assets/LEVEL4/regional-coordinator.png",
         );
         this.load.image(
             "regional-strategist",
-            "assets/LEVEL4/dost-regional-director.png",
+            "assets/LEVEL4/regional-strategist.png",
         );
         this.load.image(
             "regional-planner",
-            "assets/LEVEL4/dti-regional-director.png",
+            "assets/LEVEL4/regional-planner.png",
         );
         this.load.image(
             "regional-economist",
-            "assets/LEVEL4/da-regional-director.png",
+            "assets/LEVEL4/regional-economist.png",
         );
         this.load.image(
             "regional-researcher",
-            "assets/LEVEL4/doh-regional-director.png",
+            "assets/LEVEL4/regional-researcher.png",
         );
         this.load.image(
             "regional-systems-expert",
-            "assets/LEVEL4/dpwh-regional-director.png",
+            "assets/LEVEL4/regional-systems-expert.png",
         );
         this.load.image(
             "regional-data-scientist",
-            "assets/LEVEL4/dswd-regional-director.png",
+            "assets/LEVEL4/regional-data-scientist.png",
         );
         this.load.image(
             "regional-policy-advisor",
-            "assets/LEVEL4/dilg-regional-director.png",
+            "assets/LEVEL4/regional-policy-advisor.png",
         );
     }
     loadLevel5NPCImages() {

@@ -1,14 +1,14 @@
-# 🏆 CIVIKA Leaderboard System - Setup Guide
+# 🏆 MathTuto Leaderboard System - Setup Guide
 
 ## Overview
 
-This guide will help you set up a complete leaderboard system using Supabase for CIVIKA, enabling players to compete globally and see their rankings.
+This guide will help you set up a complete leaderboard system using Supabase for MathTuto, enabling players to compete globally and see their rankings.
 
 ---
 
 ## 🎯 Why Supabase?
 
-**Perfect for CIVIKA because:**
+**Perfect for MathTuto because:**
 
 -   ✅ **Free Tier**: Generous free tier for indie games
 -   ✅ **Real-Time**: Live leaderboard updates
@@ -35,7 +35,7 @@ npm install @supabase/supabase-js
 3. Create new organization
 4. Create new project:
 
-    - **Name**: `civika-game`
+    - **Name**: `mathtuto-game`
     - **Database Password**: (save this securely)
     - **Region**: Choose closest to your users
     - **Plan**: Free tier
@@ -1103,7 +1103,7 @@ if (progress.totalScore > MAX_POSSIBLE_SCORE) {
 -   Unlimited rows
 -   2 GB bandwidth/month
 
-**For CIVIKA:**
+**For MathTuto:**
 
 -   ~1 KB per player entry
 -   500,000 players possible

@@ -1,4 +1,4 @@
-# 🔄 Migration Status: CIVIKA → Algebra Adventure
+# 🔄 Migration Status: MathTuto → Algebra Adventure
 
 ## **Migration Progress Overview**
 
@@ -89,24 +89,24 @@ Civic Governance → Intermediate Algebra
 
 **Remaining Issues:**
 ```typescript
-Line 35: if (window.confirm("Are you sure you want to exit CIVIKA?")) {
-Line 69: alt="CIVIKA Logo"
-Line 96: CIVIKA (commented out, but still present)
+Line 35: if (window.confirm("Are you sure you want to exit MathTuto?")) {
+Line 69: alt="MathTuto Logo"
+Line 96: MathTuto (commented out, but still present)
 Line 99: 🏰 A Civic Education Adventure 🏰 (commented out)
 ```
 
 **Required Changes:**
 ```typescript
 // Line 35
-- "Are you sure you want to exit CIVIKA?"
+- "Are you sure you want to exit MathTuto?"
 + "Are you sure you want to exit Algebra Adventure?"
 
 // Line 69
-- alt="CIVIKA Logo"
+- alt="MathTuto Logo"
 + alt="Algebra Adventure Logo"
 
 // Lines 96-99: Remove or update comments
-- CIVIKA
+- MathTuto
 - 🏰 A Civic Education Adventure 🏰
 + Algebra Adventure
 + 📐 Math in Motion 📐
@@ -119,33 +119,33 @@ Line 99: 🏰 A Civic Education Adventure 🏰 (commented out)
 
 **Remaining Issues:**
 ```typescript
-Line 18: name: "CIVIKA Development Team"
-Line 134: alt="CIVIKA Logo"
-Line 138: "CIVIKA - A Civic Education Adventure"
-Line 246: <strong>CIVIKA</strong> was created...
-Line 280: © 2025 CIVIKA Development Team
+Line 18: name: "MathTuto Development Team"
+Line 134: alt="MathTuto Logo"
+Line 138: "MathTuto - A Civic Education Adventure"
+Line 246: <strong>MathTuto</strong> was created...
+Line 280: © 2025 MathTuto Development Team
 ```
 
 **Required Changes:**
 ```typescript
 // Line 18
-- name: "CIVIKA Development Team"
+- name: "MathTuto Development Team"
 + name: "Algebra Adventure Development Team"
 
 // Line 134
-- alt="CIVIKA Logo"
+- alt="MathTuto Logo"
 + alt="Algebra Adventure Logo"
 
 // Line 138
-- "CIVIKA - A Civic Education Adventure"
+- "MathTuto - A Civic Education Adventure"
 + "Algebra Adventure - Math in Motion"
 
 // Line 246
-- <strong>CIVIKA</strong> was created as a capstone project to promote civic education
+- <strong>MathTuto</strong> was created as a capstone project to promote civic education
 + <strong>Algebra Adventure</strong> was created as a capstone project to teach algebra through interactive gameplay
 
 // Line 280
-- © 2025 CIVIKA Development Team
+- © 2025 MathTuto Development Team
 + © 2025 Algebra Adventure Development Team
 ```
 
@@ -257,13 +257,13 @@ titleDescriptions = {
 
 **Remaining Issues:**
 ```typescript
-Line 83: // Keep this for compatibility but it's not used in CIVIKA
+Line 83: // Keep this for compatibility but it's not used in MathTuto
 ```
 
 **Required Changes:**
 ```typescript
 // Line 83
-- // Keep this for compatibility but it's not used in CIVIKA
+- // Keep this for compatibility but it's not used in MathTuto
 + // Keep this for compatibility but it's not used in Algebra Adventure
 ```
 
@@ -289,10 +289,10 @@ This scene appears to be a template/placeholder and is not actively used in the 
 ### **5. Miscellaneous Components**
 
 #### **Minor Updates Needed:**
-- ⚠️ `src/components/Settings.tsx` - May have CIVIKA references
+- ⚠️ `src/components/Settings.tsx` - May have MathTuto references
 - ⚠️ `src/components/PWAInstallPrompt.tsx` - Install prompt text
 - ⚠️ `src/components/LandscapePrompt.tsx` - May have game name
-- ⚠️ `src/components/CollisionEditor.tsx` - Comments may reference CIVIKA
+- ⚠️ `src/components/CollisionEditor.tsx` - Comments may reference MathTuto
 
 ---
 
@@ -316,7 +316,7 @@ This scene appears to be a template/placeholder and is not actively used in the 
 
 ### **High Priority (User-Facing)**
 1. ⚠️ **MainMenu.tsx** - Update exit confirmation & logo alt text
-2. ⚠️ **Credits.tsx** - Update all CIVIKA branding to Algebra Adventure
+2. ⚠️ **Credits.tsx** - Update all MathTuto branding to Algebra Adventure
 3. ⚠️ **PWAInstallPrompt.tsx** - Update install prompt text
 
 ### **Medium Priority (Content)**
@@ -325,7 +325,7 @@ This scene appears to be a template/placeholder and is not actively used in the 
 6. ⚠️ **src/types/secretQuest.ts** - Update PlayerTitle enum
 
 ### **Low Priority (Non-Critical)**
-7. ⚠️ **Settings.tsx** - Check for any CIVIKA references
+7. ⚠️ **Settings.tsx** - Check for any MathTuto references
 8. ⚠️ **LandscapePrompt.tsx** - Update game name if present
 9. ⚠️ **MainMenu.ts** - Update comment
 
@@ -380,8 +380,8 @@ This scene appears to be a template/placeholder and is not actively used in the 
 
 ```bash
 # Find all remaining references
-CIVIKA → Algebra Adventure
-civika → algebra adventure
+MathTuto → Algebra Adventure
+mathtuto → algebra adventure
 civic education → algebra education
 civic leader → math champion
 civic excellence → mathematical mastery
@@ -394,15 +394,15 @@ Master of Civics → Master of Algebra
 
 ### **Recommended Grep Commands:**
 ```bash
-# Find all CIVIKA references
-grep -r "CIVIKA" src/
+# Find all MathTuto references
+grep -r "MathTuto" src/
 
 # Find all civic references (case-insensitive)
 grep -ri "civic" src/
 
 # Find specific files with issues
 grep -l "civic" src/components/*.tsx
-grep -l "CIVIKA" src/services/*.ts
+grep -l "MathTuto" src/services/*.ts
 ```
 
 ---
@@ -439,7 +439,7 @@ grep -l "CIVIKA" src/services/*.ts
 - ✅ Design system (colors, fonts, animations)
 - ✅ New educational components
 
-### **What Still References CIVIKA:**
+### **What Still References MathTuto:**
 - ⚠️ Some UI component text (MainMenu, Credits)
 - ⚠️ Some service layer content (Shop items, Secret quests)
 - ⚠️ Some player titles and descriptions

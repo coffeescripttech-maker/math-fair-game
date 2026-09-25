@@ -334,7 +334,7 @@ collisionData = {
 };
 
 localStorage.setItem(
-    "civika-collision-BarangayMap",
+    "mathtuto-collision-BarangayMap",
     JSON.stringify(collisionData)
 );
 ```
@@ -343,7 +343,7 @@ localStorage.setItem(
 
 ```typescript
 // 1. loadCollisions() is called
-const collisionData = localStorage.getItem("civika-collision-BarangayMap");
+const collisionData = localStorage.getItem("mathtuto-collision-BarangayMap");
 
 // 2. Convert % to world coordinates
 const worldX = bgLeft + (42.5 / 100) * bgWidth; // e.g., 850
@@ -409,7 +409,7 @@ Coordinates shown in right panel
 5. Close editor
 6. Check localStorage:
     - F12 → Application tab → Local Storage
-    - Look for key: `civika-collision-BarangayMap`
+    - Look for key: `mathtuto-collision-BarangayMap`
     - Should have JSON data
 
 ### "Collision works but in wrong place"

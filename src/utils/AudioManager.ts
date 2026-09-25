@@ -1,5 +1,5 @@
 /**
- * CIVIKA Audio Manager
+ * MathTuto Audio Manager
  * Handles background music and sound effects with level-specific audio
  */
 
@@ -25,31 +25,35 @@ export class AudioManager {
     };
     private isInitialized = false;
 
-    // Level-specific music mapping
-    private levelMusic = {
-        MainMenu: "menu-theme.mp3",
-        BarangayMap: "menu-theme.mp3",
-        CityMap: "menu-theme.mp3",
-        ProvinceMap: "menu-theme.mp3",
-        RegionMap: "menu-theme.mp3",
-        NationalMap: "menu-theme.mp3",
-        Quiz: "quiz-theme.mp3",
-        Mission: "mission-theme.mp3",
-    };
+    // Level-specific music mapping. Only files that exist in
+// public/assets/audio/ are referenced; the level loopbacks to menu-theme
+// unless a dedicated track is present.
+private levelMusic = {
+    MainMenu: "menu-theme.mp3",
+    BarangayMap: "barangay-theme.wav",
+    CityMap: "menu-theme.mp3",
+    ProvinceMap: "menu-theme.mp3",
+    RegionMap: "menu-theme.mp3",
+    NationalMap: "menu-theme.mp3",
+    Quiz: "menu-theme.mp3",
+    Mission: "menu-theme.mp3",
+};
 
-    // Sound effects mapping
-    private soundEffectsMap = {
-        "button-click": "button-click1.mp3",
-        "mission-complete": "mission-complete.wav",
-        "quiz-correct": "quiz-correct.wav",
-        "quiz-wrong": "quiz-wrong.wav",
-        "level-up": "level-up.wav",
-        "coin-collect": "coin-collect.wav",
-        "badge-earned": "badge-earned.wav",
-        "npc-interact": "npc-interact.wav",
-        "menu-open": "button-click.mp3",
-        "menu-close": "button-click.mp3",
-    };
+// Sound effects mapping. Missing effect files fall back to the existing
+// button-click.mp3 so the game still gives audible feedback until the real
+// SFX are dropped into public/assets/audio/.
+private soundEffectsMap = {
+    "button-click": "button-click.mp3",
+    "mission-complete": "button-click.mp3",
+    "quiz-correct": "button-click.mp3",
+    "quiz-wrong": "button-click.mp3",
+    "level-up": "button-click.mp3",
+    "coin-collect": "button-click.mp3",
+    "badge-earned": "button-click.mp3",
+    "npc-interact": "button-click.mp3",
+    "menu-open": "button-click.mp3",
+    "menu-close": "button-click.mp3",
+};
 
     private constructor() {
         this.loadSettings();
@@ -130,7 +134,7 @@ export class AudioManager {
      */
     private loadSettings(): void {
         try {
-            const savedSettings = localStorage.getItem("civika-settings");
+            const savedSettings = localStorage.getItem("mathtuto-settings");
             if (savedSettings) {
                 const parsed = JSON.parse(savedSettings);
                 this.settings = { ...this.settings, ...parsed };
@@ -144,7 +148,7 @@ export class AudioManager {
      * Set up event listeners for settings changes
      */
     private setupEventListeners(): void {
-        window.addEventListener("civika-settings-changed", (event: any) => {
+        window.addEventListener("mathtuto-settings-changed", (event: any) => {
             if (event.detail) {
                 this.updateSettings(event.detail);
             }

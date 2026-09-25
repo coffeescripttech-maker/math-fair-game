@@ -1,7 +1,7 @@
-// Service Worker for Tutor Town PWA
+// Service Worker for MathTuto PWA
 const CACHE_VERSION = "v1.0.1";
-const CACHE_NAME = `tutor-town-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `tutor-town-runtime-${CACHE_VERSION}`;
+const CACHE_NAME = `mathtuto-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `mathtuto-runtime-${CACHE_VERSION}`;
 
 // Development hosts should bypass service worker caching
 const isDevelopment = () =>
@@ -22,7 +22,7 @@ const PRECACHE_ASSETS = [
 
 // Install event - cache critical assets
 self.addEventListener("install", (event) => {
-    console.log("🎮 Tutor Town Service Worker installing...");
+    console.log("🎮 MathTuto Service Worker installing...");
 
     event.waitUntil(
         caches
@@ -47,7 +47,7 @@ self.addEventListener("install", (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
-    console.log("🎮 Tutor Town Service Worker activating...");
+    console.log("🎮 MathTuto Service Worker activating...");
 
     event.waitUntil(
         caches
@@ -58,8 +58,8 @@ self.addEventListener("activate", (event) => {
                         .filter((cacheName) => {
                             // Delete old caches that belong to this app
                             return (
-                                (cacheName.startsWith("tutor-town-") ||
-                                    cacheName.startsWith("civika-")) &&
+                                (cacheName.startsWith("mathtuto-") ||
+                                    cacheName.startsWith("mathtuto-")) &&
                                 cacheName !== CACHE_NAME &&
                                 cacheName !== RUNTIME_CACHE
                             );

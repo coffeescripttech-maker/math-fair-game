@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Timer System adds urgency and excitement to CIVIKA quizzes with countdown timers, time-based bonuses, and speed challenge achievements.
+The Timer System adds urgency and excitement to MathTuto quizzes with countdown timers, time-based bonuses, and speed challenge achievements.
 
 ---
 
@@ -1087,7 +1087,7 @@ if (progress && progress.speedChallenges) {
 **Last Updated**: October 10, 2025  
 **Version**: 1.0.0  
 **Status**: ✅ Production Ready  
-**Developer**: CIVIKA Team
+**Developer**: MathTuto Team
 
 ---
 

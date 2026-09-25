@@ -1,4 +1,4 @@
-# 🎮 CIVIKA Game Features Documentation
+# 🎮 MathTuto Game Features Documentation
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -14,7 +14,7 @@
 
 ## Overview
 
-CIVIKA is a civic engagement educational game featuring two main levels:
+MathTuto is a civic engagement educational game featuring two main levels:
 - **Level 1**: Barangay Government (10 missions, 8 collectibles)
 - **Level 2**: City/Municipal Government (10 missions, 10 collectibles)
 
@@ -630,7 +630,7 @@ time.delayedCall(400, () => {
 #### localStorage Format
 ```json
 {
-    "civika-game-progress": {
+    "mathtuto-game-progress": {
         "playerName": "Citizen",
         "level": 1,
         "coins": 150,
@@ -833,7 +833,7 @@ gameStateManager.collectItem("barangay-treasure-1", 25, 50);
 GameStateManager.getInstance().resetProgress();
 
 // Or clear only collectibles (in browser console)
-localStorage.removeItem("civika-game-progress");
+localStorage.removeItem("mathtuto-game-progress");
 ```
 
 ---
@@ -959,7 +959,7 @@ updateMinimap(): void
 
 ## Credits
 
-**Game**: CIVIKA - Civic Engagement Educational Game  
+**Game**: MathTuto - Civic Engagement Educational Game  
 **Features**: Collectibles System v1.0  
 **Platform**: Phaser 3 + React + TypeScript  
 **Storage**: localStorage with checksum validation  
@@ -979,6 +979,6 @@ For issues or questions about the collectibles system:
 ---
 
 **Last Updated**: October 10, 2025  
-**Author**: CIVIKA Development Team  
+**Author**: MathTuto Development Team  
 **Version**: 1.0.0
 

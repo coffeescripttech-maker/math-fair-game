@@ -1,5 +1,5 @@
 /**
- * Collision System Type Definitions for CIVIKA
+ * Collision System Type Definitions for MathTuto
  * Background-relative collision shapes
  */
 

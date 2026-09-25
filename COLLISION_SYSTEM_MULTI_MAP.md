@@ -166,7 +166,7 @@ Each map's collision file looks like this:
 The system tries to load collision data in this order:
 
 1. **localStorage** (for editor testing)
-    - Key: `civika-collision-BarangayMap` or `civika-collision-CityMap`
+    - Key: `mathtuto-collision-BarangayMap` or `mathtuto-collision-CityMap`
 2. **JSON file** (for production)
     - Path: `/barangaymap-collisions.json` or `/citymap-collisions.json`
 

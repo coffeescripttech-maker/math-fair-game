@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Secret Quest System adds a layer of mystery, exploration, and achievement to CIVIKA by providing hidden quests that award unique **player titles**. These quests encourage players to explore every corner of the game world, experiment with different strategies, and discover hidden content.
+The Secret Quest System adds a layer of mystery, exploration, and achievement to MathTuto by providing hidden quests that award unique **player titles**. These quests encourage players to explore every corner of the game world, experiment with different strategies, and discover hidden content.
 
 ---
 
@@ -187,8 +187,8 @@ Secret Quest Flow:
 - **`src/utils/GameValidation.ts`**: Progress tracking
 
 ### Data Storage
-- **localStorage**: `civika-secret-quests` (quest progress)
-- **localStorage**: `civika-player-titles` (unlocked titles)
+- **localStorage**: `mathtuto-secret-quests` (quest progress)
+- **localStorage**: `mathtuto-player-titles` (unlocked titles)
 - **Persistent**: Survives page refresh
 - **Validated**: Checksummed with game progress
 
@@ -398,7 +398,7 @@ Secret Quest Flow:
 
 ## 🎉 Conclusion
 
-The Secret Quest System adds depth, mystery, and replayability to CIVIKA. By rewarding exploration, skill, and dedication with unique titles, players have meaningful goals beyond the main story. The system is designed to be discoverable yet challenging, providing a sense of accomplishment for those who seek out all its secrets.
+The Secret Quest System adds depth, mystery, and replayability to MathTuto. By rewarding exploration, skill, and dedication with unique titles, players have meaningful goals beyond the main story. The system is designed to be discoverable yet challenging, providing a sense of accomplishment for those who seek out all its secrets.
 
 **"Not all treasures are marked on the map. Some require a keen eye, a curious mind, and a spirit of adventure." - The Ancient Guardian** 🗺️✨
 

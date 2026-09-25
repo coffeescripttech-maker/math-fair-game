@@ -1,7 +1,7 @@
 # Algebra Adventure: Tutor Edition — Storyline v2
 
 **Working Title:** *Kuya Dex’s Radical Tutorial*  
-**Alternative Titles:** *Inverse & Radical: Tutor Quest*, *Tutor Town: Math Mission*, *Algebra Adventure: Tutor Road*
+**Alternative Titles:** *Inverse & Radical: Tutor Quest*, *MathTuto: Math Mission*, *Algebra Adventure: Tutor Road*
 
 ---
 

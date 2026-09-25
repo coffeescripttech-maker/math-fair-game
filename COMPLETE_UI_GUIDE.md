@@ -1,8 +1,8 @@
-# 🎮 CIVIKA Complete UI Guide
+# 🎮 MathTuto Complete UI Guide
 
 ## Overview
 
-This document shows all UI components and navigation in CIVIKA after all implementations.
+This document shows all UI components and navigation in MathTuto after all implementations.
 
 ---
 
@@ -12,7 +12,7 @@ This document shows all UI components and navigation in CIVIKA after all impleme
 
 ```
 ┌─────────────────────────────────────┐
-│           🏛️ CIVIKA                 │
+│           🏛️ MathTuto                 │
 ├─────────────────────────────────────┤
 │  [🆕 New Game]                      │ ← Full width
 ├─────────────────────────────────────┤

@@ -1,4 +1,4 @@
-# 🔧 CIVIKA Leaderboard - Troubleshooting Guide
+# 🔧 MathTuto Leaderboard - Troubleshooting Guide
 
 ## 🐛 Error: Invalid Input Syntax for Type Integer
 
@@ -180,7 +180,7 @@ leaderboardService.current.submitScore(progress);
 Open console and run:
 
 ```javascript
-const saved = localStorage.getItem("civika-game-progress");
+const saved = localStorage.getItem("mathtuto-game-progress");
 const parsed = JSON.parse(saved);
 console.log("Playtime value:", parsed.playtime);
 console.log("Type:", typeof parsed.playtime);
@@ -306,7 +306,7 @@ Sometimes old data with wrong formats can cause issues.
 
 ```javascript
 // In browser console:
-localStorage.removeItem("civika-game-progress");
+localStorage.removeItem("mathtuto-game-progress");
 location.reload();
 ```
 

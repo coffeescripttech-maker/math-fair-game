@@ -1,4 +1,4 @@
-# 🔄 CIVIKA Leaderboard - Score Submission Flow
+# 🔄 MathTuto Leaderboard - Score Submission Flow
 
 ## 📊 Complete Flow Diagram
 
@@ -876,7 +876,7 @@ Response: { id: "...", player_name: "Alex", ... }
 **1. Local Storage (Immediate)**
 
 ```
-localStorage.getItem("civika-game-progress")
+localStorage.getItem("mathtuto-game-progress")
 └─> Saved after every mission/action
 └─> Available offline
 └─> Only on this device

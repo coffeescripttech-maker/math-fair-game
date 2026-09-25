@@ -1,5 +1,5 @@
 /**
- * Leaderboard Type Definitions for CIVIKA
+ * Leaderboard Type Definitions for MathTuto
  */
 
 export interface LeaderboardEntry {

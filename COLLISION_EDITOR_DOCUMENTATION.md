@@ -457,8 +457,8 @@ loadCollisions() {
 ### LocalStorage Keys
 
 ```
-civika-collision-BarangayMap  → Barangay collision data
-civika-collision-CityMap      → City collision data
+mathtuto-collision-BarangayMap  → Barangay collision data
+mathtuto-collision-CityMap      → City collision data
 ```
 
 ### JSON Files (Recommended Structure)

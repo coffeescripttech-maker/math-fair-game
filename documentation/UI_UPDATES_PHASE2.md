@@ -46,7 +46,7 @@ bg-clip-text text-transparent
 
 **Logo:**
 ```typescript
-// OLD: alt="CIVIKA Logo"
+// OLD: alt="MathTuto Logo"
 // NEW: alt="Algebra Adventure Logo"
 ```
 

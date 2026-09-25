@@ -2,7 +2,7 @@
 
 ## 📱 **Quick & Easy Icon Generation**
 
-You need 8 icon sizes for your CIVIKA PWA. Here are the easiest methods:
+You need 8 icon sizes for your MathTuto PWA. Here are the easiest methods:
 
 ---
 
@@ -36,8 +36,8 @@ You need 8 icon sizes for your CIVIKA PWA. Here are the easiest methods:
 3. **Design your icon**:
     ```
     Background: Amber gradient (#FEF3C7 to #F59E0B)
-    Center: 🏛️ emoji or CIVIKA logo
-    Text: "CIVIKA" (bold, brown color)
+    Center: 🏛️ emoji or MathTuto logo
+    Text: "MathTuto" (bold, brown color)
     Border: Optional golden border
     ```
 4. **Download as PNG** (512x512)
@@ -73,7 +73,7 @@ You need 8 icon sizes for your CIVIKA PWA. Here are the easiest methods:
 ```
 Simple, recognizable design:
 - 🏛️ Government building emoji
-- CIVIKA text/logo
+- MathTuto text/logo
 - Philippine flag colors accent
 - Clean, bold design
 ```
@@ -142,7 +142,7 @@ public/
 │                        │
 │        🏛️              │  ← Large emoji
 │                        │     or logo
-│      CIVIKA            │  ← Bold text
+│      MathTuto            │  ← Bold text
 │                        │
 │  Golden Border         │
 │  (#F59E0B)            │

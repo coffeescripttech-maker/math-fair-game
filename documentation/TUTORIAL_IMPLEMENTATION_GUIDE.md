@@ -70,8 +70,8 @@ const handleShowTutorial = () => {
 ### LocalStorage Keys
 
 ```typescript
-'civika-tutorial-completed': boolean
-'civika-tutorial-show-on-start': boolean
+'mathtuto-tutorial-completed': boolean
+'mathtuto-tutorial-show-on-start': boolean
 ```
 
 ---
@@ -141,8 +141,8 @@ const handleCharacterCreated = (name: string, color: string) => {
     // ... existing code ...
     
     // Check if first-time player
-    const hasSeenTutorial = localStorage.getItem('civika-tutorial-completed');
-    const showOnStart = localStorage.getItem('civika-tutorial-show-on-start');
+    const hasSeenTutorial = localStorage.getItem('mathtuto-tutorial-completed');
+    const showOnStart = localStorage.getItem('mathtuto-tutorial-show-on-start');
     
     if (!hasSeenTutorial && showOnStart !== 'false') {
         setTimeout(() => {

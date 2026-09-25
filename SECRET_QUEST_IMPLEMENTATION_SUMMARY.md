@@ -249,8 +249,8 @@
 
 **LocalStorage Keys**:
 
--   `civika-secret-quests`: Quest progress, locations, NPCs
--   `civika-player-titles`: Unlocked titles and current title
+-   `mathtuto-secret-quests`: Quest progress, locations, NPCs
+-   `mathtuto-player-titles`: Unlocked titles and current title
 
 **Data Structure**:
 

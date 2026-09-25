@@ -1,5 +1,5 @@
 /**
- * Shop Service for CIVIKA
+ * Shop Service for MathTuto
  * Handles shop items, purchases, inventory, and rewards
  */
 
@@ -241,8 +241,12 @@ export class ShopService {
         // Add to inventory
         this.addToInventory(itemId);
 
-        // Activate effect if applicable
-        if (item.effect && item.effect.duration) {
+        // Activate effect if applicable (continuous effects trigger on
+        // purchase; consumables like hint tokens & time freeze are used later)
+        const isContinuousEffect =
+            item.effect?.type === "speed_boost" ||
+            item.effect?.type === "coin_multiplier";
+        if (item.effect && isContinuousEffect && item.effect.duration) {
             this.activateEffect(itemId, item.effect);
         }
 
@@ -284,6 +288,17 @@ export class ShopService {
             (i) => i.itemId === itemId
         );
         return item?.quantity || 0;
+    }
+
+    /**
+     * Get the number of an item currently in inventory
+     */
+    public getItemQuantity(itemId: string): number {
+        return (
+            this.inventory.purchasedItems.find(
+                (i) => i.itemId === itemId
+            )?.quantity || 0
+        );
     }
 
     /**
@@ -329,6 +344,62 @@ export class ShopService {
     }
 
     /**
+     * Activate a charge-based effect (e.g. Score Booster for N quizzes)
+     */
+    private activateChargeEffect(
+        itemId: string,
+        multiplier: number,
+        charges: number
+    ): void {
+        this.inventory.activeEffects.push({
+            itemId,
+            effectType: "score_boost",
+            startTime: Date.now(),
+            endTime: Number.MAX_SAFE_INTEGER,
+            multiplier,
+            charges,
+        });
+        this.saveInventory();
+        console.log(
+            `Score boost activated: ${charges} charge(s) with x${multiplier} points`
+        );
+    }
+
+    /**
+     * Get the active score-boost multiplier (1 if none)
+     */
+    public getScoreBoostMultiplier(): number {
+        const now = Date.now();
+        const boost = this.inventory.activeEffects.find(
+            (effect) =>
+                effect.effectType === "score_boost" &&
+                (effect.charges ?? 0) > 0 &&
+                effect.endTime > now
+        );
+        return boost?.multiplier || 1;
+    }
+
+    /**
+     * Consume one score-boost charge (used once per quiz)
+     */
+    public consumeScoreBoostCharge(): void {
+        const boost = this.inventory.activeEffects.find(
+            (effect) =>
+                effect.effectType === "score_boost" &&
+                (effect.charges ?? 0) > 0
+        );
+        if (!boost) return;
+
+        boost.charges = (boost.charges ?? 0) - 1;
+        if (boost.charges <= 0) {
+            this.inventory.activeEffects = this.inventory.activeEffects.filter(
+                (effect) => effect !== boost
+            );
+        }
+        this.saveInventory();
+    }
+
+    /**
      * Clean up expired effects
      */
     private cleanupExpiredEffects(): void {
@@ -360,7 +431,7 @@ export class ShopService {
     private saveInventory(): void {
         try {
             localStorage.setItem(
-                "civika-shop-inventory",
+                "mathtuto-shop-inventory",
                 JSON.stringify(this.inventory)
             );
         } catch (error) {
@@ -373,7 +444,7 @@ export class ShopService {
      */
     private loadInventory(): PlayerInventory {
         try {
-            const saved = localStorage.getItem("civika-shop-inventory");
+            const saved = localStorage.getItem("mathtuto-shop-inventory");
             if (saved) {
                 return JSON.parse(saved);
             }
@@ -409,7 +480,14 @@ export class ShopService {
 
         // Activate effect
         if (item.effect) {
-            this.activateEffect(itemId, item.effect);
+            if (item.effect.type === "score_boost") {
+                this.activateChargeEffect(itemId, item.effect.multiplier ?? 1.5, 3);
+            } else if (
+                item.effect.type !== "hint" &&
+                item.effect.type !== "time_freeze"
+            ) {
+                this.activateEffect(itemId, item.effect);
+            }
         }
 
         // Mark as used for consumables
@@ -469,6 +547,70 @@ export class ShopService {
     }
 
     /**
+     * Get the NPC reward (if any) granted after a mission
+     */
+    public getNPCRewardForMission(
+        missionId: number
+    ): NPCReward | undefined {
+        return this.getNPCRewards().find((r) => r.missionId === missionId);
+    }
+
+    /**
+     * Claim the NPC gift for a completed mission (once per mission)
+     */
+    public claimNPCReward(missionId: number): {
+        success: boolean;
+        message: string;
+        reward?: NPCReward;
+    } {
+        const reward = this.getNPCRewardForMission(missionId);
+        if (!reward) {
+            return { success: false, message: "No NPC reward for this mission" };
+        }
+
+        const given = this.loadGivenRewards();
+        if (given.includes(missionId)) {
+            return { success: false, message: "NPC reward already claimed" };
+        }
+
+        if (reward.coins) {
+            GameStateManager.getInstance().addCoins(
+                reward.coins,
+                `NPC Reward: ${reward.npcName}`
+            );
+        }
+        if (reward.item) {
+            this.addToInventory(reward.item);
+        }
+
+        const updated = [...given, missionId];
+        this.saveGivenRewards(updated);
+
+        return { success: true, message: reward.message, reward };
+    }
+
+    private loadGivenRewards(): number[] {
+        try {
+            const saved = localStorage.getItem("mathtuto-npc-rewards-given");
+            if (saved) return JSON.parse(saved);
+        } catch (error) {
+            console.error("Failed to load NPC rewards:", error);
+        }
+        return [];
+    }
+
+    private saveGivenRewards(missionIds: number[]): void {
+        try {
+            localStorage.setItem(
+                "mathtuto-npc-rewards-given",
+                JSON.stringify(missionIds)
+            );
+        } catch (error) {
+            console.error("Failed to save NPC rewards:", error);
+        }
+    }
+
+    /**
      * Generate daily challenges
      */
     public generateDailyChallenges(): DailyChallenge[] {
@@ -522,7 +664,7 @@ export class ShopService {
      */
     public getDailyChallenges(): DailyChallenge[] {
         try {
-            const saved = localStorage.getItem("civika-daily-challenges");
+            const saved = localStorage.getItem("mathtuto-daily-challenges");
             if (saved) {
                 const challenges: DailyChallenge[] = JSON.parse(saved);
 
@@ -557,7 +699,7 @@ export class ShopService {
     private saveDailyChallenges(challenges: DailyChallenge[]): void {
         try {
             localStorage.setItem(
-                "civika-daily-challenges",
+                "mathtuto-daily-challenges",
                 JSON.stringify(challenges)
             );
         } catch (error) {

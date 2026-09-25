@@ -1,5 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { X, ArrowLeft, ArrowRight, Check, Star } from "lucide-react";
+import {
+    ACTIVE_COLLECTIBLES,
+    ACTIVE_LEVELS,
+    GAME_CONFIG,
+    TOTAL_BADGES,
+    TOTAL_MISSIONS,
+    TOTAL_LEVELS,
+    getProgressionRequirement,
+} from "../config/gameConfig";
+import { GameValidation } from "../utils/GameValidation";
+
+const FIRST_LEVEL_NAME =
+    ACTIVE_LEVELS[0]?.name.toLowerCase() ?? "barangay";
+const LAST_LEVEL_NAME =
+    ACTIVE_LEVELS[TOTAL_LEVELS - 1]?.name.toLowerCase() ?? "national";
+const LAST_ACTIVE_BADGE =
+    GameValidation.getMissionReward(TOTAL_MISSIONS)?.badge ??
+    "Olympiad Mentor";
 
 interface TutorialProps {
     onClose: () => void;
@@ -16,17 +34,17 @@ interface TutorialSection {
 
 const YELLOW = "#FFD84D";
 
-/** Colored info-card used across the tutorial content. */
+/** Simple info-card: neutral white body with a thin colored left accent. */
 type Tone = "yellow" | "blue" | "green" | "purple" | "orange" | "red" | "cream";
 
-const TONE_CLASSES: Record<Tone, string> = {
-    yellow: "bg-tutor-yellow text-tutor-navy",
-    blue: "bg-tutor-blue text-tutor-cream",
-    green: "bg-tutor-green text-tutor-cream",
-    purple: "bg-tutor-purple text-tutor-cream",
-    orange: "bg-tutor-orange text-tutor-cream",
-    red: "bg-tutor-red text-tutor-cream",
-    cream: "bg-tutor-cream text-tutor-navy",
+const TONE_ACCENT: Record<Tone, string> = {
+    yellow: "border-l-tutor-yellow",
+    blue: "border-l-tutor-blue",
+    green: "border-l-tutor-green",
+    purple: "border-l-tutor-purple",
+    orange: "border-l-tutor-orange",
+    red: "border-l-tutor-red",
+    cream: "border-l-tutor-navy",
 };
 
 const InfoCard: React.FC<{
@@ -36,7 +54,7 @@ const InfoCard: React.FC<{
     className?: string;
 }> = ({ tone, title, children, className = "" }) => (
     <div
-        className={`rounded-xl border-2 border-tutor-navy p-4 shadow-[3px_3px_0_0_#071B3A] ${TONE_CLASSES[tone]} ${className}`}
+        className={`rounded-xl border-2 border-l-8 border-tutor-navy bg-white p-4 text-tutor-navy shadow-[3px_3px_0_0_#071B3A] ${TONE_ACCENT[tone]} ${className}`}
     >
         {title && (
             <h4 className="mb-2 font-brutal text-sm uppercase leading-snug tracking-wide">
@@ -59,7 +77,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
 
     useEffect(() => {
         // Check if tutorial has been completed
-        const completed = localStorage.getItem("civika-tutorial-completed");
+        const completed = localStorage.getItem("mathtuto-tutorial-completed");
         if (completed === "true" && autoStart) {
             // Don't auto-show if already completed
             onClose();
@@ -74,52 +92,65 @@ export const Tutorial: React.FC<TutorialProps> = ({
             content: (
                 <div className="space-y-4">
                     <h3 className="text-center font-brutal text-xl uppercase tracking-wide text-tutor-navy">
-                        Welcome to Tutor Town! 🌟
+                        Welcome to MathTuto! 🌟
                     </h3>
                     <p className="text-center font-playful text-sm leading-relaxed text-tutor-navy">
-                        You're a new math tutor in town! Help students master
-                        radicals and inverse functions as you build your
-                        tutoring reputation.
+                        You're a brand-new math tutor! Travel the
+                        Philippines{TOTAL_LEVELS > 1 ? (
+                            <>
+                                {" "}
+                                from your {FIRST_LEVEL_NAME} all the way to the{" "}
+                                {LAST_LEVEL_NAME} level,
+                            </>
+                        ) : (
+                            " "
+                        )}{" "}
+                        helping residents and officials solve real community
+                        problems with math.
                     </p>
 
                     <InfoCard tone="blue" title="📚 Your Mission:">
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Complete 50 math challenges
+                                Complete {TOTAL_MISSIONS} math missions across{" "}
+                                {TOTAL_LEVELS}{" "}
+                                {TOTAL_LEVELS === 1 ? "map" : "maps"}
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Progress from Barangay to National level
+                                Help people from {FIRST_LEVEL_NAME} to{" "}
+                                {LAST_LEVEL_NAME} level
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Master radicals & inverse functions
+                                Collect {ACTIVE_COLLECTIBLES} hidden collectibles
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Become a problem-solving expert!
+                                Earn all {TOTAL_BADGES} badges and climb the
+                                leaderboard!
                             </li>
                         </ul>
                     </InfoCard>
 
-                    <InfoCard tone="yellow" title="🎯 What You'll Teach:">
+                    <InfoCard tone="yellow" title="🧮 What You'll Solve:">
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Basic arithmetic to advanced algebra
+                                Real-life problems like distance, recipes & prices
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                How to simplify and solve radicals
+                                Radicals & inverse functions
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                How to find and use inverse functions
+                                Growing into algebra, finance, physics & data
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Critical thinking skills
+                                Critical thinking, one problem at a time
                             </li>
                         </ul>
                     </InfoCard>
@@ -147,6 +178,8 @@ export const Tutorial: React.FC<TutorialProps> = ({
                                 { key: "S or ↓", desc: "Move Down" },
                                 { key: "A or ←", desc: "Move Left" },
                                 { key: "D or →", desc: "Move Right" },
+                                { key: "SPACE", desc: "Talk to NPCs" },
+                                { key: "ESC", desc: "Pause Menu" },
                             ].map((control) => (
                                 <div
                                     key={control.key}
@@ -163,6 +196,16 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         </div>
                     </InfoCard>
 
+                    <InfoCard tone="blue" title="📱 Mobile Controls:">
+                        <p>
+                            Drag the virtual joystick (bottom-left) to move,
+                            and press the{" "}
+                            <strong className="font-bold">TAP</strong> button
+                            (bottom-right) to talk to NPCs. Tap anywhere to
+                            continue a conversation.
+                        </p>
+                    </InfoCard>
+
                     <InfoCard tone="green" title="🎥 Camera:">
                         <p>
                             The camera automatically follows your character as
@@ -171,11 +214,11 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         </p>
                     </InfoCard>
 
-                    <InfoCard tone="blue" className="p-3">
+                    <InfoCard tone="yellow" className="p-3">
                         <p>
                             💡 <strong className="font-bold">Tip:</strong> Walk
-                            around to discover NPCs and collectibles scattered
-                            throughout the map!
+                            around to find NPCs and collectibles scattered
+                            across the map — keep an eye on the minimap!
                         </p>
                     </InfoCard>
                 </div>
@@ -192,22 +235,43 @@ export const Tutorial: React.FC<TutorialProps> = ({
                     </h3>
 
                     <InfoCard tone="yellow" title="Finding Missions:">
-                        <div className="flex items-start gap-3">
-                            <span className="text-2xl">❗</span>
-                            <div>
-                                <p className="font-bold">Active Mission</p>
-                                <p className="text-tutor-navy/70">
-                                    NPCs with "!" have math challenges for you
-                                </p>
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                                <span className="text-lg font-bold text-yellow-600">
+                                    Mission #N
+                                </span>
+                                <div>
+                                    <p className="font-bold">
+                                        Available (gold)
+                                    </p>
+                                    <p className="text-tutor-navy/70">
+                                        This NPC has a math mission for you
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <span className="text-2xl">✅</span>
-                            <div>
-                                <p className="font-bold">Completed Mission</p>
-                                <p className="text-tutor-navy/70">
-                                    You've already helped this NPC
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <span className="text-lg font-bold text-green-700">
+                                    ✓
+                                </span>
+                                <div>
+                                    <p className="font-bold">
+                                        Completed (green)
+                                    </p>
+                                    <p className="text-tutor-navy/70">
+                                        You've already helped this NPC
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <span className="text-lg font-bold text-red-700">
+                                    🔒
+                                </span>
+                                <div>
+                                    <p className="font-bold">Locked (red)</p>
+                                    <p className="text-tutor-navy/70">
+                                        Finish earlier missions to unlock
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </InfoCard>
@@ -216,19 +280,20 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         <ol className="list-inside list-decimal space-y-1.5">
                             <li>Walk close to an NPC</li>
                             <li>
-                                Press <strong className="font-bold">E</strong>{" "}
-                                key (or tap on mobile)
+                                Press <strong className="font-bold">SPACE</strong>{" "}
+                                (or the TAP button on mobile)
                             </li>
                             <li>Read their story and problem</li>
-                            <li>Accept the challenge!</li>
+                            <li>Press Start Challenge to help them out!</li>
                         </ol>
                     </InfoCard>
 
                     <InfoCard tone="purple" className="p-3">
                         <p>
                             🎯 <strong className="font-bold">Fun Fact:</strong>{" "}
-                            Each NPC represents a different profession and
-                            teaches unique math concepts!
+                            Each NPC has a different profession and a real
+                            community problem — from captains to engineers to
+                            government officials!
                         </p>
                     </InfoCard>
                 </div>
@@ -248,7 +313,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Multiple choice questions (4 options)
+                                Multiple choice questions (4 options, A-D)
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
@@ -256,20 +321,37 @@ export const Tutorial: React.FC<TutorialProps> = ({
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Take your time to think!
+                                60 second timer per question
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                No time limit - focus on learning
+                                Running out of time counts as wrong
                             </li>
                         </ul>
                     </InfoCard>
 
-                    <InfoCard tone="blue" title="🔍 Help Available:">
+                    <InfoCard tone="blue" title="🏆 Scoring:">
+                        <ul className="space-y-1.5">
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                50 points for a correct answer
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Time bonus for fast answers (10s / 20s / 30s tiers)
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="font-bold">✓</span>
+                                Beat the mission for coins + a badge!
+                            </li>
+                        </ul>
+                    </InfoCard>
+
+                    <InfoCard tone="yellow" title="🔍 Help Available:">
                         <div className="space-y-2">
                             <div className="rounded-lg border-2 border-tutor-navy bg-tutor-cream px-3 py-2">
                                 <span className="font-bold">💡 Hints:</span>{" "}
-                                Click for problem-solving tips
+                                Click to reveal problem-solving tips
                             </div>
                             <div className="rounded-lg border-2 border-tutor-navy bg-tutor-cream px-3 py-2">
                                 <span className="font-bold">📖 Formula:</span>{" "}
@@ -277,20 +359,21 @@ export const Tutorial: React.FC<TutorialProps> = ({
                             </div>
                             <div className="rounded-lg border-2 border-tutor-navy bg-tutor-cream px-3 py-2">
                                 <span className="font-bold">📝 Steps:</span>{" "}
-                                View step-by-step solution
+                                Review the step-by-step solution & key concept
                             </div>
                         </div>
                     </InfoCard>
 
-                    <InfoCard tone="yellow" title="✅ After Answering:">
+                    <InfoCard tone="cream" title="✅ After Answering:">
                         <p>
                             <strong className="font-bold">Correct:</strong> Earn
-                            coins and XP! 🎉
+                            points, coins and a badge! 🎉
                             <br />
                             <strong className="font-bold">
                                 Incorrect:
                             </strong>{" "}
-                            See explanation and try again
+                            See the full explanation, then try again as many
+                            times as you like
                         </p>
                     </InfoCard>
                 </div>
@@ -310,40 +393,35 @@ export const Tutorial: React.FC<TutorialProps> = ({
                     </p>
 
                     <div className="space-y-3">
-                        <InfoCard tone="green" title="🏘️ Level 1: BARANGAY">
-                            <p className="text-tutor-cream/85">
-                                Missions 1-10 • Community tutoring in the
-                                barangay
-                            </p>
-                        </InfoCard>
-                        <InfoCard tone="blue" title="🏙️ Level 2: CITY">
-                            <p className="text-tutor-cream/85">
-                                Missions 11-20 • City tutoring for high school
-                                students
-                            </p>
-                        </InfoCard>
-                        <InfoCard tone="purple" title="🏛️ Level 3: PROVINCE">
-                            <p className="text-tutor-cream/85">
-                                Missions 21-30 • Provincial scholarship coaching
-                            </p>
-                        </InfoCard>
-                        <InfoCard tone="orange" title="🌏 Level 4: REGION">
-                            <p className="text-tutor-cream/85">
-                                Missions 31-40 • Regional math competition
-                                training
-                            </p>
-                        </InfoCard>
-                        <InfoCard tone="red" title="🇵🇭 Level 5: NATIONAL">
-                            <p className="text-tutor-cream/85">
-                                Missions 41-50 • National Olympiad mentoring
-                            </p>
-                        </InfoCard>
+                        {ACTIVE_LEVELS.map((lv) => (
+                            <InfoCard
+                                key={lv.level}
+                                tone={lv.tone}
+                                title={`${lv.icon} Level ${lv.level}: ${lv.name.toUpperCase()}`}
+                            >
+                                <p className="text-tutor-navy/85">
+                                    Missions {lv.missionStart}-{lv.missionEnd} •{" "}
+                                    {lv.theme}
+                                </p>
+                            </InfoCard>
+                        ))}
                     </div>
 
                     <InfoCard tone="blue" className="p-3">
                         <p className="text-center">
-                            🎯 Complete all missions in a level to unlock the
-                            next!
+                            🎯 Finish all{" "}
+                            {GAME_CONFIG.MISSIONS_PER_LEVEL} missions in a level
+                            to unlock the next map — plus keep at least 70% quiz
+                            accuracy
+                            {ACTIVE_LEVELS.length > 2
+                                ? ` (${ACTIVE_LEVELS.slice(1)
+                                      .map(
+                                          (lv) =>
+                                              `${getProgressionRequirement(lv.level).minScorePercentage}% → Level ${lv.level}`,
+                                      )
+                                      .join(", ")})`
+                                : ""}
+                            !
                         </p>
                     </InfoCard>
                 </div>
@@ -363,15 +441,15 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Earned by completing missions
+                                Earned from missions and collectibles
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Used to buy items in the shop
+                                Spent in the Shop
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Bonus for perfect scores!
+                                Bonus from daily challenges!
                             </li>
                         </ul>
                     </InfoCard>
@@ -380,11 +458,12 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Unlock achievements
+                                {TOTAL_BADGES} badges, one per mission
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Show your progress
+                                From "Market Mathematician" to "
+                                {LAST_ACTIVE_BADGE}"
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
@@ -393,27 +472,48 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         </ul>
                     </InfoCard>
 
+                    <InfoCard tone="green" title="💎 Collectibles:">
+                        <p>
+                            {ACTIVE_COLLECTIBLES} hidden items — coins, badges,
+                            power-ups, treasures & gems. Watch the minimap dots:
+                            gold means legendary, magenta rare, cyan uncommon,
+                            yellow common! Grab every item in a map for the Master
+                            Collector bonus.
+                        </p>
+                    </InfoCard>
+
                     <InfoCard tone="blue" title="🛒 Shop:">
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Buy power-ups and items
+Power-ups: Speed, Coin Magnet, Score Booster,
+                                    Hint Token, Time Freeze
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Customize your character
+                                Cosmetics: Golden Badge, Math Master Crown,
+                                Trophy
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Unlock special features
+                                Special: Mystery Box, Lucky Charm
                             </li>
                         </ul>
                     </InfoCard>
 
-                    <InfoCard tone="green" title="🎯 Secret Quests:">
+                    <InfoCard tone="orange" title="🗓️ Daily Challenges:">
                         <p>
-                            Hidden challenges throughout the map with extra
-                            rewards for explorers!
+                            Three fresh tasks every day — collect items, answer
+                            quizzes fast, and finish missions for extra coins
+                            and points!
+                        </p>
+                    </InfoCard>
+
+                    <InfoCard tone="cream" title="🎯 Secret Quests:">
+                        <p>
+                            Hidden quests at secret spots around the maps, plus
+                            legendary titles from Citizen up to Master of
+                            Algebra!
                         </p>
                     </InfoCard>
                 </div>
@@ -430,30 +530,39 @@ export const Tutorial: React.FC<TutorialProps> = ({
                     </h3>
 
                     <div className="space-y-3">
-                        <InfoCard tone="blue" title="📍 Minimap (Top Right)">
-                            <p className="text-tutor-cream/85">
-                                Shows your location, NPCs, and collectibles
-                                nearby
+                        <InfoCard tone="blue" title="📍 Minimap (Bottom Left)">
+                            <p className="text-tutor-navy/85">
+                                Shows you, NPCs, and collectibles color-coded by
+                                rarity
                             </p>
                         </InfoCard>
-                        <InfoCard tone="green" title="📊 Stats Display">
-                            <p className="text-tutor-cream/85">
-                                💰 Coins • 🏆 Badges • 📈 Level Progress
+                        <InfoCard tone="green" title="📊 Player Card (Top Left)">
+                            <p className="text-tutor-navy/85">
+                                Your name, level, title, badge count, coins &
+                                points
                             </p>
                         </InfoCard>
-                        <InfoCard tone="purple" title="🎒 Inventory">
-                            <p className="text-tutor-cream/85">
-                                View collected items and check your progress
+                        <InfoCard tone="purple" title="⚡ Quick Actions (Top Right)">
+                            <p className="text-tutor-navy/85">
+                                Quest Log, Shop, Daily Challenges, Secret Quests
+                                & Menu
                             </p>
                         </InfoCard>
-                        <InfoCard tone="yellow" title="🏆 Leaderboard">
+                        <InfoCard tone="yellow" title="🎒 Inventory">
+                            <p>
+                                Check your coins, items, XP, rank & accuracy
+                                (press I, or find it in the pause menu)
+                            </p>
+                        </InfoCard>
+                        <InfoCard tone="cream" title="🧭 Pause Menu">
+                            <p>
+                                Press ESC for Resume, Inventory, Shop, Daily,
+                                Secrets, Leaderboard & Quick Map Navigation
+                            </p>
+                        </InfoCard>
+                        <InfoCard tone="orange" title="🏆 Leaderboard">
                             <p>
                                 Compare scores globally and track your ranking
-                            </p>
-                        </InfoCard>
-                        <InfoCard tone="cream" title="⚙️ Settings">
-                            <p>
-                                Adjust audio, graphics, controls, and tutorials
                             </p>
                         </InfoCard>
                     </div>
@@ -478,15 +587,15 @@ export const Tutorial: React.FC<TutorialProps> = ({
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Use hints when stuck
+                                Use hints, formulas & step-by-step solutions
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Review step-by-step solutions
+                                Answer fast for time bonuses
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Practice similar problems
+                                Keep your accuracy nice and high to level up
                             </li>
                         </ul>
                     </InfoCard>
@@ -495,19 +604,19 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Talk to all NPCs
+                                Talk to every NPC (✓ = done, 🔒 = not yet)
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Explore every corner
+                                Explore every corner for hidden collectibles
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Look for hidden collectibles
+                                Follow the colored dots on the minimap
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Complete secret quests
+                                Hunt the secret quests!
                             </li>
                         </ul>
                     </InfoCard>
@@ -516,19 +625,19 @@ export const Tutorial: React.FC<TutorialProps> = ({
                         <ul className="space-y-1.5">
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Complete missions in order
+                                Finish missions in order to unlock the next map
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Save coins for useful items
+                                Save coins for the items you really want
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Review formulas regularly
+                                Do the daily challenges for bonus coins
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="font-bold">✓</span>
-                                Take breaks when needed
+                                Take breaks when needed!
                             </li>
                         </ul>
                     </InfoCard>
@@ -558,8 +667,8 @@ export const Tutorial: React.FC<TutorialProps> = ({
 
     const handleComplete = () => {
         if (dontShowAgain) {
-            localStorage.setItem("civika-tutorial-completed", "true");
-            localStorage.setItem("civika-tutorial-show-on-start", "false");
+            localStorage.setItem("mathtuto-tutorial-completed", "true");
+            localStorage.setItem("mathtuto-tutorial-show-on-start", "false");
         }
         onClose();
     };
@@ -582,7 +691,7 @@ export const Tutorial: React.FC<TutorialProps> = ({
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
             <div className="flex min-h-full items-center justify-center p-0 sm:p-4">
-                {/* Tutor Town game window: navy outer frame, yellow inner frame.
+                {/* MathTuto game window: navy outer frame, yellow inner frame.
                     On mobile the card is a full-height sheet so the content
                     scroll area gets all the leftover viewport space. */}
                 <section className="relative flex h-[100dvh] w-full flex-col rounded-none sm:h-auto sm:max-h-[calc(100dvh-20px)] sm:rounded-2xl border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 max-w-full min-[400px]:max-w-3xl animate-slide-up shadow-[8px_8px_0_0_#071B3A]">

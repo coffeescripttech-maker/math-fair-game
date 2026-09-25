@@ -9,6 +9,7 @@ import {
     Lightbulb,
     BookOpen,
 } from "lucide-react";
+import ShopService from "../services/ShopService";
 
 interface QuizQuestion {
     question: string;
@@ -43,6 +44,13 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
     const [showHints, setShowHints] = useState(false);
     const [currentHintLevel, setCurrentHintLevel] = useState(0);
     const [showFormula, setShowFormula] = useState(false);
+    const [eliminatedOptions, setEliminatedOptions] = useState<number[]>([]);
+    const [hintTokens, setHintTokens] = useState<number>(() =>
+        ShopService.getInstance().getItemQuantity("hint-token-1"),
+    );
+    const [timeFreezeCount, setTimeFreezeCount] = useState<number>(() =>
+        ShopService.getInstance().getItemQuantity("time-freeze-1"),
+    );
 
     // Timer system
     const QUIZ_TIME_LIMIT = 60;
@@ -69,10 +77,11 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
         return () => clearInterval(timerInterval);
     }, [isTimerRunning, showResult]);
 
-    const calculateTimeBonus = (remainingTime: number): number => {
-        if (remainingTime >= 50) return 30; // Excellent!
-        if (remainingTime >= 40) return 20; // Great!
-        if (remainingTime >= 30) return 10; // Good!
+    // Time bonus mirrors the scoring in GameValidation (based on time spent)
+    const calculateTimeBonus = (timeSpent: number): number => {
+        if (timeSpent <= 10) return 30; // Excellent!
+        if (timeSpent <= 20) return 20; // Great!
+        if (timeSpent <= 30) return 10; // Good!
         return 0;
     };
 
@@ -85,9 +94,41 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
     };
 
     const handleOptionSelect = (index: number) => {
-        if (!showResult) {
+        if (!showResult && !eliminatedOptions.includes(index)) {
             setSelectedOption(index);
         }
+    };
+
+    const handleUseHintToken = () => {
+        if (hintTokens <= 0) return;
+        const shopService = ShopService.getInstance();
+        const result = shopService.useItem("hint-token-1");
+        if (!result.success) return;
+
+        setHintTokens((t) => Math.max(0, t - 1));
+
+        const wrongOptions = question.options
+            .map((_, idx) => idx)
+            .filter(
+                (idx) =>
+                    idx !== question.correctAnswer &&
+                    !eliminatedOptions.includes(idx),
+            );
+        if (wrongOptions.length > 0) {
+            const pick =
+                wrongOptions[Math.floor(Math.random() * wrongOptions.length)];
+            setEliminatedOptions((prev) => [...prev, pick]);
+        }
+    };
+
+    const handleTimeFreeze = () => {
+        if (timeFreezeCount <= 0) return;
+        const shopService = ShopService.getInstance();
+        const result = shopService.useItem("time-freeze-1");
+        if (!result.success) return;
+
+        setTimeFreezeCount((c) => Math.max(0, c - 1));
+        setTimeRemaining((prev) => Math.min(prev + 15, QUIZ_TIME_LIMIT));
     };
 
     const handleSubmit = () => {
@@ -95,7 +136,7 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
             setIsTimerRunning(false);
             const correct = selectedOption === question.correctAnswer;
             const timeSpent = (Date.now() - startTime) / 1000;
-            const bonus = correct ? calculateTimeBonus(timeRemaining) : 0;
+            const bonus = correct ? calculateTimeBonus(timeSpent) : 0;
             setTimeBonus(bonus);
             setIsCorrect(correct);
             setSubmissionTime(timeSpent);
@@ -143,7 +184,7 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
             <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
-                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                {/* MathTuto game window: navy outer frame, yellow inner frame */}
                 <div className="w-full min-[420px]:max-w-2xl lg:max-w-4xl max-w-[calc(100vw-6px)]">
                     <section className="relative animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
                         <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar space-y-2 sm:space-y-3 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
@@ -327,10 +368,53 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                     </div>
                                 )}
 
+                            {/* Shop Power-ups: Hint Token & Time Freeze */}
+                            {!showResult &&
+                                (hintTokens > 0 || timeFreezeCount > 0) && (
+                                    <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 sm:gap-3">
+                                        {hintTokens > 0 && (
+                                            <button
+                                                onClick={handleUseHintToken}
+                                                type="button"
+                                                className="flex items-center justify-between rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2 sm:p-3 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] min-h-[40px]"
+                                            >
+                                                <span className="flex items-center gap-1.5 sm:gap-2 font-playful text-[11px] sm:text-sm font-bold text-tutor-navy">
+                                                    <span className="flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-yellow text-tutor-navy">
+                                                        💡
+                                                    </span>
+                                                    Use Hint Token
+                                                </span>
+                                                <span className="font-playful text-[10px] sm:text-xs font-bold text-tutor-navy">
+                                                    {hintTokens} left
+                                                </span>
+                                            </button>
+                                        )}
+                                        {timeFreezeCount > 0 && (
+                                            <button
+                                                onClick={handleTimeFreeze}
+                                                type="button"
+                                                className="flex items-center justify-between rounded-lg sm:rounded-xl border-[3px] border-tutor-navy bg-tutor-cream p-2 sm:p-3 shadow-[2px_2px_0_0_#071B3A] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#071B3A] min-h-[40px]"
+                                            >
+                                                <span className="flex items-center gap-1.5 sm:gap-2 font-playful text-[11px] sm:text-sm font-bold text-tutor-navy">
+                                                    <span className="flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
+                                                        ⏸️
+                                                    </span>
+                                                    Freeze Time +15s
+                                                </span>
+                                                <span className="font-playful text-[10px] sm:text-xs font-bold text-tutor-navy">
+                                                    {timeFreezeCount} left
+                                                </span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+
                             {/* Options Grid */}
                             <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 sm:gap-3">
                                 {question.options.map((option, index) => {
                                     const isSelected = selectedOption === index;
+                                    const isEliminated =
+                                        eliminatedOptions.includes(index);
                                     let optionClass =
                                         "w-full rounded-lg sm:rounded-xl border-[3px] border-tutor-navy p-2 sm:p-3 text-left transition-all duration-150 min-h-[44px] ";
 
@@ -345,6 +429,9 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                             optionClass +=
                                                 "bg-tutor-cream text-tutor-navy opacity-60";
                                         }
+                                    } else if (isEliminated) {
+                                        optionClass +=
+                                            " border-dashed bg-tutor-cream text-tutor-navy/40 opacity-50 line-through";
                                     } else {
                                         optionClass += isSelected
                                             ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_2px_#FFD84D,3px_3px_0_0_#071B3A]"
@@ -357,7 +444,7 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                             onClick={() =>
                                                 handleOptionSelect(index)
                                             }
-                                            disabled={showResult}
+                                            disabled={showResult || isEliminated}
                                             type="button"
                                             className={optionClass}
                                         >
@@ -374,7 +461,9 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                                                   : "bg-[#E5DCC9] text-tutor-navy/50"
                                                             : isSelected
                                                               ? "bg-tutor-yellow text-tutor-navy"
-                                                              : "bg-[#F3EBDD] text-tutor-navy"
+                                                              : isEliminated
+                                                                ? "bg-[#E5DCC9] text-tutor-navy/40"
+                                                                : "bg-[#F3EBDD] text-tutor-navy"
                                                     }`}
                                                 >
                                                     {String.fromCharCode(

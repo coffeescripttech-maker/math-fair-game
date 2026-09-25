@@ -146,8 +146,8 @@ const [showTutorial, setShowTutorial] = useState(false);
 
 ### LocalStorage Keys
 ```typescript
-'civika-tutorial-completed': boolean
-'civika-tutorial-show-on-start': boolean
+'mathtuto-tutorial-completed': boolean
+'mathtuto-tutorial-show-on-start': boolean
 ```
 
 ---

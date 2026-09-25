@@ -1,4 +1,4 @@
-# 🚀 Quick APK Build - CIVIKA
+# 🚀 Quick APK Build - MathTuto
 
 **TL;DR** - Build your Android APK in 5 steps!
 
@@ -26,7 +26,7 @@
 npm install
 
 # 2. Initialize Capacitor
-npx cap init CIVIKA com.civika.game --web-dir=dist
+npx cap init MathTuto com.mathtuto.game --web-dir=dist
 
 # 3. Add Android platform
 npx cap add android

@@ -5,13 +5,13 @@ export default function Document() {
         <Html lang="en">
             <Head>
                 {/* PWA Meta Tags */}
-                <meta name="application-name" content="Tutor Town" />
+                <meta name="application-name" content="MathTuto" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta
                     name="apple-mobile-web-app-status-bar-style"
                     content="black-translucent"
                 />
-                <meta name="apple-mobile-web-app-title" content="Tutor Town" />
+                <meta name="apple-mobile-web-app-title" content="MathTuto" />
                 <meta name="mobile-web-app-capable" content="yes" />
                 <meta name="format-detection" content="telephone=no" />
 
@@ -21,13 +21,9 @@ export default function Document() {
                 <meta name="orientation" content="landscape" />
 
                 {/* Theme Colors */}
-                <meta name="theme-color" content="#F59E0B" />
-                <meta name="msapplication-TileColor" content="#F59E0B" />
-                <meta name="msapplication-navbutton-color" content="#F59E0B" />
-                <meta
-                    name="apple-mobile-web-app-status-bar-style"
-                    content="#F59E0B"
-                />
+                <meta name="theme-color" content="#071B3A" />
+                <meta name="msapplication-TileColor" content="#071B3A" />
+                <meta name="msapplication-navbutton-color" content="#071B3A" />
 
                 {/* Manifest */}
                 <link rel="manifest" href="/manifest.json" />
@@ -71,10 +67,8 @@ export default function Document() {
                 {/* Description */}
                 <meta
                     name="description"
-                    content="Tutor Town - An interactive educational game that teaches algebra through real-world problem solving and engaging gameplay"
+                    content="MathTuto - An interactive educational adventure that builds math and civic skills through real-world problem solving."
                 />
-
-                {/* Prevent Zooming on Mobile */}
 
                 {/* Google Fonts - Math game typography */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />

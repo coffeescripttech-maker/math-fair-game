@@ -1,5 +1,5 @@
 /**
- * Shop Component for CIVIKA
+ * Shop Component for MathTuto
  * Displays shop items, handles purchases, and shows player inventory
  */
 
@@ -132,7 +132,7 @@ export const Shop: React.FC<ShopProps> = ({ onClose, isVisible }) => {
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
             <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
-                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                {/* MathTuto game window: navy outer frame, yellow inner frame */}
                 <section className="relative w-full min-[500px]:max-w-5xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
                     <div className="flex max-h-[calc(100dvh-20px)] flex-col rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
                         {/* Close Button */}

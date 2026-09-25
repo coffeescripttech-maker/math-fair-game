@@ -146,7 +146,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
 
     // Load settings from localStorage on mount
     useEffect(() => {
-        const savedSettings = localStorage.getItem("civika-settings");
+        const savedSettings = localStorage.getItem("mathtuto-settings");
         if (savedSettings) {
             try {
                 const parsed = JSON.parse(savedSettings);
@@ -195,7 +195,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
 
     // Save settings to localStorage whenever settings change
     useEffect(() => {
-        localStorage.setItem("civika-settings", JSON.stringify(settings));
+        localStorage.setItem("mathtuto-settings", JSON.stringify(settings));
 
         // Apply settings immediately
         applySettings(settings);
@@ -232,7 +232,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
 
         // Emit settings change event for other components
         window.dispatchEvent(
-            new CustomEvent("civika-settings-changed", {
+            new CustomEvent("mathtuto-settings-changed", {
                 detail: newSettings,
             }),
         );
@@ -256,7 +256,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose, isVisible }) => {
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
             <div className="flex min-h-full items-center justify-center p-1.5 sm:p-4">
-                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                {/* MathTuto game window: navy outer frame, yellow inner frame */}
                 <section className="relative flex max-h-[calc(100dvh-20px)] w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up flex-col rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
                     <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-3 sm:space-y-4 rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-2.5 sm:px-4 sm:py-4">
                         {/* Close button */}

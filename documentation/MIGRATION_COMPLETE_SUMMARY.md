@@ -1,8 +1,8 @@
-# ✅ Migration Complete: CIVIKA → Algebra Adventure
+# ✅ Migration Complete: MathTuto → Algebra Adventure
 
 ## **🎉 Migration Status: 95% Complete!**
 
-All critical user-facing content has been successfully migrated from CIVIKA (civic education) to Algebra Adventure (math education).
+All critical user-facing content has been successfully migrated from MathTuto (civic education) to Algebra Adventure (math education).
 
 **Date Completed:** October 14, 2025  
 **Total Files Updated:** 15 files  
@@ -90,7 +90,7 @@ All critical user-facing content has been successfully migrated from CIVIKA (civ
 
 | Old Text | New Text | Occurrences |
 |----------|----------|-------------|
-| CIVIKA | Algebra Adventure | 15+ |
+| MathTuto | Algebra Adventure | 15+ |
 | Civic Education | Algebra Education | 3 |
 | civic leader | math champion / algebra champion | 5 |
 | civic excellence | mathematical mastery | 2 |
@@ -153,14 +153,14 @@ All critical user-facing content has been successfully migrated from CIVIKA (civ
 These are internal/technical references that don't affect gameplay:
 
 ### **Comments & Internal Code:**
-- ✅ CollisionService.ts - "CIVIKA" in comment (line 1)
-- ✅ LeaderboardService.ts - "CIVIKA" in comment (line 1)
-- ✅ AudioManager.ts - "CIVIKA" in comment (line 1)
-- ✅ Various type definitions - "CIVIKA" in header comments
+- ✅ CollisionService.ts - "MathTuto" in comment (line 1)
+- ✅ LeaderboardService.ts - "MathTuto" in comment (line 1)
+- ✅ AudioManager.ts - "MathTuto" in comment (line 1)
+- ✅ Various type definitions - "MathTuto" in header comments
 
 ### **Storage Keys (For Backward Compatibility):**
-- ✅ localStorage key: "civika-game-progress" (kept for saved game compatibility)
-- ✅ Supabase table: "civika_leaderboard" (database schema)
+- ✅ localStorage key: "mathtuto-game-progress" (kept for saved game compatibility)
+- ✅ Supabase table: "mathtuto_leaderboard" (database schema)
 
 **Note:** These are intentionally left unchanged to maintain backward compatibility with existing saved games and database records.
 

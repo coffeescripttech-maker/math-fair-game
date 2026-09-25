@@ -1,12 +1,12 @@
 {
-    "name": "Algebra Adventure - Math in Motion",
-    "short_name": "Algebra Adventure",
-    "description": "An interactive educational game that teaches algebra through real-world problem solving and engaging gameplay",
+    "name": "MathTuto",
+    "short_name": "MathTuto",
+    "description": "MathTuto - An interactive educational adventure that builds math and civic skills through real-world problem solving.",
     "start_url": "/",
     "display": "standalone",
     "orientation": "landscape",
-    "background_color": "#FEF3C7",
-    "theme_color": "#F59E0B",
+    "background_color": "#FFF9ED",
+    "theme_color": "#071B3A",
     "scope": "/",
     "icons": [
         {
@@ -56,20 +56,6 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
-        }
-    ],
-    "screenshots": [
-        {
-            "src": "/screenshots/screenshot-wide.png",
-            "sizes": "1280x720",
-            "type": "image/png",
-            "form_factor": "wide"
-        },
-        {
-            "src": "/screenshots/screenshot-narrow.png",
-            "sizes": "720x1280",
-            "type": "image/png",
-            "form_factor": "narrow"
         }
     ],
     "categories": ["education", "games"],

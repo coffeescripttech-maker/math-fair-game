@@ -1,6 +1,6 @@
-# 📱 CIVIKA - Android APK Build Guide
+# 📱 MathTuto - Android APK Build Guide
 
-Complete guide to building your CIVIKA game as an Android APK.
+Complete guide to building your MathTuto game as an Android APK.
 
 ---
 
@@ -89,7 +89,7 @@ gradle -version
 
 ```bash
 # Navigate to your project
-cd "C:\Users\ACER\Desktop\2025 Capstone Project\CIVIKA-FINAL"
+cd "C:\Users\ACER\Desktop\2025 Capstone Project\MathTuto-FINAL"
 
 # Install npm packages (including Capacitor)
 npm install
@@ -108,15 +108,15 @@ This will install:
 npm run mobile:init
 
 # When prompted, enter:
-# App name: CIVIKA
-# App ID: com.civika.game
+# App name: MathTuto
+# App ID: com.mathtuto.game
 # Web asset directory: dist
 ```
 
 **OR** manually create if script doesn't work:
 
 ```bash
-npx cap init CIVIKA com.civika.game --web-dir=dist
+npx cap init MathTuto com.mathtuto.game --web-dir=dist
 ```
 
 ### **Step 3: Add Android Platform (First Time Only)**
@@ -281,7 +281,7 @@ adb install android/app/build/outputs/apk/debug/app-debug.apk
 cd android/app
 
 # Generate keystore
-keytool -genkey -v -keystore civika-release-key.keystore -alias civika -keyalg RSA -keysize 2048 -validity 10000
+keytool -genkey -v -keystore mathtuto-release-key.keystore -alias mathtuto -keyalg RSA -keysize 2048 -validity 10000
 
 # Enter password and details when prompted
 ```
@@ -293,8 +293,8 @@ Create `android/key.properties`:
 ```properties
 storePassword=YOUR_KEYSTORE_PASSWORD
 keyPassword=YOUR_KEY_PASSWORD
-keyAlias=civika
-storeFile=civika-release-key.keystore
+keyAlias=mathtuto
+storeFile=mathtuto-release-key.keystore
 ```
 
 ### **Step 3: Update build.gradle**
@@ -368,10 +368,10 @@ Edit `android/app/src/main/res/values/strings.xml`:
 
 ```xml
 <resources>
-    <string name="app_name">CIVIKA</string>
-    <string name="title_activity_main">CIVIKA</string>
-    <string name="package_name">com.civika.game</string>
-    <string name="custom_url_scheme">com.civika.game</string>
+    <string name="app_name">MathTuto</string>
+    <string name="title_activity_main">MathTuto</string>
+    <string name="package_name">com.mathtuto.game</string>
+    <string name="custom_url_scheme">com.mathtuto.game</string>
 </resources>
 ```
 
@@ -486,7 +486,7 @@ adb install path/to/app.apk            # Install on device
 ## 📂 **Project Structure**
 
 ```
-CIVIKA-FINAL/
+MathTuto-FINAL/
 ├── android/                          # Android native project
 │   ├── app/
 │   │   └── build/outputs/apk/       # Built APKs here
@@ -588,4 +588,4 @@ You've successfully built your APK when:
 
 ---
 
-Ready to build your CIVIKA APK! 🎮📱✨
+Ready to build your MathTuto APK! 🎮📱✨

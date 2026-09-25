@@ -1,5 +1,5 @@
 /**
- * Secret Quest Service for CIVIKA
+ * Secret Quest Service for MathTuto
  * Handles secret quests, hidden achievements, and player titles
  */
 
@@ -12,6 +12,11 @@ import {
     PlayerTitleData,
 } from "../types/secretQuest";
 import { GameStateManager } from "../utils/GameStateManager";
+import {
+    ACTIVE_COLLECTIBLES,
+    TOTAL_LEVELS,
+    TOTAL_MISSIONS,
+} from "../config/gameConfig";
 
 export class SecretQuestService {
     private static instance: SecretQuestService;
@@ -64,7 +69,7 @@ export class SecretQuestService {
             {
                 id: "secret-pathfinder-1",
                 name: "Hidden Paths",
-                description: "Discover all 5 hidden locations across all five maps",
+                description: `Discover the hidden locations across all ${TOTAL_LEVELS} maps`,
                 type: SecretQuestType.EXPLORATION,
                 reward: {
                     title: PlayerTitle.PATHFINDER,
@@ -88,7 +93,7 @@ export class SecretQuestService {
                 id: "secret-treasure-hunter-1",
                 name: "Master Collector",
                 description:
-                    "Collect ALL collectibles across all five maps",
+                    `Collect ALL collectibles across all ${TOTAL_LEVELS} maps`,
                 type: SecretQuestType.COLLECTION,
                 reward: {
                     title: PlayerTitle.TREASURE_HUNTER,
@@ -97,7 +102,7 @@ export class SecretQuestService {
                 },
                 condition: {
                     type: "collect_all",
-                    count: 48, // 8 barangay + 10 city + 10 province + 10 region + 10 national
+                    count: ACTIVE_COLLECTIBLES, // auto-derived from the live maps
                 },
                 hint: "💎 Every treasure tells a story...",
                 hidden: true,
@@ -133,7 +138,7 @@ export class SecretQuestService {
                 id: "secret-speedrun-1",
                 name: "Lightning Campaign",
                 description:
-                    "Complete all 50 missions in under 2 hours playtime",
+                    `Complete all ${TOTAL_MISSIONS} missions in under 2 hours playtime`,
                 type: SecretQuestType.SPEED,
                 reward: {
                     title: PlayerTitle.SPEEDRUNNER,
@@ -574,7 +579,7 @@ export class SecretQuestService {
 
         // Check treasure hunter (all collectibles)
         const totalCollected = progress.totalItemsCollected || 0;
-        if (totalCollected >= 48) {
+        if (totalCollected >= ACTIVE_COLLECTIBLES) {
             this.completeSecretQuest("secret-treasure-hunter-1");
         }
 
@@ -584,17 +589,17 @@ export class SecretQuestService {
 
         // Check perfect citizen (100% completion)
         if (
-            progress.completedMissions.length === 50 &&
+            progress.completedMissions.length === TOTAL_MISSIONS &&
             progress.totalQuestions > 0 &&
             progress.correctAnswers === progress.totalQuestions &&
-            totalCollected >= 48
+            totalCollected >= ACTIVE_COLLECTIBLES
         ) {
             this.completeSecretQuest("secret-perfect-1");
         }
 
         // Check speedrunner (complete all in <2 hours)
         if (
-            progress.completedMissions.length === 50 &&
+            progress.completedMissions.length === TOTAL_MISSIONS &&
             progress.playtime < 120
         ) {
             // 120 minutes = 2 hours
@@ -694,7 +699,7 @@ export class SecretQuestService {
                 locations: this.secretLocations,
                 npcs: this.hiddenNPCs,
             };
-            localStorage.setItem("civika-secret-quests", JSON.stringify(data));
+            localStorage.setItem("mathtuto-secret-quests", JSON.stringify(data));
         } catch (error) {
             console.error("Failed to save secret quest progress:", error);
         }
@@ -705,7 +710,7 @@ export class SecretQuestService {
      */
     private loadProgress(): void {
         try {
-            const saved = localStorage.getItem("civika-secret-quests");
+            const saved = localStorage.getItem("mathtuto-secret-quests");
             if (saved) {
                 const data = JSON.parse(saved);
                 if (data.quests) this.secretQuests = data.quests;
@@ -729,7 +734,7 @@ export class SecretQuestService {
                     this.playerTitles.titleUnlockedAt.entries()
                 ),
             };
-            localStorage.setItem("civika-player-titles", JSON.stringify(data));
+            localStorage.setItem("mathtuto-player-titles", JSON.stringify(data));
         } catch (error) {
             console.error("Failed to save player titles:", error);
         }
@@ -740,7 +745,7 @@ export class SecretQuestService {
      */
     private loadPlayerTitles(): PlayerTitleData {
         try {
-            const saved = localStorage.getItem("civika-player-titles");
+            const saved = localStorage.getItem("mathtuto-player-titles");
             if (saved) {
                 const data = JSON.parse(saved);
                 return {
@@ -829,8 +834,8 @@ export class SecretQuestService {
      * Reset all secret quest progress (for testing)
      */
     public resetSecretQuests(): void {
-        localStorage.removeItem("civika-secret-quests");
-        localStorage.removeItem("civika-player-titles");
+        localStorage.removeItem("mathtuto-secret-quests");
+        localStorage.removeItem("mathtuto-player-titles");
         this.initializeSecretQuests();
         this.initializeSecretLocations();
         this.initializeHiddenNPCs();

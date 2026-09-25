@@ -53,11 +53,11 @@ export const LandscapePrompt: React.FC = () => {
 
             {/* Main content */}
             <div className="relative text-center px-6 py-8 max-w-sm">
-                {/* Tutor Town Logo */}
+                {/* MathTuto Logo */}
                 {/* <div className="mb-6">
                     <img
                         src="/logo.jpg"
-                        alt="Tutor Town Logo"
+                        alt="MathTuto Logo"
                         className="w-20 h-20 mx-auto drop-shadow-2xl animate-pulse"
                     />
                 </div> */}
@@ -77,7 +77,7 @@ export const LandscapePrompt: React.FC = () => {
                 {/* Message */}
                 <div className="brutal-panel p-6">
                     <h1 className="text-3xl font-brutal uppercase text-gray-900 mb-4">
-                        Tutor Town
+                        MathTuto
                     </h1>
 
                     <p className="text-xl font-bold uppercase text-gray-900 mb-3">

@@ -8,6 +8,7 @@ import { EventBus } from "../EventBus";
 import { GameStateManager } from "../../utils/GameStateManager";
 import CollisionService from "../../services/CollisionService";
 import NpcService from "../../services/NpcService";
+import ShopService from "../../services/ShopService";
 import { NpcPosition } from "../../types/npcPositions";
 
 /**
@@ -31,7 +32,7 @@ export abstract class OpenWorldMapScene extends Scene {
     collisionBodies: Phaser.Physics.Arcade.StaticGroup | null = null;
 
     // 🚧 COLLISION AUTHORING WALL — Only blocked spots the player draws in
-    // the Collision Editor (saved to localStorage under "civika-collision-<map>") are
+    // the Collision Editor (saved to localStorage under "mathtuto-collision-<map>") are
     // applied. Stale "{map}-collisions.json" files in public/ are intentionally
     // IGNORED so old barrier shapes don't block the new generated background.
     // Flip to true to also load a JSON file placed in public/ (e.g. the one the
@@ -95,6 +96,9 @@ export abstract class OpenWorldMapScene extends Scene {
     npcNameLabels: Map<number, any> = new Map();
     missionNumberLabels: Map<number, any> = new Map();
     protected DEBUG_BYPASS_PREREQUISITES: boolean = false;
+    // Set once a level's full-collection bonus has been awarded so the reward
+    // can't be re-farmed by collecting again after everything is done.
+    protected masterCollectorAwarded: boolean = false;
 
     protected abstract getLocationDisplayColor(): string;
 
@@ -542,7 +546,7 @@ export abstract class OpenWorldMapScene extends Scene {
         // active scene repositions its NPCs live (no scene restart needed).
         if (!this.npcEditorListenerRegistered) {
             this.game.events.on(
-                "civika-npcs-saved",
+                "mathtuto-npcs-saved",
                 this.handleNPCEditorSaved,
                 this,
             );
@@ -765,7 +769,12 @@ export abstract class OpenWorldMapScene extends Scene {
             return;
         }
 
-        const speed = 120;
+        const speedBoostMultiplier = ShopService.getInstance().hasActiveEffect(
+            "speed_boost",
+        )
+            ? ShopService.getInstance().getActiveMultiplier("speed_boost")
+            : 1;
+        const speed = 120 * speedBoostMultiplier;
         let isMoving = false;
         let currentDirection = "";
         let velocityX = 0;
@@ -1631,6 +1640,9 @@ export abstract class OpenWorldMapScene extends Scene {
             );
             glow.setDepth(199);
             glow.setScrollFactor(1);
+            // Stash the glow on the collectible so it can be cleaned up
+            // when the player picks the item up.
+            collectible.setData("glow", glow);
 
             this.tweens.add({
                 targets: glow,
@@ -1676,6 +1688,15 @@ export abstract class OpenWorldMapScene extends Scene {
         );
 
         if (collected) {
+            // Kill the ambient bob/glow tweens and destroy the pulsing glow
+            // so nothing is left orphaned at the pickup spot.
+            this.tweens.killTweensOf(collectible);
+            const glow = collectible.getData("glow");
+            if (glow) {
+                this.tweens.killTweensOf(glow);
+                glow.destroy();
+            }
+
             this.createCollectionParticles(
                 collectible.x,
                 collectible.y,
@@ -1704,6 +1725,12 @@ export abstract class OpenWorldMapScene extends Scene {
             );
 
             this.checkCollectionAchievement();
+
+            // Update daily challenge progress for collectibles
+            EventBus.emit("update-daily-challenge", {
+                type: "collect",
+                amount: 1,
+            });
 
             EventBus.emit("show-notification", {
                 type: "success",
@@ -2413,7 +2440,8 @@ export abstract class OpenWorldMapScene extends Scene {
             gameStateManager.isItemCollected(item.id),
         );
 
-        if (allItemsCollected) {
+        if (allItemsCollected && !this.masterCollectorAwarded) {
+            this.masterCollectorAwarded = true;
             EventBus.emit("show-notification", {
                 type: "success",
                 title: `🏆 ${title} Master Collector! 🏆`,

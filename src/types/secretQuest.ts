@@ -1,5 +1,5 @@
 /**
- * Secret Quest and Title System Type Definitions for Tutor Town
+ * Secret Quest and Title System Type Definitions for MathTuto
  */
 
 export enum SecretQuestType {

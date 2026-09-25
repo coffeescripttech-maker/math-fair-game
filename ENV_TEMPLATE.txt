@@ -1,5 +1,5 @@
 # ==========================================
-# CIVIKA Environment Variables Template
+# MathTuto Environment Variables Template
 # ==========================================
 # Instructions:
 # 1. Create a new file named ".env.local" in the project root

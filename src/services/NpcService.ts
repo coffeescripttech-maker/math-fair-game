@@ -1,5 +1,5 @@
 /**
- * NPC Position Service for CIVIKA
+ * NPC Position Service for MathTuto
  * Loads and saves NPC position overrides (localStorage, editor-authored only).
  * The default NPC spots come from mapData's mission-location arrays — this
  * service only stores the deltas the user drags in the NPC Position Editor.
@@ -34,7 +34,7 @@ export class NpcService {
         }
 
         try {
-            const saved = localStorage.getItem(`civika-npcs-${mapName}`);
+            const saved = localStorage.getItem(`mathtuto-npcs-${mapName}`);
             if (saved) {
                 const data = JSON.parse(saved) as NpcPositionData;
                 this.cache.set(mapName, data);
@@ -60,7 +60,7 @@ export class NpcService {
     public saveNpcData(data: NpcPositionData): void {
         try {
             localStorage.setItem(
-                `civika-npcs-${data.mapName}`,
+                `mathtuto-npcs-${data.mapName}`,
                 JSON.stringify(data),
             );
             this.cache.set(data.mapName, data);
@@ -75,7 +75,7 @@ export class NpcService {
      */
     public removeNpcData(mapName: string): void {
         try {
-            localStorage.removeItem(`civika-npcs-${mapName}`);
+            localStorage.removeItem(`mathtuto-npcs-${mapName}`);
             this.cache.set(mapName, null);
             console.log(`NPC position data cleared for ${mapName}`);
         } catch (error) {

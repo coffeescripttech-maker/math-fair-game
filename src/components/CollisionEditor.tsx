@@ -1,5 +1,5 @@
 /**
- * Collision Editor Component for CIVIKA
+ * Collision Editor Component for MathTuto
  * Draw collision boxes and polygons on the background image
  * Saves to JSON with background-relative percentage coordinates
  */
@@ -466,7 +466,7 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
 
     const loadCollisionData = () => {
         try {
-            const saved = localStorage.getItem(`civika-collision-${mapName}`);
+            const saved = localStorage.getItem(`mathtuto-collision-${mapName}`);
             if (saved) {
                 const data = JSON.parse(saved);
                 setCollisionData(data);
@@ -479,7 +479,7 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
     const saveToLocalStorage = () => {
         try {
             localStorage.setItem(
-                `civika-collision-${mapName}`,
+                `mathtuto-collision-${mapName}`,
                 JSON.stringify(collisionData)
             );
             alert("Collision data saved to browser storage!");

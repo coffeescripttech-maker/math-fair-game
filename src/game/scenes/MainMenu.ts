@@ -80,7 +80,7 @@ export class MainMenu extends Scene {
     }
 
     moveLogo(reactCallback: ({ x, y }: { x: number; y: number }) => void) {
-        // Keep this for compatibility but it's not used in Tutor Town
+        // Keep this for compatibility but it's not used in MathTuto
         if (reactCallback) {
             reactCallback({
                 x: Math.floor(this.logo.x),

@@ -1,5 +1,5 @@
 /**
- * Collision Service for CIVIKA
+ * Collision Service for MathTuto
  * Loads collision data and creates Phaser physics bodies
  */
 
@@ -28,7 +28,7 @@ export class CollisionService {
     public loadCollisionData(mapName: string): CollisionData | null {
         try {
             // First try localStorage (for editor testing)
-            const saved = localStorage.getItem(`civika-collision-${mapName}`);
+            const saved = localStorage.getItem(`mathtuto-collision-${mapName}`);
             if (saved) {
                 console.log(
                     `Loaded collision data from localStorage for ${mapName}`
@@ -306,7 +306,7 @@ export class CollisionService {
     public saveCollisionData(data: CollisionData): void {
         try {
             localStorage.setItem(
-                `civika-collision-${data.mapName}`,
+                `mathtuto-collision-${data.mapName}`,
                 JSON.stringify(data)
             );
             console.log(`Collision data saved for ${data.mapName}`);

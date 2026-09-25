@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains the background-relative percentage positioning system used for NPCs in CIVIKA.
+This guide explains the background-relative percentage positioning system used for NPCs in MathTuto.
 
 ---
 

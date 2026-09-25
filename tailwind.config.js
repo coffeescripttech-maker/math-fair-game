@@ -5,9 +5,9 @@ module.exports = {
         extend: {
             colors: {
                 // Legacy colors (keep for backward compatibility)
-                "civika-green": "#2c5530",
-                "civika-gold": "#FFD700",
-                "civika-brown": "#8B4513",
+                "mathtuto-green": "#2c5530",
+                "mathtuto-gold": "#FFD700",
+                "mathtuto-brown": "#8B4513",
 
                 // Math-themed primary colors
                 math: {
@@ -51,7 +51,7 @@ module.exports = {
                     orange: "#FF8656",
                 },
 
-                // Tutor Town palette (retro educational game theme)
+                // MathTuto palette (retro educational game theme)
                 tutor: {
                     navy: "#071B3A",
                     blue: "#216FD1",
@@ -80,6 +80,11 @@ module.exports = {
                 "slide-down": "slideDown 0.3s ease-out",
                 confetti: "confetti 1s ease-out forwards",
                 celebrate: "celebrate 0.6s ease-out",
+                "kenburns": "kenburns 45s ease-in-out infinite alternate",
+                "drift": "drift 35s ease-in-out infinite alternate",
+                "float-up": "float-up 16s linear infinite",
+                "bob": "bob 3s ease-in-out infinite",
+                "spin-slower": "spin-slower 12s linear infinite",
             },
             keyframes: {
                 shimmer: {
@@ -108,6 +113,38 @@ module.exports = {
                     "0%, 100%": { transform: "scale(1) rotate(0deg)" },
                     "25%": { transform: "scale(1.1) rotate(-5deg)" },
                     "75%": { transform: "scale(1.1) rotate(5deg)" },
+                },
+                kenburns: {
+                    "0%": { transform: "scale(1.05) translate(0, 0)" },
+                    "100%": {
+                        transform: "scale(1.15) translate(-1%, -1%)",
+                    },
+                },
+                drift: {
+                    "0%": { transform: "translate(0, 0) scale(1.08)" },
+                    "100%": {
+                        transform: "translate(1.5%, 1.5%) scale(1.08)",
+                    },
+                },
+                "float-up": {
+                    "0%": {
+                        transform: "translateY(110vh) rotate(0deg)",
+                        opacity: "0",
+                    },
+                    "10%": { opacity: "var(--float-opacity, 0.35)" },
+                    "90%": { opacity: "var(--float-opacity, 0.35)" },
+                    "100%": {
+                        transform: "translateY(-120vh) rotate(360deg)",
+                        opacity: "0",
+                    },
+                },
+                bob: {
+                    "0%, 100%": { transform: "translateY(0)" },
+                    "50%": { transform: "translateY(-10px)" },
+                },
+                "spin-slower": {
+                    "0%": { transform: "rotate(0deg)" },
+                    "100%": { transform: "rotate(360deg)" },
                 },
             },
             boxShadow: {

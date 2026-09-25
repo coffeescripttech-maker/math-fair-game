@@ -1,4 +1,4 @@
-# 🏆 CIVIKA Leaderboard - Implementation Complete!
+# 🏆 MathTuto Leaderboard - Implementation Complete!
 
 ## ✅ What Has Been Implemented
 
@@ -101,7 +101,7 @@ npm install @supabase/supabase-js
 2. Sign up or log in
 3. Click "New Project"
 4. Fill in details:
-    - **Name**: `civika-game`
+    - **Name**: `mathtuto-game`
     - **Database Password**: (save securely)
     - **Region**: Choose closest to your players
 5. Wait 2 minutes for project to initialize
@@ -342,7 +342,7 @@ if (missionCompleted) {
 -   2 GB bandwidth/month
 -   Real-time subscriptions
 
-**For CIVIKA:**
+**For MathTuto:**
 
 -   ~1 KB per player entry
 -   **500,000 players possible on free tier!**
@@ -481,7 +481,7 @@ leaderboardService.unsubscribeFromLeaderboard(channel);
 
 ## 🎉 Congratulations!
 
-You now have a **fully functional, real-time leaderboard system** for CIVIKA!
+You now have a **fully functional, real-time leaderboard system** for MathTuto!
 
 ### What You've Built:
 
@@ -507,7 +507,7 @@ You now have a **fully functional, real-time leaderboard system** for CIVIKA!
 **Created**: October 10, 2025  
 **Version**: 1.0.0  
 **Status**: ✅ Production Ready  
-**Developer**: CIVIKA Team
+**Developer**: MathTuto Team
 
 ---
 

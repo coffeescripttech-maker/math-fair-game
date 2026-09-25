@@ -15,7 +15,7 @@ export const PWAInstallPrompt: React.FC = () => {
         // Check if app is already installed
         if (window.matchMedia("(display-mode: standalone)").matches) {
             setIsInstalled(true);
-            console.log("✅ Tutor Town is running as installed PWA");
+            console.log("✅ MathTuto is running as installed PWA");
             return;
         }
 
@@ -41,7 +41,7 @@ export const PWAInstallPrompt: React.FC = () => {
 
         // Listen for app installed event
         window.addEventListener("appinstalled", () => {
-            console.log("✅ Tutor Town PWA installed successfully!");
+            console.log("✅ MathTuto PWA installed successfully!");
             setIsInstalled(true);
             setShowInstallPrompt(false);
             setDeferredPrompt(null);
@@ -117,12 +117,12 @@ export const PWAInstallPrompt: React.FC = () => {
                     <div className="flex items-center space-x-3 mb-3">
                         <img
                             src="/logo.jpg"
-                            alt="Tutor Town Logo"
+                            alt="MathTuto Logo"
                             className="w-8 h-8 drop-shadow-lg animate-pulse"
                         />
                         <div>
                             <h3 className="font-brutal uppercase text-gray-900 text-sm">
-                                Install Tutor Town
+                                Install MathTuto
                             </h3>
                             <p className="text-xs text-gray-700">
                                 Play offline anytime!
@@ -131,7 +131,7 @@ export const PWAInstallPrompt: React.FC = () => {
                     </div>
 
                     <p className="text-xs text-gray-600 mb-3">
-                        Install Tutor Town on your device for:
+                        Install MathTuto on your device for:
                     </p>
 
                     <ul className="text-xs text-gray-700 mb-3 space-y-1">

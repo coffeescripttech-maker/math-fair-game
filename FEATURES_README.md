@@ -1,8 +1,8 @@
-# 🎮 CIVIKA - Features Overview
+# 🎮 MathTuto - Features Overview
 
 ## 🌟 Complete Feature Set
 
-This document provides a high-level overview of all major features implemented in the CIVIKA game.
+This document provides a high-level overview of all major features implemented in the MathTuto game.
 
 ---
 
@@ -758,7 +758,7 @@ When adding features:
 ## 📦 Project Structure
 
 ```
-CIVIKA/
+MathTuto/
 ├── src/
 │   ├── game/
 │   │   ├── scenes/
@@ -852,7 +852,7 @@ CIVIKA/
 
 ## 🙏 Acknowledgments
 
-Thanks for choosing CIVIKA for civic education!
+Thanks for choosing MathTuto for civic education!
 
 **System Developed**: October 10, 2025  
 **Version**: 1.0.0  

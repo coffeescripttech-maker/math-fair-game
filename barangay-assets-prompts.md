@@ -100,7 +100,7 @@ under one arm.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -135,7 +135,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like he was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -173,7 +173,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -201,11 +201,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Coach Miguel is another character living inside the same Tutor Town world."
+"Coach Miguel is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -241,7 +241,7 @@ holds a small notebook with a pencil in one hand.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -276,7 +276,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like she was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -313,7 +313,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -343,11 +343,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Aling Maria is another character living inside the same Tutor Town world."
+"Aling Maria is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -384,7 +384,7 @@ a rolled map (or notebook) in one hand.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -419,7 +419,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like he was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -457,7 +457,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -487,11 +487,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Ben is another character living inside the same Tutor Town world."
+"Ben is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -527,7 +527,7 @@ She holds a clipboard with papers in one hand.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -562,7 +562,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like she was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -600,7 +600,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -631,11 +631,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Ana is another character living inside the same Tutor Town world."
+"Ana is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -671,7 +671,7 @@ tiny potted seedling in the other.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -706,7 +706,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like she was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -744,7 +744,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -775,11 +775,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Lola Rosa is another character living inside the same Tutor Town world."
+"Lola Rosa is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -814,7 +814,7 @@ head. He holds a weighing scale with a few fruits on it in one hand.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -849,7 +849,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like he was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -887,7 +887,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -917,11 +917,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Mang Pedro is another character living inside the same Tutor Town world."
+"Mang Pedro is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -957,7 +957,7 @@ He holds a folded ladder in one hand and garden shears in the other.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -992,7 +992,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like he was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -1030,7 +1030,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -1060,11 +1060,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Kuya Noel is another character living inside the same Tutor Town world."
+"Kuya Noel is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -1099,7 +1099,7 @@ pointer / ruler in one hand and a stack of papers in the other.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -1134,7 +1134,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like she was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -1173,7 +1173,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -1203,11 +1203,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Teacher Cruz is another character living inside the same Tutor Town world."
+"Teacher Cruz is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -1242,7 +1242,7 @@ his waist. He holds a coil of wire (or measuring tape) in his hands.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -1277,7 +1277,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like he was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -1315,7 +1315,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -1346,11 +1346,11 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
-"Danny is another character living inside the same Tutor Town world."
+"Danny is another character living inside the same MathTuto world."
 
 NOT:
 
@@ -1388,7 +1388,7 @@ the other.
 IMPORTANT STYLE REQUIREMENT:
 
 The character must visually belong to the EXACT SAME GAME and character
-family as the existing Tutor Town student sprites.
+family as the existing MathTuto student sprites.
 
 Use the same polished retro pixel-art aesthetic:
 - crisp 16-bit / 32-bit-inspired pixel art
@@ -1423,7 +1423,7 @@ Keep the same overall:
 - overall sprite scale
 
 The NPC should look like she was created by the SAME artist for the SAME
-Tutor Town game as the student characters.
+MathTuto game as the student characters.
 
 CHARACTER PROPORTIONS:
 
@@ -1462,7 +1462,7 @@ SPRITE COMPOSITION:
 - centered horizontally
 - full body from head to shoes
 - character fills most of the vertical canvas
-- consistent scale with the existing Tutor Town student sprites
+- consistent scale with the existing MathTuto student sprites
 - feet positioned near the bottom of the canvas
 - small amount of transparent padding around the character
 - no cropping
@@ -1493,12 +1493,12 @@ NO:
 FINAL TARGET:
 
 This should look like a playable/interactive NPC sprite from the same
-retro educational adventure game as the Tutor Town student characters.
+retro educational adventure game as the MathTuto student characters.
 
 Think:
 
 "The barangay captain's daughter is another character living inside the
-same Tutor Town world."
+same MathTuto world."
 
 NOT:
 

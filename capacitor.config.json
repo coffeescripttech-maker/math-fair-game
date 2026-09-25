@@ -1,12 +1,12 @@
 {
-  "appId": "com.civika.game",
-  "appName": "CIVIKA",
+  "appId": "com.mathtuto.game",
+  "appName": "MathTuto",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "android": {
     "allowMixedContent": true,
     "captureInput": true,
-    "webContentsDebuggingEnabled": true
+    "webContentsDebuggingEnabled": false
   },
   "server": {
     "androidScheme": "https"

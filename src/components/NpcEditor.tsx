@@ -1,5 +1,5 @@
 /**
- * NPC Position Editor Component for CIVIKA
+ * NPC Position Editor Component for MathTuto
  * Drag NPCs around the map background and save their locations.
  * Saves background-relative percentage coordinates to browser storage (the
  * same pattern as the Collision Editor), so the game spawns NPCs at the

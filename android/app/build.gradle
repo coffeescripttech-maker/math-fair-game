@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.civika.game"
+    namespace "com.mathtuto.game"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.civika.game"
+        applicationId "com.mathtuto.game"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

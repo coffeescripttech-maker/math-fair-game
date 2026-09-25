@@ -18,13 +18,11 @@ import {
 import { IRefPhaserGame, PhaserGame } from "./PhaserGame";
 import { MainMenu } from "./components/MainMenu";
 import { CharacterCreation } from "./components/CharacterCreation";
-import { QuizSystem } from "./components/QuizSystem";
 import { EnhancedQuizSystem } from "./components/EnhancedQuizSystem";
 import { AchievementCelebration } from "./components/AchievementCelebration";
 import { MissionSystem } from "./components/MissionSystem";
 import { VirtualJoystick } from "./components/VirtualJoystick";
 import { MobileInteractionButton } from "./components/MobileInteractionButton";
-import { GameDebugPanel } from "./components/GameDebugPanel";
 import { Settings } from "./components/Settings";
 import { Extras } from "./components/Extras";
 import { Credits } from "./components/Credits";
@@ -49,6 +47,13 @@ import { audioManager } from "./utils/AudioManager";
 import LeaderboardService from "./services/LeaderboardService";
 import ShopService from "./services/ShopService";
 import SecretQuestService from "./services/SecretQuestService";
+import {
+    ACTIVE_LEVELS,
+    GAME_CONFIG,
+    TOTAL_MISSIONS,
+    getSceneForLevel as getGameSceneForLevel,
+} from "./config/gameConfig";
+import type { LevelTone } from "./config/gameConfig";
 import { quizzes, defaultQuiz } from "./data/quizzes";
 
 // 🧪 TESTING MODE: Set to true to bypass mission prerequisites for testing
@@ -71,6 +76,17 @@ const COLLISION_EDITOR_MAPS: MapSceneKey[] = [
     "NationalMap",
 ];
 
+/** Icon-chip colors for each level tone in the pause-menu map navigation. */
+const LEVEL_ICON_TONE: Record<LevelTone, string> = {
+    yellow: "bg-tutor-yellow text-tutor-navy",
+    blue: "bg-tutor-blue text-tutor-cream",
+    green: "bg-tutor-green text-tutor-cream",
+    purple: "bg-tutor-purple text-tutor-cream",
+    orange: "bg-tutor-orange text-tutor-cream",
+    red: "bg-tutor-red text-tutor-cream",
+    cream: "bg-tutor-cream text-tutor-green",
+};
+
 function App() {
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const gameStateManager = useRef(GameStateManager.getInstance());
@@ -83,6 +99,37 @@ function App() {
         accuracy: "0%",
         level: 1,
     });
+
+    // Derived level display values (from gameConfig)
+    const currentLevelDef = ACTIVE_LEVELS.find(
+        (lv) => lv.level === gameInfo.level,
+    );
+    const currentLevelIndex = currentLevelDef
+        ? currentLevelDef.level - 1
+        : Math.max(
+              0,
+              Math.min(ACTIVE_LEVELS.length - 1, gameInfo.level - 1),
+          );
+    const earnedInCurrentLevel = Math.max(
+        0,
+        Math.min(
+            gameInfo.badges,
+            (currentLevelIndex + 1) * GAME_CONFIG.MISSIONS_PER_LEVEL,
+        ) -
+            currentLevelIndex * GAME_CONFIG.MISSIONS_PER_LEVEL,
+    );
+    const levelProgressPercent = Math.round(
+        (earnedInCurrentLevel / GAME_CONFIG.MISSIONS_PER_LEVEL) * 100,
+    );
+    const currentRank = (() => {
+        const ratio =
+            TOTAL_MISSIONS > 0 ? gameInfo.badges / TOTAL_MISSIONS : 0;
+        if (ratio < 0.25) return "Beginner";
+        if (ratio < 0.5) return "Problem Solver";
+        if (ratio < 0.75) return "Math Expert";
+        if (ratio < 1) return "Algebra Master";
+        return "Math Olympiad Champion";
+    })();
     const [showPauseMenu, setShowPauseMenu] = useState(false);
     const [showInventory, setShowInventory] = useState(false);
     const [showQuestLog, setShowQuestLog] = useState(false);
@@ -340,8 +387,8 @@ function App() {
             setTimeout(() => {
                 showGameNotification({
                     type: "info",
-                    title: `Welcome to Tutor Town, ${name}! 👋`,
-                    message: `You just moved to town and decided to offer tutoring in radicals and inverse functions. Look for students with "!" symbols who need your help. Build your reputation, earn coins, and grow from a barangay tutor to a national math mentor. Good luck!`,
+                    title: `Welcome to MathTuto, ${name}! 👋`,
+                    message: `You just moved to town and decided to help your community through math! Look for the gold Mission #N markers above NPCs who need your help. Complete missions, collect items, earn badges, and grow from a barangay tutor to a national math mentor. Good luck!`,
                     icon: "🎓",
                     actions: [
                         {
@@ -380,23 +427,8 @@ function App() {
                 );
 
                 // Determine which scene to start based on player level
-                const getSceneForLevel = (level: number) => {
-                    switch (level) {
-                        case 1:
-                            return "BarangayMap";
-                        case 2:
-                            return "CityMap";
-                        case 3:
-                            return "ProvinceMap";
-                        case 4:
-                            return "RegionMap";
-                        case 5:
-                            return "NationalMap";
-                        default:
-                            return "BarangayMap";
-                    }
-                };
-                const startScene = getSceneForLevel(progress.level);
+                // (driven by gameConfig - only configured levels are live)
+                const startScene = getGameSceneForLevel(progress.level);
                 console.log(
                     `Starting ${startScene} scene for Level ${progress.level}...`,
                 );
@@ -549,37 +581,36 @@ function App() {
 
                             // Show level up notification
                             setTimeout(() => {
+                                const reachedLevel = ACTIVE_LEVELS.find(
+                                    (lv) => lv.level === progress.level,
+                                );
+                                const nextLevel = ACTIVE_LEVELS.find(
+                                    (lv) => lv.level === progress.level + 1,
+                                );
+                                const levelUpMessage = reachedLevel
+                                    ? nextLevel
+                                        ? `You've mastered ${reachedLevel.name} tutoring and are ready to tutor across the ${nextLevel.name}! Automatically transitioning...`
+                                        : `You've reached the final level, ${reachedLevel.name}! You've conquered every district — you're a true Math Hero! 🏆`
+                                    : "You've completed all math challenges with excellent accuracy. Great job, math champion!";
                                 showGameNotification({
                                     type: "success",
                                     title: "LEVEL UP! 🌟",
-                                    message: (() => {
-                                        const levelMessages: Record<
-                                            number,
-                                            string
-                                        > = {
-                                            2: "You've mastered barangay tutoring and are ready for city-wide challenges! Automatically transitioning to the City...",
-                                            3: "You've conquered the city and are ready to tutor across the province! Automatically transitioning to the Province...",
-                                            4: "You've guided learners throughout the province and are ready for regional outreach! Automatically transitioning to the Region...",
-                                            5: "You've become a regional math mentor and are ready for the national stage! Automatically transitioning to the National finals...",
-                                        };
-                                        return `Amazing! You've reached Level ${progress.level}! ${levelMessages[progress.level] || "You've completed all math challenges with excellent accuracy. Great job, math champion!"}`;
-                                    })(),
+                                    message: `Amazing! You've reached Level ${progress.level}! ${levelUpMessage}`,
                                     icon: "🎓",
                                     actions: [],
                                 });
 
                                 // Automatically transition to the next map after level up
-                                const nextSceneMap: Record<
-                                    number,
-                                    { from: string; to: string }
-                                > = {
-                                    2: { from: "BarangayMap", to: "CityMap" },
-                                    3: { from: "CityMap", to: "ProvinceMap" },
-                                    4: { from: "ProvinceMap", to: "RegionMap" },
-                                    5: { from: "RegionMap", to: "NationalMap" },
-                                };
+                                const transition =
+                                    reachedLevel && progress.level > 1
+                                        ? {
+                                              from: getGameSceneForLevel(
+                                                  progress.level - 1,
+                                              ),
+                                              to: reachedLevel.scene,
+                                          }
+                                        : undefined;
                                 const game = phaserRef.current?.game;
-                                const transition = nextSceneMap[progress.level];
                                 if (game && transition) {
                                     setTimeout(() => {
                                         console.log(
@@ -615,6 +646,14 @@ function App() {
                             1,
                         );
 
+                        // Claim any NPC milestone gift (missions 9, 10, 20)
+                        const npcReward = shopService.current.claimNPCReward(
+                            missionId,
+                        );
+                        const npcRewardNote = npcReward.success
+                            ? `\n\n🎁 ${npcReward.reward?.npcName}: ${npcReward.reward?.message}`
+                            : "";
+
                         showGameNotification({
                             type: "success",
                             title: "Math Challenge Completed! 🎉",
@@ -624,7 +663,7 @@ function App() {
                                 progress.badges[progress.badges.length - 1]
                             }" achievement! You received ${rewardCoins} coins and ${
                                 result.points + 100
-                            } points!`,
+                            } points!${npcRewardNote}`,
                             icon: "🏆",
                             actions: [
                                 {
@@ -1031,7 +1070,7 @@ function App() {
                                     {/* Badges */}
                                     <div className="flex items-center gap-0.5 rounded-md border-2 border-tutor-navy bg-tutor-yellow px-1.5 py-0.5 font-playful text-[10px] font-bold text-tutor-navy">
                                         <span>🏆</span>
-                                        {gameInfo.badges}/20
+                                        {gameInfo.badges}/{TOTAL_MISSIONS}
                                     </div>
 
                                     {/* Coins */}
@@ -1129,7 +1168,7 @@ function App() {
                         {/* Pause Menu Overlay */}
                         {showPauseMenu && (
                             <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-1.5 sm:p-4 pointer-events-auto">
-                                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                                {/* MathTuto game window: navy outer frame, yellow inner frame */}
                                 <section className="relative w-full max-w-md animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
                                     <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-3 sm:px-4 sm:py-4">
                                         {/* Close Button */}
@@ -1272,196 +1311,51 @@ function App() {
                                                 <div className="h-1 flex-1 rounded-full bg-tutor-yellow" />
                                             </div>
                                             <div className="space-y-2">
-                                                <button
-                                                    onClick={() => {
-                                                        const scene =
-                                                            phaserRef.current
-                                                                ?.scene;
-                                                        if (scene) {
-                                                            scene.scene.stop(
-                                                                gameInfo.currentScene,
-                                                            );
-                                                            scene.scene.start(
-                                                                "BarangayMap",
-                                                            );
-                                                            setShowPauseMenu(
-                                                                false,
-                                                            );
-                                                        }
-                                                    }}
-                                                    type="button"
-                                                    className={`flex w-full items-center gap-2 rounded-lg border-[3px] border-tutor-navy px-3 py-2 font-playful text-sm font-bold transition-all duration-150 ${
-                                                        gameInfo.currentScene ===
-                                                        "BarangayMap"
-                                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
-                                                            : "bg-tutor-cream text-tutor-navy shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
-                                                    }`}
-                                                >
-                                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-green text-tutor-cream">
-                                                        🏘️
-                                                    </span>
-                                                    <span className="flex-1 text-left">
-                                                        Level 1: Barangay Map
-                                                    </span>
-                                                    {gameInfo.currentScene ===
-                                                        "BarangayMap" && (
-                                                        <span className="rounded-full border-2 border-tutor-yellow px-2 py-0.5 font-brutal text-[10px] uppercase tracking-wide text-tutor-yellow">
-                                                            ● Here
+                                                {ACTIVE_LEVELS.map((lv) => (
+                                                    <button
+                                                        key={lv.scene}
+                                                        onClick={() => {
+                                                            const scene =
+                                                                phaserRef
+                                                                    .current
+                                                                    ?.scene;
+                                                            if (scene) {
+                                                                scene.scene.stop(
+                                                                    gameInfo.currentScene,
+                                                                );
+                                                                scene.scene.start(
+                                                                    lv.scene,
+                                                                );
+                                                                setShowPauseMenu(
+                                                                    false,
+                                                                );
+                                                            }
+                                                        }}
+                                                        type="button"
+                                                        className={`flex w-full items-center gap-2 rounded-lg border-[3px] border-tutor-navy px-3 py-2 font-playful text-sm font-bold transition-all duration-150 ${
+                                                            gameInfo.currentScene ===
+                                                            lv.scene
+                                                                ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
+                                                                : "bg-tutor-cream text-tutor-navy shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
+                                                        }`}
+                                                    >
+                                                        <span
+                                                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy ${LEVEL_ICON_TONE[lv.tone]}`}
+                                                        >
+                                                            {lv.icon}
                                                         </span>
-                                                    )}
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        const scene =
-                                                            phaserRef.current
-                                                                ?.scene;
-                                                        if (scene) {
-                                                            scene.scene.stop(
-                                                                gameInfo.currentScene,
-                                                            );
-                                                            scene.scene.start(
-                                                                "CityMap",
-                                                            );
-                                                            setShowPauseMenu(
-                                                                false,
-                                                            );
-                                                        }
-                                                    }}
-                                                    type="button"
-                                                    className={`flex w-full items-center gap-2 rounded-lg border-[3px] border-tutor-navy px-3 py-2 font-playful text-sm font-bold transition-all duration-150 ${
-                                                        gameInfo.currentScene ===
-                                                        "CityMap"
-                                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
-                                                            : "bg-tutor-cream text-tutor-navy shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
-                                                    }`}
-                                                >
-                                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-blue text-tutor-cream">
-                                                        🏙️
-                                                    </span>
-                                                    <span className="flex-1 text-left">
-                                                        Level 2: City Map
-                                                    </span>
-                                                    {gameInfo.currentScene ===
-                                                        "CityMap" && (
-                                                        <span className="rounded-full border-2 border-tutor-yellow px-2 py-0.5 font-brutal text-[10px] uppercase tracking-wide text-tutor-yellow">
-                                                            ● Here
+                                                        <span className="flex-1 text-left">
+                                                            Level {lv.level}:{" "}
+                                                            {lv.name} Map
                                                         </span>
-                                                    )}
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        const scene =
-                                                            phaserRef.current
-                                                                ?.scene;
-                                                        if (scene) {
-                                                            scene.scene.stop(
-                                                                gameInfo.currentScene,
-                                                            );
-                                                            scene.scene.start(
-                                                                "ProvinceMap",
-                                                            );
-                                                            setShowPauseMenu(
-                                                                false,
-                                                            );
-                                                        }
-                                                    }}
-                                                    type="button"
-                                                    className={`flex w-full items-center gap-2 rounded-lg border-[3px] border-tutor-navy px-3 py-2 font-playful text-sm font-bold transition-all duration-150 ${
-                                                        gameInfo.currentScene ===
-                                                        "ProvinceMap"
-                                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
-                                                            : "bg-tutor-cream text-tutor-navy shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
-                                                    }`}
-                                                >
-                                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-green text-tutor-cream">
-                                                        🏛️
-                                                    </span>
-                                                    <span className="flex-1 text-left">
-                                                        Level 3: Province Map
-                                                    </span>
-                                                    {gameInfo.currentScene ===
-                                                        "ProvinceMap" && (
-                                                        <span className="rounded-full border-2 border-tutor-yellow px-2 py-0.5 font-brutal text-[10px] uppercase tracking-wide text-tutor-yellow">
-                                                            ● Here
-                                                        </span>
-                                                    )}
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        const scene =
-                                                            phaserRef.current
-                                                                ?.scene;
-                                                        if (scene) {
-                                                            scene.scene.stop(
-                                                                gameInfo.currentScene,
-                                                            );
-                                                            scene.scene.start(
-                                                                "RegionMap",
-                                                            );
-                                                            setShowPauseMenu(
-                                                                false,
-                                                            );
-                                                        }
-                                                    }}
-                                                    type="button"
-                                                    className={`flex w-full items-center gap-2 rounded-lg border-[3px] border-tutor-navy px-3 py-2 font-playful text-sm font-bold transition-all duration-150 ${
-                                                        gameInfo.currentScene ===
-                                                        "RegionMap"
-                                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
-                                                            : "bg-tutor-cream text-tutor-navy shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
-                                                    }`}
-                                                >
-                                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-purple text-tutor-cream">
-                                                        🌏
-                                                    </span>
-                                                    <span className="flex-1 text-left">
-                                                        Level 4: Region Map
-                                                    </span>
-                                                    {gameInfo.currentScene ===
-                                                        "RegionMap" && (
-                                                        <span className="rounded-full border-2 border-tutor-yellow px-2 py-0.5 font-brutal text-[10px] uppercase tracking-wide text-tutor-yellow">
-                                                            ● Here
-                                                        </span>
-                                                    )}
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        const scene =
-                                                            phaserRef.current
-                                                                ?.scene;
-                                                        if (scene) {
-                                                            scene.scene.stop(
-                                                                gameInfo.currentScene,
-                                                            );
-                                                            scene.scene.start(
-                                                                "NationalMap",
-                                                            );
-                                                            setShowPauseMenu(
-                                                                false,
-                                                            );
-                                                        }
-                                                    }}
-                                                    type="button"
-                                                    className={`flex w-full items-center gap-2 rounded-lg border-[3px] border-tutor-navy px-3 py-2 font-playful text-sm font-bold transition-all duration-150 ${
-                                                        gameInfo.currentScene ===
-                                                        "NationalMap"
-                                                            ? "-translate-y-0.5 bg-tutor-navy text-tutor-cream shadow-[0_0_0_3px_#FFD84D,3px_3px_0_0_#071B3A]"
-                                                            : "bg-tutor-cream text-tutor-navy shadow-[2px_2px_0_0_#071B3A] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#071B3A]"
-                                                    }`}
-                                                >
-                                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-yellow text-tutor-navy">
-                                                        🏆
-                                                    </span>
-                                                    <span className="flex-1 text-left">
-                                                        Level 5: National Map
-                                                    </span>
-                                                    {gameInfo.currentScene ===
-                                                        "NationalMap" && (
-                                                        <span className="rounded-full border-2 border-tutor-yellow px-2 py-0.5 font-brutal text-[10px] uppercase tracking-wide text-tutor-yellow">
-                                                            ● Here
-                                                        </span>
-                                                    )}
-                                                </button>
+                                                        {gameInfo.currentScene ===
+                                                            lv.scene && (
+                                                            <span className="rounded-full border-2 border-tutor-yellow px-2 py-0.5 font-brutal text-[10px] uppercase tracking-wide text-tutor-yellow">
+                                                                ● Here
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
 
@@ -1534,7 +1428,7 @@ function App() {
                         {/* Quest Log Overlay */}
                         {showQuestLog && (
                             <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-1.5 sm:p-4 pointer-events-auto">
-                                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                                {/* MathTuto game window: navy outer frame, yellow inner frame */}
                                 <section className="relative w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
                                     <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-3 sm:px-4 sm:py-4">
                                         {/* Close Button */}
@@ -1579,11 +1473,25 @@ function App() {
                                                     Main Objective
                                                 </h3>
                                                 <p className="font-playful text-xs leading-relaxed text-tutor-navy sm:text-sm">
-                                                    {gameInfo.level === 1
-                                                        ? "Complete 10 barangay math challenges to unlock city-level intermediate algebra problems and become a math expert!"
-                                                        : gameInfo.level === 2
-                                                          ? "Complete 10 city math challenges to master intermediate algebra and unlock advanced topics!"
-                                                          : "You've mastered all algebra challenges! Continue practicing to maintain your math excellence."}
+                                                    {(() => {
+                                                        const current = ACTIVE_LEVELS.find(
+                                                            (lv) =>
+                                                                lv.level ===
+                                                                gameInfo.level,
+                                                        );
+                                                        if (!current) {
+                                                            return "Keep solving math challenges to advance!";
+                                                        }
+                                                        const next = ACTIVE_LEVELS.find(
+                                                            (lv) =>
+                                                                lv.level ===
+                                                                gameInfo.level +
+                                                                    1,
+                                                        );
+                                                        return next
+                                                            ? `Complete ${GAME_CONFIG.MISSIONS_PER_LEVEL} ${current.name.toLowerCase()} math challenges to unlock ${next.name.toLowerCase()}-level problems and level up!`
+                                                            : `You've conquered all ${TOTAL_MISSIONS} math challenges! Continue practicing to maintain your math excellence.`;
+                                                    })()}
                                                 </p>
                                             </div>
 
@@ -1596,68 +1504,25 @@ function App() {
                                                     Progress
                                                 </h3>
                                                 <p className="mb-2 font-playful text-sm text-tutor-navy">
-                                                    {gameInfo.level === 1
-                                                        ? "Basic Math Achievements"
-                                                        : "Intermediate Achievements"}{" "}
-                                                    Earned:{" "}
+                                                    {currentLevelDef?.name ??
+                                                        "Math"}{" "}
+                                                    Achievements Earned:{" "}
                                                     <span className="inline-flex min-w-[2.5rem] items-center justify-center rounded-md border-2 border-tutor-navy bg-tutor-green px-2 py-0.5 font-brutal text-sm text-tutor-cream">
-                                                        {gameInfo.level === 1
-                                                            ? Math.min(
-                                                                  gameInfo.badges,
-                                                                  10,
-                                                              )
-                                                            : Math.max(
-                                                                  0,
-                                                                  gameInfo.badges -
-                                                                      10,
-                                                              )}
-                                                        /10
+                                                        {earnedInCurrentLevel}/
+                                                        {GAME_CONFIG.MISSIONS_PER_LEVEL}
                                                     </span>
                                                 </p>
                                                 <div className="h-3 w-full overflow-hidden rounded-full border-2 border-tutor-navy bg-tutor-cream">
                                                     <div
                                                         className="h-full rounded-full bg-tutor-green transition-all duration-300"
                                                         style={{
-                                                            width: `${
-                                                                gameInfo.level ===
-                                                                1
-                                                                    ? (Math.min(
-                                                                          gameInfo.badges,
-                                                                          10,
-                                                                      ) /
-                                                                          10) *
-                                                                      100
-                                                                    : (Math.max(
-                                                                          0,
-                                                                          gameInfo.badges -
-                                                                              10,
-                                                                      ) /
-                                                                          10) *
-                                                                      100
-                                                            }%`,
+                                                            width: `${levelProgressPercent}%`,
                                                         }}
                                                     ></div>
                                                 </div>
                                                 <div className="mt-2 text-center font-playful text-sm font-bold text-tutor-green">
-                                                    {gameInfo.level === 1
-                                                        ? Math.round(
-                                                              (Math.min(
-                                                                  gameInfo.badges,
-                                                                  10,
-                                                              ) /
-                                                                  10) *
-                                                                  100,
-                                                          )
-                                                        : Math.round(
-                                                              (Math.max(
-                                                                  0,
-                                                                  gameInfo.badges -
-                                                                      10,
-                                                              ) /
-                                                                  10) *
-                                                                  100,
-                                                          )}
-                                                    % Complete
+                                                    {levelProgressPercent}%
+                                                    Complete
                                                 </div>
                                             </div>
 
@@ -1672,10 +1537,9 @@ function App() {
                                                 <div className="space-y-2">
                                                     <div className="flex items-center justify-between gap-2">
                                                         <span className="font-playful text-sm font-bold text-tutor-navy">
-                                                            {gameInfo.level ===
-                                                            1
-                                                                ? "Barangay Math Zone"
-                                                                : "City Math Zone"}
+                                                            {currentLevelDef
+                                                                ? `${currentLevelDef.name} Math Zone`
+                                                                : "Math Zone"}
                                                         </span>
                                                         <span className="inline-flex items-center rounded-md border-2 border-tutor-navy bg-tutor-yellow px-2 py-0.5 font-brutal text-xs text-tutor-navy">
                                                             Level{" "}
@@ -1713,7 +1577,7 @@ function App() {
                         {/* Inventory Overlay */}
                         {showInventory && (
                             <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-1.5 sm:p-4 pointer-events-auto">
-                                {/* Tutor Town game window: navy outer frame, yellow inner frame */}
+                                {/* MathTuto game window: navy outer frame, yellow inner frame */}
                                 <section className="relative w-full min-[420px]:max-w-2xl max-w-[calc(100vw-6px)] animate-slide-up rounded-xl sm:rounded-2xl border-[3px] sm:border-4 border-tutor-navy bg-tutor-cream p-1 sm:p-1.5 shadow-[6px_6px_0_0_#071B3A] sm:shadow-[8px_8px_0_0_#071B3A]">
                                     <div className="max-h-[calc(100dvh-20px)] overflow-y-auto overscroll-contain custom-scrollbar rounded-[10px] sm:rounded-[14px] border-2 border-tutor-yellow px-2.5 py-3 sm:px-4 sm:py-4">
                                         {/* Close Button */}
@@ -1823,21 +1687,7 @@ function App() {
                                                         Math Rank
                                                     </div>
                                                     <div className="font-playful font-bold text-tutor-navy text-[10px] sm:text-xs">
-                                                        {gameInfo.level === 1
-                                                            ? gameInfo.badges >=
-                                                              10
-                                                                ? "Math Expert"
-                                                                : gameInfo.badges >=
-                                                                    5
-                                                                  ? "Problem Solver"
-                                                                  : "Beginner"
-                                                            : gameInfo.badges >=
-                                                                20
-                                                              ? "Algebra Master"
-                                                              : gameInfo.badges >=
-                                                                  15
-                                                                ? "Math Scholar"
-                                                                : "Math Student"}
+                                                        {currentRank}
                                                     </div>
                                                 </div>
                                                 <div className="text-center">
@@ -1845,9 +1695,8 @@ function App() {
                                                         Difficulty
                                                     </div>
                                                     <div className="font-playful font-bold text-tutor-navy">
-                                                        {gameInfo.level === 1
-                                                            ? "Basic"
-                                                            : "Intermediate"}
+                                                        {currentLevelDef?.name ??
+                                                            "Basic"}
                                                     </div>
                                                 </div>
                                                 <div className="text-center">
@@ -1969,7 +1818,7 @@ function App() {
                 onNpcsPersisted={(mapName) => {
                     // Tell the live scene to re-read the saved positions so the
                     // NPCs jump to their new spots without a scene restart.
-                    phaserRef.current?.game?.events.emit("civika-npcs-saved", {
+                    phaserRef.current?.game?.events.emit("mathtuto-npcs-saved", {
                         mapName,
                     });
                 }}
@@ -1986,9 +1835,6 @@ function App() {
                     onComplete={() => setShowCelebration(false)}
                 />
             )}
-
-            {/* Debug Panel for Development */}
-            {/* <GameDebugPanel /> */}
 
             {/* PWA Install Prompt */}
             {/* <PWAInstallPrompt /> */}

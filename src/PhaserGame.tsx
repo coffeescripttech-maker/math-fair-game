@@ -37,29 +37,26 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
         }, [ref]);
 
         useEffect(() => {
-            EventBus.on(
-                "current-scene-ready",
-                (scene_instance: Phaser.Scene) => {
-                    if (
-                        currentActiveScene &&
-                        typeof currentActiveScene === "function"
-                    ) {
-                        currentActiveScene(scene_instance);
-                    }
-
-                    if (typeof ref === "function") {
-                        ref({ game: game.current, scene: scene_instance });
-                    } else if (ref) {
-                        ref.current = {
-                            game: game.current,
-                            scene: scene_instance,
-                        };
-                    }
+            const handleSceneReady = (scene_instance: Phaser.Scene) => {
+                if (
+                    currentActiveScene &&
+                    typeof currentActiveScene === "function"
+                ) {
+                    currentActiveScene(scene_instance);
                 }
-            );
+
+                if (typeof ref === "function") {
+                    ref({ game: game.current, scene: scene_instance });
+                } else if (ref) {
+                    ref.current = {
+                        game: game.current,
+                        scene: scene_instance,
+                    };
+                }
+            };
 
             // Listen for game data updates
-            EventBus.on("game-data-updated", () => {
+            const handleGameDataUpdated = () => {
                 if (
                     game.current &&
                     currentActiveScene &&
@@ -71,11 +68,14 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
                         currentActiveScene(currentScene);
                     }
                 }
-            });
+            };
+
+            EventBus.on("current-scene-ready", handleSceneReady);
+            EventBus.on("game-data-updated", handleGameDataUpdated);
 
             return () => {
-                EventBus.removeListener("current-scene-ready");
-                EventBus.removeListener("game-data-updated");
+                EventBus.removeListener("current-scene-ready", handleSceneReady);
+                EventBus.removeListener("game-data-updated", handleGameDataUpdated);
             };
         }, [currentActiveScene, ref]);
 

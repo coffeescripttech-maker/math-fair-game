@@ -1,5 +1,5 @@
 /**
- * Leaderboard Service for CIVIKA
+ * Leaderboard Service for MathTuto
  *
  * Handles all interactions with the Supabase leaderboard database,
  * including score submission, fetching rankings, and real-time updates.

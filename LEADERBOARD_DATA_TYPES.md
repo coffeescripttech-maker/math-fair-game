@@ -1,4 +1,4 @@
-# 🔧 CIVIKA Leaderboard - Data Type Reference
+# 🔧 MathTuto Leaderboard - Data Type Reference
 
 ## 🐛 Common Error Fixed
 

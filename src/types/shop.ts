@@ -1,5 +1,5 @@
 /**
- * Shop and Reward System Type Definitions for CIVIKA
+ * Shop and Reward System Type Definitions for MathTuto
  */
 
 export enum ShopItemCategory {
@@ -61,6 +61,7 @@ export interface ActiveEffect {
     startTime: number;
     endTime: number;
     multiplier?: number;
+    charges?: number; // For finite-usage effects (e.g. score boost)
 }
 
 export interface NPCReward {

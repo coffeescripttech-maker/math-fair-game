@@ -112,9 +112,9 @@ interface TutorialState {
 
 ```typescript
 // LocalStorage keys
-'civika-tutorial-completed': boolean
-'civika-tutorial-show-on-start': boolean
-'civika-tutorial-last-step': number
+'mathtuto-tutorial-completed': boolean
+'mathtuto-tutorial-show-on-start': boolean
+'mathtuto-tutorial-last-step': number
 ```
 
 ---

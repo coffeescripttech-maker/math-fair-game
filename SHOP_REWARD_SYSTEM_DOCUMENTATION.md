@@ -1,8 +1,8 @@
-# 🏪 CIVIKA Shop & Reward System Documentation
+# 🏪 MathTuto Shop & Reward System Documentation
 
 ## Overview
 
-The Shop & Reward System adds depth and progression to CIVIKA with purchasable items, daily challenges, NPC rewards, and powerups that enhance gameplay.
+The Shop & Reward System adds depth and progression to MathTuto with purchasable items, daily challenges, NPC rewards, and powerups that enhance gameplay.
 
 ---
 
@@ -659,7 +659,7 @@ updateChallengeProgress("collect", 1) {
 
 ### What Gets Saved:
 
-**Shop Inventory** (`civika-shop-inventory`):
+**Shop Inventory** (`mathtuto-shop-inventory`):
 
 ```javascript
 {
@@ -679,7 +679,7 @@ updateChallengeProgress("collect", 1) {
 }
 ```
 
-**Daily Challenges** (`civika-daily-challenges`):
+**Daily Challenges** (`mathtuto-daily-challenges`):
 
 ```javascript
 [
@@ -694,7 +694,7 @@ updateChallengeProgress("collect", 1) {
 ];
 ```
 
-**Game Progress** (`civika-game-progress`):
+**Game Progress** (`mathtuto-game-progress`):
 
 ```javascript
 {

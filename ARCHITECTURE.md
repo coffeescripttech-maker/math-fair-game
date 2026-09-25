@@ -1,4 +1,4 @@
-# CIVIKA Game Architecture
+# MathTuto Game Architecture
 
 ## Clear Separation of Concerns
 

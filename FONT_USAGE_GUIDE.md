@@ -1,4 +1,4 @@
-# 🎨 CIVIKA Font Usage Guide
+# 🎨 MathTuto Font Usage Guide
 
 ## ✅ **Installed Fonts**
 
@@ -43,7 +43,7 @@ className = "text-base"; // Uses Inter by default
 ### **1. Main Logo / Game Title**
 
 ```tsx
-<h1 className="font-display font-black text-5xl text-amber-900">CIVIKA</h1>
+<h1 className="font-display font-black text-5xl text-amber-900">MathTuto</h1>
 ```
 
 ### **2. Subtitle**
@@ -89,7 +89,7 @@ className = "text-base"; // Uses Inter by default
 ```tsx
 // Title
 <h1 className="font-display font-black text-6xl md:text-7xl text-amber-900">
-    CIVIKA
+    MathTuto
 </h1>
 
 // Subtitle
@@ -267,7 +267,7 @@ Update your main components:
 
 ## 🏆 **Result**
 
-Your CIVIKA game will have:
+Your MathTuto game will have:
 
 -   ✅ **Professional typography** matching civic/government theme
 -   ✅ **Consistent branding** across all components

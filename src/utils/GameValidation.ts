@@ -1,7 +1,15 @@
 /**
- * Tutor Town Game Logic Validation System
+ * MathTuto Game Logic Validation System
  * Ensures proper game state management, validation, and progression
  */
+
+import {
+    ACTIVE_LEVELS,
+    GAME_CONFIG,
+    TOTAL_MISSIONS,
+    getLevelOfMission,
+    getProgressionRequirement,
+} from "../config/gameConfig";
 
 export interface GameProgress {
     playerName: string;
@@ -432,25 +440,6 @@ export class GameValidation {
         QUIZ_TIME_LIMIT: 60, // Maximum time allowed per quiz (seconds)
     };
 
-    private static readonly PROGRESSION_REQUIREMENTS = {
-        LEVEL_1_TO_2: {
-            BADGES_REQUIRED: 10, // All Level 1 badges
-            MIN_SCORE_PERCENTAGE: 70,
-        },
-        LEVEL_2_TO_3: {
-            BADGES_REQUIRED: 20, // All Level 1 + Level 2 badges
-            MIN_SCORE_PERCENTAGE: 75,
-        },
-        LEVEL_3_TO_4: {
-            BADGES_REQUIRED: 30, // All Level 1-3 badges
-            MIN_SCORE_PERCENTAGE: 80,
-        },
-        LEVEL_4_TO_5: {
-            BADGES_REQUIRED: 40, // All Level 1-4 badges
-            MIN_SCORE_PERCENTAGE: 85,
-        },
-    };
-
     /**
      * Initialize default game progress
      */
@@ -550,6 +539,11 @@ export class GameValidation {
         missionId: number,
         completedMissions: number[]
     ): boolean {
+        // Missions beyond the configured live levels are unreachable
+        if (getLevelOfMission(missionId) > ACTIVE_LEVELS.length) {
+            return false;
+        }
+
         const mission = this.MISSION_REWARDS[missionId];
         if (!mission) return false;
 
@@ -631,53 +625,20 @@ export class GameValidation {
      * Check if player can progress to next level
      */
     public static canProgressToNextLevel(progress: GameProgress): boolean {
-        if (progress.level === 1) {
-            const hasRequiredBadges =
-                progress.badges.length >=
-                this.PROGRESSION_REQUIREMENTS.LEVEL_1_TO_2.BADGES_REQUIRED;
-            const hasMinScore =
-                progress.totalQuestions > 0 &&
-                (progress.correctAnswers / progress.totalQuestions) * 100 >=
-                    this.PROGRESSION_REQUIREMENTS.LEVEL_1_TO_2
-                        .MIN_SCORE_PERCENTAGE;
-
-            return hasRequiredBadges && hasMinScore;
-        } else if (progress.level === 2) {
-            const hasRequiredBadges =
-                progress.badges.length >=
-                this.PROGRESSION_REQUIREMENTS.LEVEL_2_TO_3.BADGES_REQUIRED;
-            const hasMinScore =
-                progress.totalQuestions > 0 &&
-                (progress.correctAnswers / progress.totalQuestions) * 100 >=
-                    this.PROGRESSION_REQUIREMENTS.LEVEL_2_TO_3
-                        .MIN_SCORE_PERCENTAGE;
-
-            return hasRequiredBadges && hasMinScore;
-        } else if (progress.level === 3) {
-            const hasRequiredBadges =
-                progress.badges.length >=
-                this.PROGRESSION_REQUIREMENTS.LEVEL_3_TO_4.BADGES_REQUIRED;
-            const hasMinScore =
-                progress.totalQuestions > 0 &&
-                (progress.correctAnswers / progress.totalQuestions) * 100 >=
-                    this.PROGRESSION_REQUIREMENTS.LEVEL_3_TO_4
-                        .MIN_SCORE_PERCENTAGE;
-
-            return hasRequiredBadges && hasMinScore;
-        } else if (progress.level === 4) {
-            const hasRequiredBadges =
-                progress.badges.length >=
-                this.PROGRESSION_REQUIREMENTS.LEVEL_4_TO_5.BADGES_REQUIRED;
-            const hasMinScore =
-                progress.totalQuestions > 0 &&
-                (progress.correctAnswers / progress.totalQuestions) * 100 >=
-                    this.PROGRESSION_REQUIREMENTS.LEVEL_4_TO_5
-                        .MIN_SCORE_PERCENTAGE;
-
-            return hasRequiredBadges && hasMinScore;
+        const nextLevel = progress.level + 1;
+        if (nextLevel > ACTIVE_LEVELS.length) {
+            return false; // Already on the final live level
         }
 
-        return false; // Level 5 is the final level
+        const req = getProgressionRequirement(nextLevel);
+        const hasRequiredBadges =
+            progress.badges.length >= req.badgesRequired;
+        const hasMinScore =
+            progress.totalQuestions > 0 &&
+            (progress.correctAnswers / progress.totalQuestions) * 100 >=
+                req.minScorePercentage;
+
+        return hasRequiredBadges && hasMinScore;
     }
 
     /**
@@ -692,9 +653,7 @@ export class GameValidation {
                 : 0;
 
         const completionPercentage = Math.round(
-            (progress.completedMissions.length /
-                Object.keys(this.MISSION_REWARDS).length) *
-                100
+            (progress.completedMissions.length / TOTAL_MISSIONS) * 100
         );
 
         return {
@@ -767,7 +726,7 @@ export class GameValidation {
                 lastPlayedDate: new Date().toISOString(),
                 checksum: this.generateChecksum(progress),
             });
-            localStorage.setItem("civika-game-progress", serialized);
+            localStorage.setItem("mathtuto-game-progress", serialized);
             console.log("Game progress saved successfully");
         } catch (error) {
             console.error("Failed to save game progress:", error);
@@ -779,7 +738,7 @@ export class GameValidation {
      */
     public static loadProgress(): GameProgress | null {
         try {
-            const saved = localStorage.getItem("civika-game-progress");
+            const saved = localStorage.getItem("mathtuto-game-progress");
             if (!saved) return null;
 
             const parsed = JSON.parse(saved);
@@ -798,6 +757,32 @@ export class GameValidation {
                 console.warn("Game progress validation failed");
                 return null;
             }
+
+            // Keep saved progress aligned with the configured live levels
+            // (e.g. a save from a 5-level build loaded with MAX_LEVELS=3)
+            const maxMission =
+                ACTIVE_LEVELS.length * GAME_CONFIG.MISSIONS_PER_LEVEL;
+            progress.level = Math.min(
+                Math.max(1, progress.level),
+                ACTIVE_LEVELS.length
+            );
+            progress.completedMissions = progress.completedMissions.filter(
+                (id: number) => id >= 1 && id <= maxMission
+            );
+            progress.completedQuizzes = (
+                progress.completedQuizzes || []
+            ).filter((id: number) => id >= 1 && id <= maxMission);
+            const activeBadgeNames = new Set<string>();
+            for (const [id, reward] of Object.entries(
+                this.MISSION_REWARDS
+            )) {
+                if (Number(id) <= maxMission) {
+                    activeBadgeNames.add(reward.badge);
+                }
+            }
+            progress.badges = progress.badges.filter((badge: string) =>
+                activeBadgeNames.has(badge)
+            );
 
             return progress;
         } catch (error) {
@@ -824,7 +809,7 @@ export class GameValidation {
      * Clear all game progress (for testing or reset)
      */
     public static clearProgress(): void {
-        localStorage.removeItem("civika-game-progress");
+        localStorage.removeItem("mathtuto-game-progress");
         console.log("Game progress cleared");
     }
 }

@@ -1,6 +1,6 @@
-# CIVIKA Audio Assets
+# MathTuto Audio Assets
 
-This directory contains all audio assets for the CIVIKA game.
+This directory contains all audio assets for the MathTuto game.
 
 ## Directory Structure
 

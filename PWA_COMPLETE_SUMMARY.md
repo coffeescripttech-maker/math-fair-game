@@ -1,8 +1,8 @@
-# 🎮📱 CIVIKA PWA - Complete Implementation Summary
+# 🎮📱 MathTuto PWA - Complete Implementation Summary
 
 ## ✅ **YOUR GAME IS NOW A PWA!**
 
-CIVIKA is now configured as a **Progressive Web App** with **landscape orientation lock** for optimal mobile gaming!
+MathTuto is now configured as a **Progressive Web App** with **landscape orientation lock** for optimal mobile gaming!
 
 ---
 
@@ -87,7 +87,7 @@ CIVIKA is now configured as a **Progressive Web App** with **landscape orientati
 ## 📁 **File Structure**
 
 ```
-CIVIKA-FINAL/
+MathTuto-FINAL/
 ├── public/
 │   ├── manifest.json              ✅ PWA configuration
 │   ├── sw.js                      ✅ Service worker
@@ -186,7 +186,7 @@ vercel --prod
 ### **First Visit (Web Browser):**
 
 ```
-1. User opens CIVIKA URL
+1. User opens MathTuto URL
    ↓
 2. Game loads (caches assets)
    ↓
@@ -198,7 +198,7 @@ vercel --prod
 ### **Installed PWA:**
 
 ```
-1. User taps CIVIKA icon on home screen
+1. User taps MathTuto icon on home screen
    ↓
 2. App launches in fullscreen (no browser UI)
    ↓
@@ -232,7 +232,7 @@ vercel --prod
 ```
 ┌───────────────────────────────────┐
 │                                   │
-│   🏛️ CIVIKA - Full Game          │
+│   🏛️ MathTuto - Full Game          │
 │   Perfect landscape experience    │
 │                                   │
 └───────────────────────────────────┘
@@ -270,7 +270,7 @@ vercel login
 vercel --prod
 
 # You'll get a URL like:
-# https://civika-final-xxx.vercel.app
+# https://mathtuto-final-xxx.vercel.app
 ```
 
 ### **Or Deploy to Netlify:**
@@ -404,7 +404,7 @@ setTimeout(() => {
 
 ```javascript
 // In sw.js
-const CACHE_NAME = "civika-v1.0.1"; // Increment when updating
+const CACHE_NAME = "mathtuto-v1.0.1"; // Increment when updating
 ```
 
 ---
@@ -478,7 +478,7 @@ I've created comprehensive guides:
 
 ### **Users Can:**
 
--   📥 Install CIVIKA on home screen
+-   📥 Install MathTuto on home screen
 -   📱 Play in landscape fullscreen mode
 -   🔌 Play offline after first load
 -   ⚡ Experience fast loading
@@ -501,7 +501,7 @@ I've created comprehensive guides:
 ### **Android:**
 
 ```
-1. Open CIVIKA in Chrome/Edge
+1. Open MathTuto in Chrome/Edge
 2. Tap "Install" when prompted
    OR tap menu (⋮) → "Install app"
 3. App installs to home screen
@@ -511,7 +511,7 @@ I've created comprehensive guides:
 ### **iOS:**
 
 ```
-1. Open CIVIKA in Safari
+1. Open MathTuto in Safari
 2. Tap Share (📤)
 3. Tap "Add to Home Screen"
 4. Tap "Add"
@@ -522,7 +522,7 @@ I've created comprehensive guides:
 
 ## 🎉 **Congratulations!**
 
-Your CIVIKA game is now a **fully-functional Progressive Web App** with:
+Your MathTuto game is now a **fully-functional Progressive Web App** with:
 
 ✅ **Landscape orientation lock**  
 ✅ **Installable on mobile devices**  
@@ -572,6 +572,6 @@ vercel --prod
 
 ---
 
-**Your CIVIKA game is PWA-ready! Just generate the icons and deploy!** 🎉📱🎮
+**Your MathTuto game is PWA-ready! Just generate the icons and deploy!** 🎉📱🎮
 
 **Read `PWA_SETUP_GUIDE.md` for detailed instructions and troubleshooting!**

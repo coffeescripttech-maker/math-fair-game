@@ -334,7 +334,7 @@ DEVELOPMENT WORKFLOW:
          ▼
 ┌─────────────────┐
 │ localStorage:   │
-│ civika-         │
+│ mathtuto-         │
 │ collision-      │
 │ BarangayMap     │
 └────────┬────────┘
