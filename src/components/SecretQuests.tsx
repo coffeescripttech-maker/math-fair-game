@@ -30,7 +30,7 @@ export const SecretQuests: React.FC<SecretQuestsProps> = ({
 }) => {
     const [secretQuests, setSecretQuests] = useState<SecretQuest[]>([]);
     const [currentTitle, setCurrentTitle] = useState<PlayerTitle>(
-        PlayerTitle.CITIZEN,
+        PlayerTitle.MATH_EXPLORER,
     );
     const [unlockedTitles, setUnlockedTitles] = useState<PlayerTitle[]>([]);
     const [showTitles, setShowTitles] = useState(false);
@@ -165,7 +165,7 @@ export const SecretQuests: React.FC<SecretQuestsProps> = ({
                                 secretQuestService.getTitleRarity(currentTitle),
                             ).replace("bg-", "text-")}`}
                         >
-                            {currentTitle || "Citizen"}
+                            {currentTitle || "Math Explorer"}
                         </h3>
                         <p className="mt-0.5 font-playful text-[10px] sm:text-xs text-tutor-navy/70">
                             {secretQuestService.getTitleDescription(

@@ -512,8 +512,8 @@ Power-ups: Speed, Coin Magnet, Score Booster,
                     <InfoCard tone="cream" title="🎯 Secret Quests:">
                         <p>
                             Hidden quests at secret spots around the maps, plus
-                            legendary titles from Citizen up to Master of
-                            Algebra!
+                            legendary titles from Math Explorer up to
+                            Master of Algebra!
                         </p>
                     </InfoCard>
                 </div>

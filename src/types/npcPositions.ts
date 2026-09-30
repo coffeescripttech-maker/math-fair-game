@@ -8,6 +8,14 @@ export interface NpcPosition {
     npc: string;
     percentX: number; // Background-relative X (%)
     percentY: number; // Background-relative Y (%)
+    scale?: number; // Size multiplier vs. the authored default (defaults to 1)
+}
+
+export interface CollectiblePosition {
+    id: string;
+    percentX: number; // Background-relative X (%)
+    percentY: number; // Background-relative Y (%)
+    scale?: number; // Size multiplier vs. the authored default (defaults to 1)
 }
 
 export interface NpcPositionData {
@@ -16,4 +24,5 @@ export interface NpcPositionData {
     createdAt: string;
     updatedAt: string;
     npcs: NpcPosition[]; // Overrides only — defaults come from mapData missionLocations
+    collectibles?: CollectiblePosition[]; // Overrides only — defaults come from mapData collectibleItems
 }

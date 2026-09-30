@@ -1,0 +1,227 @@
+{
+    "configVersion": "1.2.0",
+    "exportedAt": "2026-09-29T04:47:58.585Z",
+    "mapName": "CityMap",
+    "npcs": [
+        {
+            "x": 8,
+            "y": 6,
+            "name": "Simplify for the Exam",
+            "npc": "Carla",
+            "missionId": 11,
+            "percentX": 18.872180451127818,
+            "percentY": 55.78947368421052
+        },
+        {
+            "x": 21,
+            "y": 46,
+            "name": "Fare Formula",
+            "npc": "Mang Roy",
+            "missionId": 12,
+            "percentX": 54.060150375939855,
+            "percentY": 18.045112781954884
+        },
+        {
+            "x": 22,
+            "y": 10,
+            "name": "Building Shadow",
+            "npc": "Arki Maya",
+            "missionId": 13,
+            "percentX": 86.24060150375941,
+            "percentY": 24.661654135338345
+        },
+        {
+            "x": 10,
+            "y": 16,
+            "name": "Peso to Dollar",
+            "npc": "Student Leo",
+            "missionId": 14,
+            "percentX": 23.834586466165415,
+            "percentY": 42.857142857142854
+        },
+        {
+            "x": 18,
+            "y": 14,
+            "name": "Park Path",
+            "npc": "Gina",
+            "missionId": 15,
+            "percentX": 78.26669152634558,
+            "percentY": 60.23821632543998
+        },
+        {
+            "x": 5,
+            "y": 20,
+            "name": "Grade Reverse",
+            "npc": "Sir Tan",
+            "missionId": 16,
+            "percentX": 45.6390977443609,
+            "percentY": 80.30075187969923
+        },
+        {
+            "x": 20,
+            "y": 18,
+            "name": "Bus Route Map",
+            "npc": "Manager Ben",
+            "missionId": 17,
+            "percentX": 86.99248120300751,
+            "percentY": 37.744360902255636
+        },
+        {
+            "x": 12,
+            "y": 22,
+            "name": "Commission Check",
+            "npc": "Carlos",
+            "missionId": 18,
+            "percentX": 48.19548872180451,
+            "percentY": 54.58646616541354
+        },
+        {
+            "x": 25,
+            "y": 15,
+            "name": "Sports Complex",
+            "npc": "Coach Kim",
+            "missionId": 19,
+            "percentX": 19.32330827067669,
+            "percentY": 18.646616541353385
+        },
+        {
+            "x": 16,
+            "y": 12,
+            "name": "Citywide Exam Review",
+            "npc": "Principal Santos",
+            "missionId": 20,
+            "percentX": 53.30827067669173,
+            "percentY": 51.578947368421055
+        }
+    ],
+    "collectibles": [
+        {
+            "id": "city-coin-1",
+            "type": "coin",
+            "name": "Radicand Token",
+            "description": "A token stamped with the number under the radical",
+            "value": 10,
+            "points": 20,
+            "rarity": "common",
+            "percentX": 4.43609022556391,
+            "percentY": 24.81203007518797,
+            "icon": "💰"
+        },
+        {
+            "id": "city-coin-2",
+            "type": "coin",
+            "name": "Index Token",
+            "description": "A token honoring the small index of every root",
+            "value": 10,
+            "points": 20,
+            "rarity": "common",
+            "percentX": 70.30075187969925,
+            "percentY": 27.06766917293233,
+            "icon": "💰"
+        },
+        {
+            "id": "city-coin-3",
+            "type": "coin",
+            "name": "Surd Token",
+            "description": "A token for radicals that refuse to simplify neatly",
+            "value": 10,
+            "points": 20,
+            "rarity": "common",
+            "percentX": 59,
+            "percentY": 4,
+            "icon": "💰"
+        },
+        {
+            "id": "city-badge-1",
+            "type": "badge",
+            "name": "One-to-One Badge",
+            "description": "Earned only by functions that never repeat an output",
+            "value": 20,
+            "points": 40,
+            "rarity": "uncommon",
+            "percentX": 44,
+            "percentY": 4,
+            "icon": "🏅"
+        },
+        {
+            "id": "city-badge-2",
+            "type": "badge",
+            "name": "Conjugate Badge",
+            "description": "For masters of the conjugate that clears radicals",
+            "value": 20,
+            "points": 40,
+            "rarity": "uncommon",
+            "percentX": 5.037593984962406,
+            "percentY": 47.5187969924812,
+            "icon": "🏅"
+        },
+        {
+            "id": "city-treasure-1",
+            "type": "treasure",
+            "name": "Rationalize Crystal",
+            "description": "A legendary crystal that sweeps radicals out of denominators",
+            "value": 50,
+            "points": 100,
+            "rarity": "rare",
+            "percentX": 11,
+            "percentY": 67,
+            "icon": "💎"
+        },
+        {
+            "id": "city-powerup-1",
+            "type": "powerup",
+            "name": "Simplify Rush",
+            "description": "Speeds up radical simplification",
+            "value": 25,
+            "points": 50,
+            "rarity": "uncommon",
+            "percentX": 3.68421052631579,
+            "percentY": 85.11278195488721,
+            "icon": "⚡"
+        },
+        {
+            "id": "city-powerup-2",
+            "type": "powerup",
+            "name": "Conjugate Charge",
+            "description": "Charges your skill with conjugate pairs",
+            "value": 25,
+            "points": 50,
+            "rarity": "uncommon",
+            "percentX": 38.421052631578945,
+            "percentY": 84.81203007518798,
+            "icon": "⚡"
+        },
+        {
+            "id": "city-gem-1",
+            "type": "treasure",
+            "name": "Perfect Square Gem",
+            "description": "A rare gem cut from flawless perfect squares",
+            "value": 40,
+            "points": 80,
+            "rarity": "rare",
+            "percentX": 37.81954887218045,
+            "percentY": 66.16541353383458,
+            "icon": "💠"
+        },
+        {
+            "id": "city-gem-2",
+            "type": "treasure",
+            "name": "Golden Inverse Medal",
+            "description": "A prestigious medal for flawless inverse work",
+            "value": 35,
+            "points": 70,
+            "rarity": "rare",
+            "percentX": 81.8796992481203,
+            "percentY": 96.09022556390977,
+            "icon": "🎖️"
+        }
+    ],
+    "collisions": {
+        "mapName": "CityMap",
+        "version": "1.0.0",
+        "createdAt": "2026-09-29T04:43:39.870Z",
+        "updatedAt": "2026-09-29T04:43:39.870Z",
+        "shapes": []
+    }
+}
+

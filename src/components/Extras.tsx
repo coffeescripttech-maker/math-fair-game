@@ -102,7 +102,7 @@ export const Extras: React.FC<ExtrasProps> = ({ onClose, isVisible }) => {
         },
         {
             id: 8,
-            title: "Helpful Citizen",
+            title: "Math Buddy",
             description: "Help 10 NPCs",
             icon: "🤝",
             unlocked: true,

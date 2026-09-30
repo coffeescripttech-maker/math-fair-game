@@ -225,6 +225,18 @@ export const barangayCollectibleItems: CollectibleItemData[] = [
         percentY: 73,
         icon: "⚡",
     },
+    {
+        id: "barangay-star-1",
+        type: "treasure",
+        name: "Golden Star",
+        description: "A bright golden star glistening just for you",
+        value: 20,
+        points: 40,
+        rarity: "legendary",
+        percentX: 64,
+        percentY: 90,
+        icon: "⭐",
+    },
 ];
 
 export const barangayMissionMetadata: Record<number, MissionMetadata> = {
@@ -1004,6 +1016,18 @@ export const provinceCollectibleItems: CollectibleItemData[] = [
         percentY: 82,
         icon: "🎖️",
     },
+    {
+        id: "province-star-1",
+        type: "treasure",
+        name: "Provincial Star",
+        description: "A golden star for provincial math heroes",
+        value: 35,
+        points: 70,
+        rarity: "legendary",
+        percentX: 64,
+        percentY: 82,
+        icon: "⭐",
+    },
 ];
 
 export const provinceMissionMetadata: Record<number, MissionMetadata> = {
@@ -1393,6 +1417,18 @@ export const regionCollectibleItems: CollectibleItemData[] = [
         percentY: 82,
         icon: "🎖️",
     },
+    {
+        id: "region-star-1",
+        type: "treasure",
+        name: "Regional Star",
+        description: "A golden star for regional champions",
+        value: 40,
+        points: 80,
+        rarity: "legendary",
+        percentX: 64,
+        percentY: 82,
+        icon: "⭐",
+    },
 ];
 
 export const regionMissionMetadata: Record<number, MissionMetadata> = {
@@ -1781,6 +1817,18 @@ export const nationalCollectibleItems: CollectibleItemData[] = [
         percentX: 87,
         percentY: 82,
         icon: "🎖️",
+    },
+    {
+        id: "national-star-1",
+        type: "treasure",
+        name: "National Star",
+        description: "The golden star of the national math stage",
+        value: 50,
+        points: 100,
+        rarity: "legendary",
+        percentX: 64,
+        percentY: 82,
+        icon: "⭐",
     },
 ];
 

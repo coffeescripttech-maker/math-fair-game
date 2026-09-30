@@ -1,11 +1,16 @@
 /**
  * NPC Position Service for MathTuto
- * Loads and saves NPC position overrides (localStorage, editor-authored only).
- * The default NPC spots come from mapData's mission-location arrays — this
- * service only stores the deltas the user drags in the NPC Position Editor.
+ * Provides NPC + collectible position data with this precedence:
+ *   1) Full-config file (public/config/<map>-config.json, auto-detected)
+ *      → treated as the map's ENTIRE config (defaults + edits).
+ *   2) localStorage overrides authored in the Position Editor.
+ *   3) mapData defaults (only when neither of the above exists).
+ * The service only stores the deltas the user drags in the editor; the
+ * defaults come from mapData's mission-location arrays.
  */
 
 import {
+    CollectiblePosition,
     NpcPosition,
     NpcPositionData,
 } from "../types/npcPositions";
@@ -15,6 +20,9 @@ export class NpcService {
 
     /** Per-mapName memo so the editor and the Phaser scenes agree instantly. */
     private cache = new Map<string, NpcPositionData | null>();
+
+    /** Data sourced from an auto-detected full-config file (highest priority). */
+    private fileData = new Map<string, NpcPositionData>();
 
     private constructor() {}
 
@@ -26,9 +34,26 @@ export class NpcService {
     }
 
     /**
-     * Load NPC position overrides from localStorage (or null when none/corrupt).
+     * Register file-sourced position data (from SceneConfigService) — this
+     * becomes the map's entire config and outranks localStorage overrides.
+     */
+    public setFileData(mapName: string, data: NpcPositionData): void {
+        this.fileData.set(mapName, data);
+        console.log(`Using full-config file data for ${mapName}`);
+    }
+
+    /** True when a full-config file currently drives the given map. */
+    public isFileDataActive(mapName: string): boolean {
+        return this.fileData.has(mapName);
+    }
+
+    /**
+     * Load position data for a map with file > localStorage > null priority.
      */
     public loadNpcData(mapName: string): NpcPositionData | null {
+        const file = this.fileData.get(mapName);
+        if (file) return file;
+
         if (this.cache.has(mapName)) {
             return this.cache.get(mapName) ?? null;
         }
@@ -109,6 +134,36 @@ export class NpcService {
         const positions = new Map<number, NpcPosition>();
         data.npcs.forEach((npc) => {
             positions.set(npc.missionId, npc);
+        });
+        return positions;
+    }
+
+    /**
+     * Single collectible override for a map's item, or null.
+     */
+    public getCollectiblePosition(
+        mapName: string,
+        id: string,
+    ): CollectiblePosition | null {
+        const data = this.loadNpcData(mapName);
+        if (!data || !data.collectibles) return null;
+        return data.collectibles.find((c) => c.id === id) ?? null;
+    }
+
+    /**
+     * All collectible overrides for a map keyed by item id, or null.
+     */
+    public getCollectiblePositions(
+        mapName: string,
+    ): Map<string, CollectiblePosition> | null {
+        const data = this.loadNpcData(mapName);
+        if (!data || !data.collectibles || data.collectibles.length === 0) {
+            return null;
+        }
+
+        const positions = new Map<string, CollectiblePosition>();
+        data.collectibles.forEach((c) => {
+            positions.set(c.id, c);
         });
         return positions;
     }

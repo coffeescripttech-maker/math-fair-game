@@ -1,0 +1,238 @@
+{
+  "configVersion": "1.2.0",
+  "exportedAt": "2026-09-29T04:49:06.435Z",
+  "mapName": "ProvinceMap",
+  "npcs": [
+    {
+      "x": 8,
+      "y": 6,
+      "name": "Scholarship Qualifier",
+      "npc": "Sarah",
+      "missionId": 21,
+      "percentX": 28.95033437916939,
+      "percentY": 39.03819641885355
+    },
+    {
+      "x": 21,
+      "y": 46,
+      "name": "Farm Plot Diagonal",
+      "npc": "Mang Tomas",
+      "missionId": 22,
+      "percentX": 59.17163162034061,
+      "percentY": 22.799888131444845
+    },
+    {
+      "x": 22,
+      "y": 10,
+      "name": "Fertilizer Mix",
+      "npc": "Ate Liza",
+      "missionId": 23,
+      "percentX": 76.16172143114628,
+      "percentY": 19.492083750198987
+    },
+    {
+      "x": 10,
+      "y": 16,
+      "name": "Irrigation Pipe",
+      "npc": "Engineer Pat",
+      "missionId": 24,
+      "percentX": 71.35037419234224,
+      "percentY": 46.40558165743329
+    },
+    {
+      "x": 18,
+      "y": 14,
+      "name": "Budget Scaling",
+      "npc": "Budget Officer Amy",
+      "missionId": 25,
+      "percentX": 83.52909657510814,
+      "percentY": 61.14034708728382
+    },
+    {
+      "x": 5,
+      "y": 20,
+      "name": "Dosage Formula",
+      "npc": "Nurse Joy",
+      "missionId": 26,
+      "percentX": 83.07804885976748,
+      "percentY": 79.18291185107128
+    },
+    {
+      "x": 20,
+      "y": 18,
+      "name": "Road Slope",
+      "npc": "Foreman Bob",
+      "missionId": 27,
+      "percentX": 33.76168161797343,
+      "percentY": 11.072215987674069
+    },
+    {
+      "x": 12,
+      "y": 22,
+      "name": "Yield Reverse",
+      "npc": "Ma'am Elena",
+      "missionId": 28,
+      "percentX": 34.06239018948506,
+      "percentY": 76.47652461284869
+    },
+    {
+      "x": 25,
+      "y": 15,
+      "name": "Water Tank Volume",
+      "npc": "Sir Dan",
+      "missionId": 29,
+      "percentX": 92.40002467124604,
+      "percentY": 37.233939942474805
+    },
+    {
+      "x": 16,
+      "y": 12,
+      "name": "Provincial Scholarship Final",
+      "npc": "Governor's Aide",
+      "missionId": 30,
+      "percentX": 48.64680133357977,
+      "percentY": 53.02119041992499
+    }
+  ],
+  "collectibles": [
+    {
+      "id": "province-coin-1",
+      "type": "coin",
+      "name": "Principal Root Token",
+      "description": "A token for the positive principal root everyone trusts",
+      "value": 10,
+      "points": 20,
+      "rarity": "common",
+      "percentX": 35,
+      "percentY": 37,
+      "icon": "💰"
+    },
+    {
+      "id": "province-coin-2",
+      "type": "coin",
+      "name": "Nth Root Token",
+      "description": "A token for roots beyond the square",
+      "value": 15,
+      "points": 25,
+      "rarity": "common",
+      "percentX": 35,
+      "percentY": 9,
+      "icon": "💰"
+    },
+    {
+      "id": "province-coin-3",
+      "type": "coin",
+      "name": "Cube Root Token",
+      "description": "A token carved for perfect cube roots",
+      "value": 15,
+      "points": 25,
+      "rarity": "common",
+      "percentX": 59,
+      "percentY": 4,
+      "icon": "💰"
+    },
+    {
+      "id": "province-badge-1",
+      "type": "badge",
+      "name": "Radical Simplifier Badge",
+      "description": "A badge for taming messy radical expressions",
+      "value": 25,
+      "points": 50,
+      "rarity": "uncommon",
+      "percentX": 44,
+      "percentY": 4,
+      "icon": "🏅"
+    },
+    {
+      "id": "province-badge-2",
+      "type": "badge",
+      "name": "Domain Swap Badge",
+      "description": "For swapping domain and range like a true inverse pro",
+      "value": 25,
+      "points": 50,
+      "rarity": "uncommon",
+      "percentX": 5,
+      "percentY": 42,
+      "icon": "🏅"
+    },
+    {
+      "id": "province-treasure-1",
+      "type": "treasure",
+      "name": "Range Mirror Crystal",
+      "description": "A legendary crystal that mirrors outputs back to inputs",
+      "value": 60,
+      "points": 120,
+      "rarity": "rare",
+      "percentX": 11,
+      "percentY": 67,
+      "icon": "💎"
+    },
+    {
+      "id": "province-powerup-1",
+      "type": "powerup",
+      "name": "Extraction Surge",
+      "description": "Pulls perfect roots out of any expression in a flash",
+      "value": 30,
+      "points": 60,
+      "rarity": "uncommon",
+      "percentX": 6,
+      "percentY": 94,
+      "icon": "⚡"
+    },
+    {
+      "id": "province-powerup-2",
+      "type": "powerup",
+      "name": "Reverse Surge",
+      "description": "Reverses any function back to its input instantly",
+      "value": 30,
+      "points": 60,
+      "rarity": "uncommon",
+      "percentX": 30,
+      "percentY": 95,
+      "icon": "⚡"
+    },
+    {
+      "id": "province-gem-1",
+      "type": "treasure",
+      "name": "Rationalizing Gem",
+      "description": "A rare gem that clears radicals from the bottom lines",
+      "value": 50,
+      "points": 100,
+      "rarity": "rare",
+      "percentX": 41,
+      "percentY": 82,
+      "icon": "💠"
+    },
+    {
+      "id": "province-gem-2",
+      "type": "treasure",
+      "name": "Provincial Root Medal",
+      "description": "A prestigious medal for provincial root mastery",
+      "value": 45,
+      "points": 90,
+      "rarity": "rare",
+      "percentX": 87,
+      "percentY": 82,
+      "icon": "🎖️"
+    },
+    {
+      "id": "province-star-1",
+      "type": "treasure",
+      "name": "Provincial Star",
+      "description": "A golden star for provincial math heroes",
+      "value": 35,
+      "points": 70,
+      "rarity": "legendary",
+      "percentX": 64,
+      "percentY": 82,
+      "icon": "⭐"
+    }
+  ],
+  "collisions": {
+    "mapName": "ProvinceMap",
+    "version": "1.0.0",
+    "createdAt": "2026-09-29T04:49:06.435Z",
+    "updatedAt": "2026-09-29T04:49:06.435Z",
+    "shapes": []
+  }
+}

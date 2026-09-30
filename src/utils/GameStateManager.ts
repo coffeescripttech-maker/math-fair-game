@@ -422,6 +422,36 @@ export class GameStateManager {
     }
 
     /**
+     * Remove the "collected" flag for every item that belongs to a map
+     * (authoring tool: lets repositioned collectibles render again). Keeps the
+     * total count consistent and persists immediately.
+     */
+    public uncollectItemsByMap(mapName: string): number {
+        if (!this.gameProgress || !this.gameProgress.collectedItems) {
+            return 0;
+        }
+        const prefix = `${mapName.toLowerCase()}-`;
+        const remaining = this.gameProgress.collectedItems.filter(
+            (id) => !id.startsWith(prefix),
+        );
+        const removed =
+            this.gameProgress.collectedItems.length - remaining.length;
+        if (removed === 0) return 0;
+
+        this.gameProgress.collectedItems = remaining;
+        this.gameProgress.totalItemsCollected = Math.max(
+            0,
+            (this.gameProgress.totalItemsCollected || 0) - removed,
+        );
+        this.saveProgress();
+        this.notifyListeners();
+        console.log(
+            `Un-collected ${removed} item(s) for map prefix "${prefix}"`,
+        );
+        return removed;
+    }
+
+    /**
      * Record speed challenge performance
      */
     public recordSpeedChallenge(timeSpent: number): void {

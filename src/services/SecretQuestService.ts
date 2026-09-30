@@ -559,7 +559,7 @@ export class SecretQuestService {
      * Get current active title
      */
     public getCurrentTitle(): PlayerTitle {
-        return this.playerTitles.currentTitle || PlayerTitle.CITIZEN;
+        return this.playerTitles.currentTitle || PlayerTitle.MATH_EXPLORER;
     }
 
     /**
@@ -744,15 +744,21 @@ export class SecretQuestService {
      * Load player titles
      */
     private loadPlayerTitles(): PlayerTitleData {
+        // Migrate the old default title name ("Citizen" -> "Math Explorer").
+        const normalizeTitle = (t: unknown): PlayerTitle =>
+            t === "Citizen" ? PlayerTitle.MATH_EXPLORER : (t as PlayerTitle);
+
         try {
             const saved = localStorage.getItem("mathtuto-player-titles");
             if (saved) {
                 const data = JSON.parse(saved);
                 return {
-                    currentTitle: data.currentTitle || PlayerTitle.CITIZEN,
-                    unlockedTitles: data.unlockedTitles || [
-                        PlayerTitle.CITIZEN,
-                    ],
+                    currentTitle:
+                        normalizeTitle(data.currentTitle) ||
+                        PlayerTitle.MATH_EXPLORER,
+                    unlockedTitles: Array.isArray(data.unlockedTitles)
+                        ? data.unlockedTitles.map(normalizeTitle)
+                        : [PlayerTitle.MATH_EXPLORER],
                     titleUnlockedAt: new Map(data.titleUnlockedAt || []),
                 };
             }
@@ -761,8 +767,8 @@ export class SecretQuestService {
         }
 
         return {
-            currentTitle: PlayerTitle.CITIZEN,
-            unlockedTitles: [PlayerTitle.CITIZEN],
+            currentTitle: PlayerTitle.MATH_EXPLORER,
+            unlockedTitles: [PlayerTitle.MATH_EXPLORER],
             titleUnlockedAt: new Map(),
         };
     }
@@ -773,7 +779,8 @@ export class SecretQuestService {
     public getTitleDescription(title: PlayerTitle): string {
         const descriptions: Record<PlayerTitle, string> = {
             [PlayerTitle.NONE]: "",
-            [PlayerTitle.CITIZEN]: "A member of the community",
+            [PlayerTitle.MATH_EXPLORER]:
+                "Every Math Fair journey starts here",
             [PlayerTitle.EXPLORER]: "Discovered all corners of the map",
             [PlayerTitle.PATHFINDER]: "Found all hidden locations",
             [PlayerTitle.WANDERER]: "Traveled 10,000 steps",
@@ -840,8 +847,8 @@ export class SecretQuestService {
         this.initializeSecretLocations();
         this.initializeHiddenNPCs();
         this.playerTitles = {
-            currentTitle: PlayerTitle.CITIZEN,
-            unlockedTitles: [PlayerTitle.CITIZEN],
+            currentTitle: PlayerTitle.MATH_EXPLORER,
+            unlockedTitles: [PlayerTitle.MATH_EXPLORER],
             titleUnlockedAt: new Map(),
         };
         console.log("Secret quests reset");

@@ -36,7 +36,6 @@ export class Preloader extends Scene {
         });
 
         this.load.image("logo", "logo.jpg");
-        this.load.image("star", "star.png");
 
         // MathTuto game assets
         this.load.image("background", "bg.png");

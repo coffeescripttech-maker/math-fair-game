@@ -13,6 +13,9 @@ import { Scene } from "phaser";
 export class CollisionService {
     private static instance: CollisionService;
 
+    /** Collisions sourced from an auto-detected full-config file (highest priority). */
+    private fileCollisions = new Map<string, CollisionData>();
+
     private constructor() {}
 
     public static getInstance(): CollisionService {
@@ -23,9 +26,26 @@ export class CollisionService {
     }
 
     /**
-     * Load collision data from localStorage or file
+     * Register file-sourced collisions (from SceneConfigService) — these
+     * outrank localStorage editor overrides.
+     */
+    public setFileCollisionData(
+        mapName: string,
+        data: CollisionData,
+    ): void {
+        this.fileCollisions.set(mapName, data);
+        console.log(
+            `Using full-config collisions for ${mapName} (${data.shapes.length} shapes)`,
+        );
+    }
+
+    /**
+     * Load collision data with file > localStorage > null priority.
      */
     public loadCollisionData(mapName: string): CollisionData | null {
+        const file = this.fileCollisions.get(mapName);
+        if (file) return file;
+
         try {
             // First try localStorage (for editor testing)
             const saved = localStorage.getItem(`mathtuto-collision-${mapName}`);

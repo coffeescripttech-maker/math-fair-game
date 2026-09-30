@@ -53,9 +53,6 @@ with a small open area of flat ground in front of it (NPCs stand there):
 10. CITY SCHOOL (exam hall): central school campus with an exam hall.
     Position ~50% X, ~56% Y.
 
-Also scatter these collectible-touch spots across open ground (no
-building needed, small sparkle/shiny spots are fine): ~35/37, ~35/9,
-~59/4, ~44/4, ~5/42, ~11/67, ~6/94, ~30/95, ~41/82, ~87/82.
 
 Make paths connect everything so it reads as one lived-in city.
 ```
@@ -77,7 +74,6 @@ Make paths connect everything so it reads as one lived-in city.
 > - UNIQUE FACES: every NPC below has its own one-of-a-kind face (age, face shape, skin tone, eyes, brows, hair, glasses, facial hair, distinguishing marks). No two NPCs in the whole game may share the same face, hairstyle, glasses, or facial-hair combination. Generate each face exactly as specified - do not reuse, copy, or slightly alter another NPC's face even if it would be faster.
 >
 > The 10 NPCs below are the exact mission cast for this level (mission #, NPC name, and map position map 1:1 to `mapData.ts`). Each prompt is ready to paste into ChatGPT.
-
 
 ### NPC 1 — Carla (Public-School Student)
 
@@ -216,7 +212,6 @@ NOT:
 "a standalone vector illustration of a generic schoolgirl."
 ```
 
-
 ### NPC 2 — Mang Roy (Jeepney Driver)
 
 > File: `public/assets/LEVEL2/mang-roy.png` · DB name: "Mang Roy" (Mission 12 · Fare Formula, City Terminal) · current role: **Jeepney Driver** · map position: (59% X, 23% Y)
@@ -353,7 +348,6 @@ NOT:
 
 "a standalone vector illustration of a jeepney driver."
 ```
-
 
 ### NPC 3 — Arki Maya (Architect)
 
@@ -492,7 +486,6 @@ NOT:
 "a standalone vector illustration of an architect."
 ```
 
-
 ### NPC 4 — Student Leo (Online-Seller Student)
 
 > File: `public/assets/LEVEL2/student-leo.png` · DB name: "Student Leo" (Mission 14 · Peso to Dollar, City Internet Café) · current role: **Online-Seller Student** · map position: (81% X, 46% Y)
@@ -629,7 +622,6 @@ NOT:
 
 "a standalone vector illustration of an online seller."
 ```
-
 
 ### NPC 5 — Gina (Urban Planner)
 
@@ -768,7 +760,6 @@ NOT:
 "a standalone vector illustration of an urban planner."
 ```
 
-
 ### NPC 6 — Sir Tan (High-School Teacher)
 
 > File: `public/assets/LEVEL2/sir-tan.png` · DB name: "Sir Tan" (Mission 16 · Grade Reverse, City High School) · current role: **High-School Teacher** · map position: (60% X, 90% Y)
@@ -905,7 +896,6 @@ NOT:
 
 "a standalone vector illustration of a teacher."
 ```
-
 
 ### NPC 7 — Manager Ben (Transit Operations Manager)
 
@@ -1044,7 +1034,6 @@ NOT:
 "a standalone vector illustration of a transit manager."
 ```
 
-
 ### NPC 8 — Carlos (Sales Entrepreneur)
 
 > File: `public/assets/LEVEL2/carlos.png` · DB name: "Carlos" (Mission 18 · Commission Check, City Mall) · current role: **Sales Entrepreneur** · map position: (19% X, 89% Y)
@@ -1181,7 +1170,6 @@ NOT:
 
 "a standalone vector illustration of a salesman."
 ```
-
 
 ### NPC 9 — Coach Kim (Sports Coach)
 
@@ -1320,7 +1308,6 @@ NOT:
 "a standalone vector illustration of a sports coach."
 ```
 
-
 ### NPC 10 — Principal Santos (School Principal)
 
 > File: `public/assets/LEVEL2/principal-santos.png` · DB name: "Principal Santos" (Mission 20 · Citywide Exam Review, City School) · current role: **School Principal** · map position: (50% X, 56% Y)
@@ -1458,7 +1445,6 @@ NOT:
 "a standalone vector illustration of a principal."
 ```
 
-
 ---
 
 ## 🔍 Audit Notes — City (Level 2)
@@ -1484,10 +1470,11 @@ NOT:
 
 **⚠️ Code wiring — read this before/while generating:**
 
-1. **The 4 non-barangay maps currently fall back to `student-front-1` for EVERY NPC.** In `CityMap.ts`, `getNPCTheme().imageMap` is keyed by *titles* (e.g. "Entrepreneur Carlos"), but `mapData` mission NPCs use short names (e.g. "Carlos") — so the lookup `npcImageMap[location.npc]` misses and every NPC renders as the default boy sprite. BarangayMap was already fixed to key by mission short names; the other four maps still need that same fix (they'll show the real sprites the moment the imageMap keys match the mission NPC names).
+1. **The 4 non-barangay maps currently fall back to `student-front-1` for EVERY NPC.** In `CityMap.ts`, `getNPCTheme().imageMap` is keyed by _titles_ (e.g. "Entrepreneur Carlos"), but `mapData` mission NPCs use short names (e.g. "Carlos") — so the lookup `npcImageMap[location.npc]` misses and every NPC renders as the default boy sprite. BarangayMap was already fixed to key by mission short names; the other four maps still need that same fix (they'll show the real sprites the moment the imageMap keys match the mission NPC names).
 2. **`imageMap.value → imageFileMap.value → file` chain:** the base class (`OpenWorldMapScene.createNPCs`) loads `assets/LEVEL{n}/<imageFileMap[img]>`. If any value in that chain is missing/mismatched, the NPC silently falls back. Keep the filename EXACTLY equal to the map's key value and save under the right LEVEL folder.
 3. Existing files in `LEVEL2/` below are leftovers from the earlier title-based batch — fine to reuse as references, but they will NOT display until the `imageMap` fix above lands (and their filenames must match the city imageFileMap values).
 
 **Existing `LEVEL2/` files on disk (for reference):** accountant-lisa.png, architect-maya.png, city-planner-tom.png, engineer-sarah.png, entrepreneur-carlos.png, logistics-manager-ben.png, sales-director-kim.png, transit-manager-roy.png, transport-chief-mike.png, urban-planner-gina.png, removebg/accountant-lisa.png, Gemini_Generated_Image_2f5hb82f5hb82f5h-removebg-preview.png
 
 **Positioning note:** NPCs auto-scale to a target on-screen height in the base class + BarangayMap: `setScale(targetHeight / npc.height)` with `targetHeight = max(player.displayHeight, 80) × 1.35` (~106–119px on screen). This is resolution-independent, so source images can be any pixel size — no need to match a specific width/height. Just keep the character full-body and centered in the frame.
+

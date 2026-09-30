@@ -470,7 +470,7 @@ export class GameValidation {
             fastestQuizTime: Infinity,
             purchasedItems: [],
             npcRewardsReceived: [],
-            currentTitle: "Citizen", // Start with Citizen title
+            currentTitle: "Math Explorer", // Start with Math Explorer title
             totalCoinsEarned: 0,
             totalStepsTaken: 0,
         };

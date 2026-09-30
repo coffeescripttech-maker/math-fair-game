@@ -26,34 +26,34 @@ export class AudioManager {
     private isInitialized = false;
 
     // Level-specific music mapping. Only files that exist in
-// public/assets/audio/ are referenced; the level loopbacks to menu-theme
-// unless a dedicated track is present.
-private levelMusic = {
-    MainMenu: "menu-theme.mp3",
-    BarangayMap: "barangay-theme.wav",
-    CityMap: "menu-theme.mp3",
-    ProvinceMap: "menu-theme.mp3",
-    RegionMap: "menu-theme.mp3",
-    NationalMap: "menu-theme.mp3",
-    Quiz: "menu-theme.mp3",
-    Mission: "menu-theme.mp3",
-};
+    // public/assets/audio/ are referenced; the level loopbacks to menu-theme
+    // unless a dedicated track is present.
+    private levelMusic = {
+        MainMenu: "menu-theme.mp3",
+        BarangayMap: "barangay-theme.mp3",
+        CityMap: "menu-theme.mp3",
+        ProvinceMap: "menu-theme.mp3",
+        RegionMap: "menu-theme.mp3",
+        NationalMap: "menu-theme.mp3",
+        Quiz: "menu-theme.mp3",
+        Mission: "menu-theme.mp3",
+    };
 
-// Sound effects mapping. Missing effect files fall back to the existing
-// button-click.mp3 so the game still gives audible feedback until the real
-// SFX are dropped into public/assets/audio/.
-private soundEffectsMap = {
-    "button-click": "button-click.mp3",
-    "mission-complete": "button-click.mp3",
-    "quiz-correct": "button-click.mp3",
-    "quiz-wrong": "button-click.mp3",
-    "level-up": "button-click.mp3",
-    "coin-collect": "button-click.mp3",
-    "badge-earned": "button-click.mp3",
-    "npc-interact": "button-click.mp3",
-    "menu-open": "button-click.mp3",
-    "menu-close": "button-click.mp3",
-};
+    // Sound effects mapping. Missing effect files fall back to the existing
+    // button-click.mp3 so the game still gives audible feedback until the real
+    // SFX are dropped into public/assets/audio/.
+    private soundEffectsMap = {
+        "button-click": "button-click.mp3",
+        "mission-complete": "button-click.mp3",
+        "quiz-correct": "button-click.mp3",
+        "quiz-wrong": "button-click.mp3",
+        "level-up": "button-click.mp3",
+        "coin-collect": "button-click.mp3",
+        "badge-earned": "button-click.mp3",
+        "npc-interact": "button-click.mp3",
+        "menu-open": "button-click.mp3",
+        "menu-close": "button-click.mp3",
+    };
 
     private constructor() {
         this.loadSettings();
@@ -89,8 +89,9 @@ private soundEffectsMap = {
 
             console.log("🎵 AudioManager: Creating audio context...");
             // Create audio context
-            this.audioContext = new (window.AudioContext ||
-                (window as any).webkitAudioContext)();
+            this.audioContext = new (
+                window.AudioContext || (window as any).webkitAudioContext
+            )();
 
             console.log("🎵 AudioContext state:", this.audioContext.state);
 
@@ -100,7 +101,7 @@ private soundEffectsMap = {
                 await this.audioContext.resume();
                 console.log(
                     "🎵 AudioContext resumed, new state:",
-                    this.audioContext.state
+                    this.audioContext.state,
                 );
             }
 
@@ -203,10 +204,10 @@ private soundEffectsMap = {
                 } catch (error) {
                     console.warn(
                         `Failed to preload sound effect: ${filename}`,
-                        error
+                        error,
                     );
                 }
-            }
+            },
         );
 
         await Promise.allSettled(loadPromises);
@@ -223,7 +224,7 @@ private soundEffectsMap = {
 
         if (!this.settings.enableMusic || !this.isInitialized) {
             console.warn(
-                `🎵 Music blocked - Initialized: ${this.isInitialized}, Enabled: ${this.settings.enableMusic}`
+                `🎵 Music blocked - Initialized: ${this.isInitialized}, Enabled: ${this.settings.enableMusic}`,
             );
             return;
         }
@@ -249,7 +250,7 @@ private soundEffectsMap = {
             this.currentMusic.volume = this.calculateVolume("music");
 
             console.log(
-                `🎵 Audio element created, volume: ${this.currentMusic.volume}`
+                `🎵 Audio element created, volume: ${this.currentMusic.volume}`,
             );
 
             // Add event listeners for debugging
@@ -271,26 +272,26 @@ private soundEffectsMap = {
                 playPromise
                     .then(() => {
                         console.log(
-                            `🎵 ✅ Music started successfully: ${musicFile}`
+                            `🎵 ✅ Music started successfully: ${musicFile}`,
                         );
                     })
                     .catch((error) => {
                         console.warn(
                             `🎵 ❌ Failed to play music: ${musicFile}`,
-                            error
+                            error,
                         );
 
                         // Try to handle autoplay restrictions
                         if (error.name === "NotAllowedError") {
                             console.log(
-                                `🎵 Autoplay blocked for ${musicFile}. Music will start after user interaction.`
+                                `🎵 Autoplay blocked for ${musicFile}. Music will start after user interaction.`,
                             );
                         }
                     });
             }
 
             console.log(
-                `🎵 Playing background music for ${level}: ${musicFile}`
+                `🎵 Playing background music for ${level}: ${musicFile}`,
             );
         } catch (error) {
             console.error(`🎵 Error playing level music:`, error);
@@ -329,14 +330,14 @@ private soundEffectsMap = {
                     playPromise.catch((error) => {
                         console.warn(
                             `Failed to play sound effect: ${effectName}`,
-                            error
+                            error,
                         );
                     });
                 }
             } catch (error) {
                 console.warn(
                     `Error playing sound effect: ${effectName}`,
-                    error
+                    error,
                 );
             }
         } else {
@@ -413,7 +414,7 @@ private soundEffectsMap = {
             const fadeStep = startVolume / (duration / 50);
 
             console.log(
-                `🎵 Fade out - Start volume: ${startVolume}, Step: ${fadeStep}`
+                `🎵 Fade out - Start volume: ${startVolume}, Step: ${fadeStep}`,
             );
 
             const fadeInterval = setInterval(() => {
@@ -421,8 +422,8 @@ private soundEffectsMap = {
                     this.currentMusic.volume -= fadeStep;
                     console.log(
                         `🎵 Fading... volume: ${this.currentMusic.volume.toFixed(
-                            2
-                        )}`
+                            2,
+                        )}`,
                     );
                 } else {
                     console.log("🎵 Fade complete, stopping music");
@@ -439,12 +440,12 @@ private soundEffectsMap = {
      */
     public async crossfadeToLevel(
         level: keyof typeof this.levelMusic,
-        fadeDuration: number = 1000
+        fadeDuration: number = 1000,
     ): Promise<void> {
         console.log(`🎵 🔄 Crossfading to level: ${level}`);
         console.log(
             `🎵 Current music before crossfade:`,
-            this.currentMusic?.src || "None"
+            this.currentMusic?.src || "None",
         );
 
         // Fade out current music
@@ -459,3 +460,4 @@ private soundEffectsMap = {
 
 // Initialize global audio manager instance
 export const audioManager = AudioManager.getInstance();
+

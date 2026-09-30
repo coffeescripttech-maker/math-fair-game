@@ -326,7 +326,7 @@ function App() {
         audioManager.playEffect("button-click");
         const savedProgress = GameValidation.loadProgress();
         if (savedProgress) {
-            const playerName = savedProgress.playerName || "Citizen";
+            const playerName = savedProgress.playerName || "Math Explorer";
             handleCharacterCreated(playerName, "default", savedProgress.gender);
         } else {
             alert("No saved game found! Start a new game first.");

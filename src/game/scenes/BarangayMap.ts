@@ -366,6 +366,9 @@ export class BarangayMap extends OpenWorldMapScene {
                 // Store the background reference for future updates
                 this.backgroundImage = bgImage;
 
+                // Bound camera/world to the map so no blue shows past its edges.
+                this.updateCameraBoundsForBackground();
+
                 bgImage.setAlpha(1); // Fully visible
                 bgImage.setVisible(true); // Explicitly set visible
                 console.log("Root background image created successfully");
@@ -492,8 +495,8 @@ export class BarangayMap extends OpenWorldMapScene {
         }
 
         this.player = this.physics.add.sprite(playerX, playerY, playerTexture);
-        // Remove world bounds collision for unlimited movement
-        this.player.setCollideWorldBounds(false);
+        // Player stays inside the map rect (see updateCameraBoundsForBackground).
+        this.player.setCollideWorldBounds(true);
         this.player.setScale(this.getPlayerScale()); // Match on-screen size for both genders
 
         console.log(
@@ -658,21 +661,25 @@ export class BarangayMap extends OpenWorldMapScene {
             // fixed on-screen height (a bit bigger than the player), whatever the
             // source image's pixel resolution (exports vary 408-2000px+). A hard
             // floor guarantees the NPC is always visible even if the player's
-            // displayHeight reads anomalously low.
+            // displayHeight reads anomalously low. The NPC Position Editor's
+            // scale multiplier (0.5-2.5x) layers on top of the authored target.
             const npcTargetHeight = Math.max(
                 this.player?.displayHeight || 0,
                 80
             ) * 1.35;
-            npc.setScale(npcTargetHeight / npc.height);
+            const npcScale = npcOverride?.scale ?? 1;
+            npc.setScale((npcTargetHeight * npcScale) / npc.height);
+            npc.setData("baseTargetHeight", npcTargetHeight);
             npc.setInteractive();
 
             console.log(`Size check ${location.npc}:`, {
                 playerDisplayHeight: this.player?.displayHeight,
                 npcFrameHeight: npc.height,
                 targetHeight: npcTargetHeight,
-                scale: npcTargetHeight / npc.height,
+                scaleMultiplier: npcScale,
+                scale: (npcTargetHeight * npcScale) / npc.height,
                 finalDisplayHeight:
-                    npc.height * (npcTargetHeight / npc.height),
+                    npc.height * ((npcTargetHeight * npcScale) / npc.height),
             });
 
             // Set up collision body for NPC - make it static from the start.
@@ -706,7 +713,7 @@ export class BarangayMap extends OpenWorldMapScene {
 
             // Add NPC name with better styling - adjusted offset for larger NPC
             const npcName = this.add
-                .text(worldX, worldY - 50, location.npc, {
+                .text(worldX, worldY - 50 * npcScale, location.npc, {
                     fontFamily: "Arial Black",
                     fontSize: 11,
                     color: "#FFFFFF",
@@ -744,7 +751,7 @@ export class BarangayMap extends OpenWorldMapScene {
             const indicatorKey = `mission-indicator-${location.missionId}`;
 
             const missionIndicator = this.add
-                .text(worldX + 25, worldY - 25, indicatorText, {
+                .text(worldX + 25 * npcScale, worldY - 25 * npcScale, indicatorText, {
                     fontFamily: "Arial Black",
                     fontSize: 18,
                     color: indicatorColor,
@@ -859,24 +866,32 @@ export class BarangayMap extends OpenWorldMapScene {
         this.collectibles = this.physics.add.group();
 
         const gameStateManager = GameStateManager.getInstance();
+        this.reloadCollectiblePositionOverrides();
 
         this.collectibleItemsData.forEach((item) => {
             // Check if item has already been collected
             if (gameStateManager.isItemCollected(item.id)) {
-                console.log(`Item ${item.id} already collected, skipping`);
+                console.log(
+                `Item ${item.id} already collected, skipping (restore it in the Position Editor if you moved/resized it)`
+            );
                 return;
             }
 
+            // NPC/Collectible Position Editor override wins over the authored default.
+            const itemOverride =
+                this.collectiblePositionOverrides?.get(item.id) ?? null;
+            const collectScale = itemOverride?.scale ?? 1;
+
             // Calculate world position from percentage
             const coords = this.percentageToWorldCoordinates(
-                item.percentX,
-                item.percentY
+                itemOverride?.percentX ?? item.percentX,
+                itemOverride?.percentY ?? item.percentY
             );
 
             // Create collectible sprite using emoji/icon
             const collectible = this.add
                 .text(coords.x, coords.y, item.icon, {
-                    fontSize: "30px", // Larger size for better visibility
+                    fontSize: `${Math.round(30 * collectScale)}px`, // Larger size for better visibility
                     fontFamily: "Arial",
                 })
                 .setOrigin(0.5)
@@ -884,7 +899,10 @@ export class BarangayMap extends OpenWorldMapScene {
 
             // Add physics body
             this.physics.add.existing(collectible);
-            (collectible.body as Phaser.Physics.Arcade.Body).setSize(48, 48);
+            (collectible.body as Phaser.Physics.Arcade.Body).setSize(
+                48 * collectScale,
+                48 * collectScale
+            );
             (collectible.body as Phaser.Physics.Arcade.Body).setAllowGravity(
                 false
             );
@@ -905,7 +923,7 @@ export class BarangayMap extends OpenWorldMapScene {
             // Add floating animation
             this.tweens.add({
                 targets: collectible,
-                y: coords.y - 10,
+                y: coords.y - 10 * collectScale,
                 duration: 1000,
                 ease: "Sine.easeInOut",
                 yoyo: true,
@@ -925,7 +943,7 @@ export class BarangayMap extends OpenWorldMapScene {
             const glow = this.add.circle(
                 coords.x,
                 coords.y,
-                30,
+                30 * collectScale,
                 glowColor,
                 0.4
             );
@@ -948,9 +966,13 @@ export class BarangayMap extends OpenWorldMapScene {
             });
 
             console.log(
-                `✓ Created collectible ${item.id} (${item.type}) at (${
-                    item.percentX
-                }%, ${item.percentY}%) = world(${coords.x.toFixed(
+                `✓ Created collectible ${item.id} (${
+                    item.type
+                }) at (${
+                    itemOverride?.percentX ?? item.percentX
+                }%, ${
+                    itemOverride?.percentY ?? item.percentY
+                }%) = world(${coords.x.toFixed(
                     1
                 )}, ${coords.y.toFixed(1)})`
             );

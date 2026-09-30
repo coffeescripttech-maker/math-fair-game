@@ -14,7 +14,7 @@ export enum SecretQuestType {
 export enum PlayerTitle {
     // Default
     NONE = "",
-    CITIZEN = "Citizen",
+    MATH_EXPLORER = "Math Explorer", // Every Math Fair journey starts here
 
     // Exploration Titles
     EXPLORER = "Explorer", // Visit all map corners

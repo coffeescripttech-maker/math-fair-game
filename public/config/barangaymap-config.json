@@ -1,0 +1,387 @@
+{
+    "configVersion": "1.2.0",
+    "exportedAt": "2026-09-29T04:20:42.817Z",
+    "mapName": "BarangayMap",
+    "npcs": [
+        {
+            "x": 6,
+            "y": 9,
+            "name": "Court Diagonal",
+            "npc": "Miguel",
+            "missionId": 1,
+            "percentX": 65.23374193028482,
+            "percentY": 71.92230956426152
+        },
+        {
+            "x": 12,
+            "y": 6,
+            "name": "Recipe Scaling",
+            "npc": "Aling Maria",
+            "missionId": 2,
+            "percentX": 51.066356788711296,
+            "percentY": 21.650955755027937
+        },
+        {
+            "x": 18,
+            "y": 12,
+            "name": "Walking Distance",
+            "npc": "Ben",
+            "missionId": 3,
+            "percentX": 10.69694841398983,
+            "percentY": 30.94354130319284
+        },
+        {
+            "x": 9,
+            "y": 15,
+            "name": "Temperature Switch",
+            "npc": "Ana",
+            "missionId": 4,
+            "percentX": 85.34227508583415,
+            "percentY": 23.021992486912847
+        },
+        {
+            "x": 21,
+            "y": 6,
+            "name": "Garden Area",
+            "npc": "Lola Rosa",
+            "missionId": 5,
+            "percentX": 13.286679814136823,
+            "percentY": 16.47148458658983
+        },
+        {
+            "x": 3,
+            "y": 18,
+            "name": "Original Price",
+            "npc": "Mang Pedro",
+            "missionId": 6,
+            "percentX": 30.348472114958884,
+            "percentY": 63.23907135022767
+        },
+        {
+            "x": 15,
+            "y": 18,
+            "name": "Ladder Reach",
+            "npc": "Kuya Noel",
+            "missionId": 7,
+            "percentX": 5.97448670013199,
+            "percentY": 22.869654607362076
+        },
+        {
+            "x": 25,
+            "y": 12,
+            "name": "Trip Time",
+            "npc": "Teacher Cruz",
+            "missionId": 8,
+            "percentX": 66.75711235764845,
+            "percentY": 24.088353459696215
+        },
+        {
+            "x": 6,
+            "y": 3,
+            "name": "Wire Length",
+            "npc": "Danny",
+            "missionId": 9,
+            "percentX": 77.11605469452468,
+            "percentY": 56.68856344990464
+        },
+        {
+            "x": 12,
+            "y": 12,
+            "name": "Barangay Quiz Prep",
+            "npc": "Barangay Captain's Daughter",
+            "missionId": 10,
+            "percentX": 30.348472114958884,
+            "percentY": 21.346279995926384
+        }
+    ],
+    "collectibles": [
+        {
+            "id": "barangay-coin-1",
+            "type": "coin",
+            "name": "Radical Coin",
+            "description": "A shiny coin celebrating square roots",
+            "value": 5,
+            "points": 10,
+            "rarity": "common",
+            "percentX": 31.50375939849624,
+            "percentY": 38.64661654135338,
+            "icon": "💰"
+        },
+        {
+            "id": "barangay-coin-2",
+            "type": "coin",
+            "name": "Root Power Coin",
+            "description": "A coin flickering with the power of roots",
+            "value": 5,
+            "points": 10,
+            "rarity": "common",
+            "percentX": 59.17293233082707,
+            "percentY": 59.248120300751886,
+            "icon": "💰"
+        },
+        {
+            "id": "barangay-coin-3",
+            "type": "coin",
+            "name": "Inverse Coin",
+            "description": "A coin that always flips back the same way",
+            "value": 5,
+            "points": 10,
+            "rarity": "common",
+            "percentX": 31.50375939849624,
+            "percentY": 43.007518796992485,
+            "icon": "💰"
+        },
+        {
+            "id": "barangay-badge-1",
+            "type": "badge",
+            "name": "Radical Rookie Badge",
+            "description": "A badge for rising stars of radicals",
+            "value": 10,
+            "points": 25,
+            "rarity": "uncommon",
+            "percentX": 31.353383458646615,
+            "percentY": 46.616541353383454,
+            "icon": "🏅"
+        },
+        {
+            "id": "barangay-badge-2",
+            "type": "badge",
+            "name": "Function Flip Badge",
+            "description": "For students who can flip any function into f⁻¹",
+            "value": 10,
+            "points": 25,
+            "rarity": "uncommon",
+            "percentX": 52,
+            "percentY": 73,
+            "icon": "🏅"
+        },
+        {
+            "id": "barangay-treasure-1",
+            "type": "treasure",
+            "name": "Inverse Crystal",
+            "description": "A rare crystal mirroring functions back on themselves",
+            "value": 25,
+            "points": 50,
+            "rarity": "rare",
+            "percentX": 60,
+            "percentY": 82,
+            "icon": "💎"
+        },
+        {
+            "id": "barangay-powerup-1",
+            "type": "powerup",
+            "name": "Root Rush",
+            "description": "Boosts your square-root solving speed",
+            "value": 15,
+            "points": 30,
+            "rarity": "uncommon",
+            "percentX": 72,
+            "percentY": 92,
+            "icon": "⚡"
+        },
+        {
+            "id": "barangay-powerup-2",
+            "type": "powerup",
+            "name": "Flip Boost",
+            "description": "Boosts your inverse-function flipping power",
+            "value": 15,
+            "points": 30,
+            "rarity": "uncommon",
+            "percentX": 92,
+            "percentY": 73,
+            "icon": "⚡"
+        },
+        {
+            "id": "barangay-star-1",
+            "type": "treasure",
+            "name": "Golden Star",
+            "description": "A bright golden star glistening just for you",
+            "value": 20,
+            "points": 40,
+            "rarity": "legendary",
+            "percentX": 64,
+            "percentY": 90,
+            "icon": "⭐"
+        }
+    ],
+    "collisions": {
+        "mapName": "BarangayMap",
+        "version": "1.0.0",
+        "createdAt": "2026-09-28T10:59:39.094Z",
+        "updatedAt": "2026-09-29T04:17:11.137Z",
+        "shapes": [
+            {
+                "id": "polygon-1790593219729",
+                "type": "polygon",
+                "name": "Collision Polygon 1",
+                "points": [
+                    {
+                        "percentX": 17.877931149176785,
+                        "percentY": 60.53550640279395
+                    },
+                    {
+                        "percentX": 16.048561450191254,
+                        "percentY": 60.53550640279395
+                    },
+                    {
+                        "percentX": 14.385498087477133,
+                        "percentY": 61.533344420422424
+                    },
+                    {
+                        "percentX": 13.221353733577251,
+                        "percentY": 62.69748877432231
+                    },
+                    {
+                        "percentX": 12.888741061034425,
+                        "percentY": 63.69532679195078
+                    },
+                    {
+                        "percentX": 12.389822052220191,
+                        "percentY": 64.36055213703644
+                    },
+                    {
+                        "percentX": 12.057209379677367,
+                        "percentY": 65.19208381839348
+                    },
+                    {
+                        "percentX": 12.057209379677367,
+                        "percentY": 65.69100282720773
+                    },
+                    {
+                        "percentX": 12.057209379677367,
+                        "percentY": 67.02145351737902
+                    },
+                    {
+                        "percentX": 12.888741061034425,
+                        "percentY": 67.68667886246466
+                    },
+                    {
+                        "percentX": 13.055047397305838,
+                        "percentY": 67.68667886246466
+                    },
+                    {
+                        "percentX": 13.720272742391487,
+                        "percentY": 68.01929153500748
+                    },
+                    {
+                        "percentX": 13.886579078662898,
+                        "percentY": 68.35190420755032
+                    },
+                    {
+                        "percentX": 14.385498087477133,
+                        "percentY": 68.68451688009314
+                    },
+                    {
+                        "percentX": 14.385498087477133,
+                        "percentY": 69.68235489772161
+                    },
+                    {
+                        "percentX": 14.385498087477133,
+                        "percentY": 70.34758024280727
+                    },
+                    {
+                        "percentX": 15.050723432562782,
+                        "percentY": 70.68019291535008
+                    },
+                    {
+                        "percentX": 16.880093131548314,
+                        "percentY": 70.8464992516215
+                    },
+                    {
+                        "percentX": 17.545318476633962,
+                        "percentY": 69.84866123399303
+                    },
+                    {
+                        "percentX": 17.711624812905374,
+                        "percentY": 68.01929153500748
+                    },
+                    {
+                        "percentX": 19.374688175619493,
+                        "percentY": 67.18775985365043
+                    },
+                    {
+                        "percentX": 20.206219856976553,
+                        "percentY": 65.52469649093631
+                    },
+                    {
+                        "percentX": 20.206219856976553,
+                        "percentY": 64.0279394644936
+                    },
+                    {
+                        "percentX": 20.206219856976553,
+                        "percentY": 62.86379511059372
+                    },
+                    {
+                        "percentX": 19.374688175619493,
+                        "percentY": 62.53118243805089
+                    },
+                    {
+                        "percentX": 19.20838183934808,
+                        "percentY": 61.699650756693835
+                    },
+                    {
+                        "percentX": 18.21054382171961,
+                        "percentY": 61.03442541160818
+                    },
+                    {
+                        "percentX": 17.046399467819725,
+                        "percentY": 60.86811907533678
+                    }
+                ],
+                "color": "#0000FF"
+            },
+            {
+                "id": "polygon-1790655431137",
+                "type": "polygon",
+                "name": "Collision Polygon 2",
+                "points": [
+                    {
+                        "percentX": 33.63567649281935,
+                        "percentY": 32.50188964474679
+                    },
+                    {
+                        "percentX": 32.7286470143613,
+                        "percentY": 32.50188964474679
+                    },
+                    {
+                        "percentX": 32.7286470143613,
+                        "percentY": 32.6530612244898
+                    },
+                    {
+                        "percentX": 31.670445956160243,
+                        "percentY": 33.10657596371882
+                    },
+                    {
+                        "percentX": 30.763416477702194,
+                        "percentY": 33.560090702947846
+                    },
+                    {
+                        "percentX": 31.216931216931215,
+                        "percentY": 34.31594860166289
+                    },
+                    {
+                        "percentX": 31.670445956160243,
+                        "percentY": 34.6182917611489
+                    },
+                    {
+                        "percentX": 33.78684807256236,
+                        "percentY": 34.92063492063492
+                    },
+                    {
+                        "percentX": 34.69387755102041,
+                        "percentY": 34.6182917611489
+                    },
+                    {
+                        "percentX": 34.5427059712774,
+                        "percentY": 34.01360544217687
+                    },
+                    {
+                        "percentX": 33.93801965230537,
+                        "percentY": 32.804232804232804
+                    }
+                ],
+                "color": "#0000FF"
+            }
+        ]
+    }
+}

@@ -14,6 +14,13 @@ import {
     CollisionShapeType,
     CollisionEditorState,
 } from "../types/collision";
+import NpcService from "../services/NpcService";
+import SceneConfigService from "../services/SceneConfigService";
+import {
+    buildFullConfig,
+    copyTextToClipboard,
+    tryDownload,
+} from "../utils/configExport";
 
 interface CollisionEditorProps {
     onClose: () => void;
@@ -51,6 +58,8 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
     const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
     const [showGrid, setShowGrid] = useState(true);
     const [showShapeList, setShowShapeList] = useState(true);
+    const [previewTitle, setPreviewTitle] = useState("");
+    const [previewJson, setPreviewJson] = useState<string | null>(null);
 
     // Load background image
     useEffect(() => {
@@ -78,8 +87,13 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
     // Load existing collision data
     useEffect(() => {
         if (isVisible) {
-            loadCollisionData();
+            // Ensure any full-config file for this map has been registered
+            // (SceneConfigService gives it top priority), then load.
+            SceneConfigService.getInstance()
+                .ensureLoaded(mapName)
+                .then(() => loadCollisionData());
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isVisible, mapName]);
 
     // Draw canvas
@@ -453,15 +467,56 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
 
     const saveCollisionData = () => {
         const filename = `${mapName.toLowerCase()}-collisions.json`;
-        const json = JSON.stringify(collisionData, null, 2);
-        const blob = new Blob([json], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
+        tryDownload(filename, JSON.stringify(collisionData, null, 2));
         alert(`Collision data saved to ${filename}!`);
+    };
+
+    /**
+     * Export ONE file with the whole map config (NPCs + collectibles +
+     * collisions) so the game config can live in a single source of truth.
+     */
+    const downloadFullConfig = () => {
+        try {
+            const service = NpcService.getInstance();
+
+            const npcPositions = service.getNpcPositions(mapName);
+            const npcOverrides = npcPositions
+                ? Array.from(npcPositions.values()).map((p) => ({
+                      missionId: p.missionId,
+                      percentX: p.percentX,
+                      percentY: p.percentY,
+                      scale: p.scale,
+                  }))
+                : [];
+
+            const collectiblePositions =
+                service.getCollectiblePositions(mapName);
+            const collectibleOverrides = collectiblePositions
+                ? Array.from(collectiblePositions.values()).map((p) => ({
+                      id: p.id,
+                      percentX: p.percentX,
+                      percentY: p.percentY,
+                      scale: p.scale,
+                  }))
+                : [];
+
+            const fullConfig = buildFullConfig({
+                mapName,
+                npcOverrides,
+                collectibleOverrides,
+                collisions: collisionData,
+            });
+
+            const json = JSON.stringify(fullConfig, null, 2);
+            tryDownload(`${mapName.toLowerCase()}-config.json`, json);
+            setPreviewTitle(
+                `Full Config — ${mapName} (${fullConfig.npcs.length} NPCs, ${fullConfig.collectibles.length} collectibles, ${fullConfig.collisions.shapes.length} collision shapes)`,
+            );
+            setPreviewJson(json);
+        } catch (error) {
+            console.error("Failed to download full config:", error);
+            alert("Failed to download full config!");
+        }
     };
 
     const loadCollisionData = () => {
@@ -545,6 +600,20 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
                         ✕
                     </button>
                 </div>
+
+                {SceneConfigService.getInstance().isConfigActive(mapName) && (
+                    <div className="bg-teal-950 border-b-2 border-teal-500 px-4 py-2 text-sm text-teal-100">
+                        ⚡{" "}
+                        <span className="font-bold">
+                            Active config file detected
+                        </span>{" "}
+                        (public/config/{mapName.toLowerCase()}-config.json) — the
+                        game loads this file as the map's entire config. After
+                        drawing shapes here, re-download the Full Config and
+                        overwrite that file (Save to Browser is shadowed while
+                        it exists).
+                    </div>
+                )}
 
                 <div className="flex flex-1 overflow-hidden">
                     {/* Left Panel - Tools */}
@@ -703,6 +772,12 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
                                 💾 Download JSON
                             </button>
                             <button
+                                onClick={downloadFullConfig}
+                                className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded transition-all"
+                            >
+                                📦 Download Full Config (NPCs + Collectibles + Collisions)
+                            </button>
+                            <button
                                 onClick={saveToLocalStorage}
                                 className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition-all"
                             >
@@ -828,6 +903,47 @@ export const CollisionEditor: React.FC<CollisionEditorProps> = ({
                     </div>
                 </div>
             </div>
+
+            {/* JSON preview fallback — some browsers/previews block auto-downloads */}
+            {previewJson && (
+                <div className="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4">
+                    <div className="bg-gray-900 border-4 border-black shadow-brutal-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col">
+                        <div className="bg-brutal-yellow p-3 flex items-center justify-between border-b-4 border-black">
+                            <h3 className="font-brutal uppercase text-gray-900 font-bold text-base truncate">
+                                {previewTitle}
+                            </h3>
+                            <button
+                                onClick={() => setPreviewJson(null)}
+                                className="w-9 h-9 bg-brutal-red border-2 border-black text-white font-bold text-xl brutal-press shrink-0 ml-2"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-300 px-4 py-2">
+                            Auto-download started. If no file appeared, select
+                            all + copy the JSON below.
+                        </p>
+                        <div className="flex justify-end px-4 pb-2">
+                            <button
+                                onClick={async () => {
+                                    await copyTextToClipboard(previewJson);
+                                    alert("JSON copied to clipboard!");
+                                }}
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded"
+                            >
+                                📋 Copy JSON
+                            </button>
+                        </div>
+                        <textarea
+                            readOnly
+                            value={previewJson}
+                            onFocus={(e) => e.currentTarget.select()}
+                            className="flex-1 mx-4 mb-4 bg-gray-950 text-green-400 font-mono text-xs p-3 resize-none outline-none rounded"
+                            spellCheck={false}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

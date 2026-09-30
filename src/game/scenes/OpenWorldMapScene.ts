@@ -9,7 +9,10 @@ import { GameStateManager } from "../../utils/GameStateManager";
 import CollisionService from "../../services/CollisionService";
 import NpcService from "../../services/NpcService";
 import ShopService from "../../services/ShopService";
-import { NpcPosition } from "../../types/npcPositions";
+import {
+    CollectiblePosition,
+    NpcPosition,
+} from "../../types/npcPositions";
 
 /**
  * Base class for the five open-world map scenes.
@@ -91,6 +94,12 @@ export abstract class OpenWorldMapScene extends Scene {
     // data). NPCs carry their own `missionData` COPY so the shared mapData
     // arrays are never mutated.
     protected npcPositionOverrides: Map<number, NpcPosition> | null = null;
+    // Collectibles spawn at `override ?? default` percents too — the same
+    // editor stores their deltas in the shared NpcService localStorage data.
+    protected collectiblePositionOverrides: Map<
+        string,
+        CollectiblePosition
+    > | null = null;
     protected npcEditorListenerRegistered: boolean = false;
     protected globalListenersRegistered: boolean = false;
     npcNameLabels: Map<number, any> = new Map();
@@ -427,18 +436,44 @@ export abstract class OpenWorldMapScene extends Scene {
 
     optimizeCameraForOpenWorld() {
         if (this.player) {
-            this.cameras.main.setBounds(
-                -Infinity,
-                -Infinity,
-                Infinity,
-                Infinity,
-            );
+            this.updateCameraBoundsForBackground();
             this.cameras.main.setLerp(0.08, 0.08);
             this.cameras.main.setDeadzone(25, 25);
             console.log(
                 `${this.getCameraLogName()} camera optimized for open world`,
             );
         }
+    }
+
+    /**
+     * Bind the play area to the rendered background image so the camera can
+     * never scroll past the map's edges (otherwise the sky-blue renderer
+     * background color is exposed). The physics world matches the map rect and
+     * the player collides with it, keeping the player inside the map.
+     */
+    protected updateCameraBoundsForBackground() {
+        const bg = this.backgroundImage;
+        if (!bg) {
+            return;
+        }
+
+        const w = bg.displayWidth;
+        const h = bg.displayHeight;
+        const x = bg.x - w / 2;
+        const y = bg.y - h / 2;
+
+        this.cameras.main.setBounds(x, y, w, h);
+        this.physics.world.setBounds(x, y, w, h);
+
+        if (this.player) {
+            this.player.setCollideWorldBounds(true);
+        }
+
+        console.log(
+            `${this.getCameraLogName()} camera/world bounded to map rect ${Math.round(
+                x,
+            )},${Math.round(y)} ${Math.round(w)}x${Math.round(h)}`,
+        );
     }
 
     setupInputAndMobile() {
@@ -510,8 +545,9 @@ export abstract class OpenWorldMapScene extends Scene {
     }
 
     setupCameraAndDelayedUI() {
-        // Set unlimited camera bounds for open world
-        this.cameras.main.setBounds(-Infinity, -Infinity, Infinity, Infinity);
+        // Clamp the camera to the map rect (no-op until the background exists;
+        // createBackgroundImage re-applies bounds once the map is ready).
+        this.updateCameraBoundsForBackground();
 
         // Ensure camera follows player
         this.cameras.main.startFollow(this.player);
@@ -740,8 +776,24 @@ export abstract class OpenWorldMapScene extends Scene {
         });
 
         const gameStateManager = GameStateManager.getInstance();
+        // Collectible dots follow their live sprite (covers editor drags too),
+        // then hide once the item is collected.
         this.minimapCollectibleDots.forEach((dot) => {
             const itemId = dot.getData("itemId");
+            const sprite = itemId
+                ? this.collectibleItems.get(itemId)
+                : undefined;
+            if (sprite && sprite.active) {
+                const relX = sprite.x - (bgX - bgWidth / 2);
+                const relY = sprite.y - (bgY - bgHeight / 2);
+                const pctX = Math.max(0, Math.min(100, (relX / bgWidth) * 100));
+                const pctY = Math.max(0, Math.min(100, (relY / bgHeight) * 100));
+                dot.setPosition(
+                    (pctX / 100) * minimapSize,
+                    (pctY / 100) * minimapSize,
+                );
+                dot.setVisible(true);
+            }
             if (itemId && gameStateManager.isItemCollected(itemId)) {
                 dot.setVisible(false);
             }
@@ -1206,6 +1258,9 @@ export abstract class OpenWorldMapScene extends Scene {
                 // Store the background reference for future updates
                 this.backgroundImage = bgImage;
 
+                // Bound camera/world to the map so no blue shows past its edges.
+                this.updateCameraBoundsForBackground();
+
                 bgImage.setAlpha(1); // Fully visible
                 bgImage.setVisible(true); // Explicitly set visible
                 console.log(`${title} background image created successfully`);
@@ -1334,6 +1389,12 @@ export abstract class OpenWorldMapScene extends Scene {
         );
     }
 
+    /** (Re)read the editor's collectible overrides from the shared NpcService. */
+    protected reloadCollectiblePositionOverrides() {
+        this.collectiblePositionOverrides =
+            NpcService.getInstance().getCollectiblePositions(this.scene.key);
+    }
+
     /** Live-apply overrides (or defaults after Reset) to every spawned NPC + overlay. */
     protected applyNPCPositionOverrides() {
         this.reloadNPCPositionOverrides();
@@ -1364,12 +1425,28 @@ export abstract class OpenWorldMapScene extends Scene {
             missionData.percentX = pX;
             missionData.percentY = pY;
 
+            // Resize support: re-scale the sprite + overlays by the saved
+            // multiplier (layered on the authored base target height).
+            const npcScale = override?.scale ?? 1;
+            const baseTargetHeight = npc.getData?.("baseTargetHeight");
+            if (typeof baseTargetHeight === "number" && baseTargetHeight > 0) {
+                npc.setScale((baseTargetHeight * npcScale) / npc.height);
+            }
+
             const indicator = this.missionIndicators.get(missionId);
-            if (indicator) indicator.setPosition(worldX + 25, worldY - 25);
+            if (indicator)
+                indicator.setPosition(
+                    worldX + 25 * npcScale,
+                    worldY - 25 * npcScale,
+                );
             const nameLabel = this.npcNameLabels.get(missionId);
-            if (nameLabel) nameLabel.setPosition(worldX, worldY - 50);
+            if (nameLabel) nameLabel.setPosition(worldX, worldY - 50 * npcScale);
             const numberLabel = this.missionNumberLabels.get(missionId);
-            if (numberLabel) numberLabel.setPosition(worldX - 35, worldY - 35);
+            if (numberLabel)
+                numberLabel.setPosition(
+                    worldX - 35 * npcScale,
+                    worldY - 35 * npcScale,
+                );
             const glowData = this.npcGlowEffects.get(missionId);
             if (glowData) {
                 if (glowData.baseGlow) {
@@ -1384,11 +1461,72 @@ export abstract class OpenWorldMapScene extends Scene {
         // Minimap dots self-heal every frame in updateMinimap().
     }
 
+    /** Live-apply collectible overrides (or defaults after Reset) to spawns. */
+    protected applyCollectiblePositionOverrides() {
+        this.reloadCollectiblePositionOverrides();
+        const overrides = this.collectiblePositionOverrides ?? new Map();
+        if (overrides.size === 0) {
+            console.log(
+                `${this.getCameraLogName()} no collectible overrides to apply`,
+            );
+            return;
+        }
+
+        // Warn about overrides that target items with no live sprite (they were
+        // picked up, so they never render — use the editor's Restore tool).
+        const missing: string[] = [];
+        overrides.forEach((_o, id) => {
+            const spr = this.collectibleItems.get(id);
+            if (!spr?.active) missing.push(id);
+        });
+        if (missing.length > 0) {
+            console.warn(
+                `${this.getCameraLogName()} collectible override(s) with no live sprite (already collected or not spawned yet): ${missing.join(", ")}`,
+            );
+        }
+
+        this.collectibleItems.forEach((collectible: any, id: string) => {
+            const override = overrides.get(id);
+            if (!override || !collectible?.active) return;
+
+            const coords = this.percentageToWorldCoordinates(
+                override.percentX,
+                override.percentY,
+            );
+
+            // Restart the bob tween so it hangs around the new spot instead of
+            // fighting the old absolute animation target.
+            this.tweens.killTweensOf(collectible);
+            collectible.setPosition(coords.x, coords.y);
+            const collectScale = override.scale ?? 1;
+            collectible.setFontSize(`${Math.round(30 * collectScale)}px`);
+            this.tweens.add({
+                targets: collectible,
+                y: coords.y - 15 * collectScale,
+                duration: 1200,
+                ease: "Sine.easeInOut",
+                yoyo: true,
+                repeat: -1,
+            });
+
+            const glow = collectible.getData?.("glow");
+            if (glow && glow.active !== false) {
+                glow.setPosition(coords.x, coords.y);
+                if (glow.setRadius) glow.setRadius(30 * collectScale);
+            }
+        });
+
+        console.log(
+            `${this.getCameraLogName()} collectible positions re-applied (${overrides.size} override(s))`,
+        );
+    }
+
     /** React → Phaser: called after the NPC editor persists a save/reset. */
     private handleNPCEditorSaved = (payload: { mapName: string }) => {
         if (!this.scene.isActive()) return; // editor on a non-active map → next spawn
         if (payload?.mapName !== this.scene.key) return;
         this.applyNPCPositionOverrides();
+        this.applyCollectiblePositionOverrides();
     };
 
     updateNPCIndicators() {
@@ -1580,28 +1718,38 @@ export abstract class OpenWorldMapScene extends Scene {
 
         this.collectibles = this.physics.add.group();
         const gameStateManager = GameStateManager.getInstance();
+        this.reloadCollectiblePositionOverrides();
 
         this.collectibleItemsData.forEach((item) => {
             if (gameStateManager.isItemCollected(item.id)) {
-                console.log(`Item ${item.id} already collected, skipping`);
+                console.log(
+                `Item ${item.id} already collected, skipping (restore it in the Position Editor if you moved/resized it)`,
+            );
                 return;
             }
 
+            // NPC/Collectible Position Editor override wins over the authored default.
+            const itemOverride =
+                this.collectiblePositionOverrides?.get(item.id) ?? null;
+            const collectScale = itemOverride?.scale ?? 1;
             const coords = this.percentageToWorldCoordinates(
-                item.percentX,
-                item.percentY,
+                itemOverride?.percentX ?? item.percentX,
+                itemOverride?.percentY ?? item.percentY,
             );
 
             const collectible = this.add
                 .text(coords.x, coords.y, item.icon, {
-                    fontSize: "30px",
+                    fontSize: `${Math.round(30 * collectScale)}px`,
                     fontFamily: "Arial",
                 })
                 .setOrigin(0.5)
                 .setScrollFactor(1);
 
             this.physics.add.existing(collectible);
-            (collectible.body as Phaser.Physics.Arcade.Body).setSize(48, 48);
+            (collectible.body as Phaser.Physics.Arcade.Body).setSize(
+                48 * collectScale,
+                48 * collectScale,
+            );
             (collectible.body as Phaser.Physics.Arcade.Body).setAllowGravity(
                 false,
             );
@@ -1615,7 +1763,7 @@ export abstract class OpenWorldMapScene extends Scene {
 
             this.tweens.add({
                 targets: collectible,
-                y: coords.y - 15,
+                y: coords.y - 15 * collectScale,
                 duration: 1200,
                 ease: "Sine.easeInOut",
                 yoyo: true,
@@ -1634,7 +1782,7 @@ export abstract class OpenWorldMapScene extends Scene {
             const glow = this.add.circle(
                 coords.x,
                 coords.y,
-                30,
+                30 * collectScale,
                 glowColor,
                 0.4,
             );
@@ -2579,9 +2727,12 @@ export abstract class OpenWorldMapScene extends Scene {
             // source image's pixel resolution (exports vary 408-2000px+). A hard
             // floor guarantees the NPC is always visible even if the player's
             // displayHeight reads anomalously low. Matches the Barangay map.
+            // The NPC Position Editor's scale multiplier (0.5-2.5x) layers on top.
             const npcTargetHeight =
                 Math.max(this.player?.displayHeight || 0, 80) * 1.1;
-            npc.setScale(npcTargetHeight / npc.height);
+            const npcScale = npcOverride?.scale ?? 1;
+            npc.setScale((npcTargetHeight * npcScale) / npc.height);
+            npc.setData("baseTargetHeight", npcTargetHeight);
             npc.setInteractive();
 
             // Set up collision body for NPC — size from frame pixels so the hitbox
@@ -2604,7 +2755,7 @@ export abstract class OpenWorldMapScene extends Scene {
 
             // Add NPC name text via the themed config
             const npcName = this.add
-                .text(worldX, worldY - 50, location.npc, {
+                .text(worldX, worldY - 50 * npcScale, location.npc, {
                     fontFamily: "Arial Black",
                     fontSize: 11,
                     color: theme.nameFill,
@@ -2636,7 +2787,7 @@ export abstract class OpenWorldMapScene extends Scene {
             }
 
             const missionIndicator = this.add
-                .text(worldX + 25, worldY - 25, indicatorText, {
+                .text(worldX + 25 * npcScale, worldY - 25 * npcScale, indicatorText, {
                     fontFamily: "Arial Black",
                     fontSize: 18,
                     color: indicatorColor,
@@ -2662,7 +2813,11 @@ export abstract class OpenWorldMapScene extends Scene {
 
             // Add mission number beside NPC name
             const missionNumber = this.add
-                .text(worldX - 35, worldY - 35, `#${location.missionId}`, {
+                .text(
+                    worldX - 35 * npcScale,
+                    worldY - 35 * npcScale,
+                    `#${location.missionId}`,
+                    {
                     fontFamily: "Arial Black",
                     fontSize: 12,
                     color: theme.addressFill,
@@ -2881,6 +3036,9 @@ export abstract class OpenWorldMapScene extends Scene {
         this.optimizeCameraForOpenWorld();
         this.updateBackgroundForOrientation();
 
+        // Re-clamp camera/world to the map's new display rect from the resize.
+        this.updateCameraBoundsForBackground();
+
         this.isMobile =
             this.sys.game.device.input.touch ||
             /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -2930,8 +3088,8 @@ export abstract class OpenWorldMapScene extends Scene {
 
         this.player = this.physics.add.sprite(playerX, playerY, playerTexture);
 
-        // Remove world bounds collision for unlimited movement
-        this.player.setCollideWorldBounds(false);
+        // Player stays inside the map rect (see updateCameraBoundsForBackground).
+        this.player.setCollideWorldBounds(true);
         this.player.setScale(this.getPlayerScale());
 
         // Create player animations if not already created
