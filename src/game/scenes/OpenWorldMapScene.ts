@@ -673,17 +673,50 @@ export abstract class OpenWorldMapScene extends Scene {
         return true;
     }
 
+    /**
+     * Max gap (px) between the player's and an NPC's sprite boxes for the
+     * interaction prompt to appear. Works from every direction because it
+     * measures edge-to-edge distance, not sprite centers.
+     */
+    protected readonly npcInteractionRange = 40;
+
+    /**
+     * Gap between the player's and an NPC's sprite boxes — 0 when they touch.
+     *
+     * Interaction used to compare sprite CENTERS against a fixed 80px range,
+     * which made detection direction-dependent: side approaches only had to
+     * clear the sprites' widths (~58px), while an approach from below had to
+     * clear both full heights first (~94px) — the player stopped outside the
+     * range, so "Press SPACE to interact" never appeared from below.
+     * The edge gap is symmetric, so every approach direction behaves the same.
+     */
+    protected getNPCInteractionDistance(
+        npc: Phaser.Physics.Arcade.Sprite,
+    ): number {
+        if (!this.player || !npc) {
+            return Number.POSITIVE_INFINITY;
+        }
+
+        const gapX = Math.max(
+            0,
+            Math.abs(this.player.x - npc.x) -
+                (this.player.displayWidth + npc.displayWidth) / 2,
+        );
+        const gapY = Math.max(
+            0,
+            Math.abs(this.player.y - npc.y) -
+                (this.player.displayHeight + npc.displayHeight) / 2,
+        );
+
+        return Math.sqrt(gapX * gapX + gapY * gapY);
+    }
+
     checkForNearbyNPCs() {
         let nearestNPC: Phaser.Physics.Arcade.Sprite | null = null;
-        let nearestDistance = 100;
+        let nearestDistance = Number.POSITIVE_INFINITY;
 
         this.npcs.children.entries.forEach((npc: any) => {
-            const distance = Phaser.Math.Distance.Between(
-                this.player.x,
-                this.player.y,
-                npc.x,
-                npc.y,
-            );
+            const distance = this.getNPCInteractionDistance(npc);
 
             if (distance < nearestDistance) {
                 nearestDistance = distance;
@@ -691,7 +724,7 @@ export abstract class OpenWorldMapScene extends Scene {
             }
         });
 
-        if (nearestNPC && nearestDistance < 80) {
+        if (nearestNPC && nearestDistance < this.npcInteractionRange) {
             this.nearbyNPC = nearestNPC;
             this.interactionPrompt.setPosition(
                 this.player.x + 80,

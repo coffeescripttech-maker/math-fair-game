@@ -1181,16 +1181,11 @@ export class BarangayMap extends OpenWorldMapScene {
 
     checkForNearbyNPCs() {
         let nearestNPC: Phaser.Physics.Arcade.Sprite | null = null;
-        let nearestDistance = 100; // Interaction range
+        let nearestDistance = Number.POSITIVE_INFINITY;
         let nearestMissionId = null;
 
         this.npcs.children.entries.forEach((npc: any) => {
-            const distance = Phaser.Math.Distance.Between(
-                this.player.x,
-                this.player.y,
-                npc.x,
-                npc.y
-            );
+            const distance = this.getNPCInteractionDistance(npc);
 
             if (distance < nearestDistance) {
                 nearestDistance = distance;
@@ -1203,8 +1198,9 @@ export class BarangayMap extends OpenWorldMapScene {
         const currentNearbyMissionId =
             this.nearbyNPC?.getData("missionData")?.missionId;
 
-        // Increased interaction range to make it easier to trigger
-        if (nearestNPC && nearestDistance < 80) {
+        // Edge-to-edge gap (see getNPCInteractionDistance): the same range now
+        // applies whether the player approaches from the left, right, or below.
+        if (nearestNPC && nearestDistance < this.npcInteractionRange) {
             // New NPC detected - activate glow
             if (currentNearbyMissionId !== nearestMissionId) {
                 // Deactivate previous NPC glow if exists
