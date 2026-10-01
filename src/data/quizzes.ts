@@ -598,9 +598,9 @@ export const quizzes: Record<string, QuizData> = {
     question:
         "Which of the following is equivalent to √(72) + √(50)?",
     options: ["11√2", "12√2", "13√2", "14√2"],
-    correctAnswer: 2,
+    correctAnswer: 0,
     explanation:
-        "Simplify each radical: √72 = √(36 × 2) = 6√2, and √50 = √(25 × 2) = 5√2. Adding gives 6√2 + 5√2 = 11√2. Wait, that's 11√2. Let me recheck: 6 + 5 = 11. So the answer is 11√2.",
+        "Simplify each radical: √72 = √(36 × 2) = 6√2, and √50 = √(25 × 2) = 5√2. Adding like radicals: 6√2 + 5√2 = 11√2.",
     steps: [
         "√72 = √(36 × 2) = 6√2",
         "√50 = √(25 × 2) = 5√2",
@@ -885,7 +885,7 @@ export const quizzes: Record<string, QuizData> = {
         "f⁻¹(x) = (x + 3) / (x + 2)",
         "f⁻¹(x) = (x - 3) / (x - 2)",
     ],
-    correctAnswer: 1,
+    correctAnswer: 0,
     explanation:
         "Let y = (2x + 3)/(x - 1). Swap: x = (2y + 3)/(y - 1). Multiply: x(y - 1) = 2y + 3. Expand: xy - x = 2y + 3. Collect y terms: xy - 2y = x + 3. Factor: y(x - 2) = x + 3. So y = (x + 3)/(x - 2).",
     steps: [

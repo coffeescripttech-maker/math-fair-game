@@ -184,7 +184,9 @@ export abstract class OpenWorldMapScene extends Scene {
             .text(
                 this.player.x + 80, // Right side of player
                 this.player.y,
-                this.isMobile ? "Tap to interact" : "Tap to interact",
+                this.isMobile
+                    ? "Tap to interact"
+                    : "Press SPACE to interact",
                 {
                     fontFamily: "Arial Black",
                     fontSize: 14,

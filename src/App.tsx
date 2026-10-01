@@ -136,6 +136,9 @@ function App() {
     const [showMainMenu, setShowMainMenu] = useState(true);
     const [showCharacterCreation, setShowCharacterCreation] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
+    // Bumped on every retry so the quiz modal remounts fresh (resets the
+    // timer, selection and result state) without re-walking to the NPC.
+    const [quizAttempt, setQuizAttempt] = useState(0);
     const [showMission, setShowMission] = useState(false);
     const [currentQuiz, setCurrentQuiz] = useState<any>(null);
     const [currentMission, setCurrentMission] = useState<any>(null);
@@ -704,7 +707,34 @@ function App() {
                         actions: [
                             {
                                 label: "Try Again",
-                                action: closeNotification,
+                                action: () => {
+                                    closeNotification();
+                                    // Remount the same mission's quiz fresh so the
+                                    // player can answer again immediately.
+                                    setQuizAttempt((n) => n + 1);
+                                    if (currentMission) {
+                                        const retryId =
+                                            parseInt(currentMission.id);
+                                        if (
+                                            gameStateManager.current.canAccessMission(
+                                                retryId,
+                                            ) &&
+                                            !gameStateManager.current.isMissionCompleted(
+                                                retryId,
+                                            )
+                                        ) {
+                                            gameStateManager.current.startQuiz(
+                                                retryId,
+                                            );
+                                            setShowQuiz(true);
+                                            setCurrentQuiz(
+                                                getQuizForMission(
+                                                    currentMission.id,
+                                                ),
+                                            );
+                                        }
+                                    }
+                                },
                                 style: "secondary",
                             },
                         ],
@@ -969,9 +999,13 @@ function App() {
             )}
             {showQuiz && currentQuiz && (
                 <EnhancedQuizSystem
+                    key={`quiz-${currentMission?.id ?? "none"}-${quizAttempt}`}
                     question={currentQuiz}
                     onAnswer={handleQuizAnswer}
-                    onClose={() => setShowQuiz(false)}
+                    onClose={() => {
+                        setShowQuiz(false);
+                        setCurrentQuiz(null);
+                    }}
                     missionId={currentMission?.id}
                     level={gameInfo.level}
                 />
