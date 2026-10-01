@@ -439,9 +439,14 @@ export class SecretQuestService {
             const distanceY = Math.abs(location.percentY - percentY);
 
             if (distanceX <= PROXIMITY && distanceY <= PROXIMITY) {
-                if (!location.discovered) {
-                    this.discoverLocation(location.id);
+                // Only report a location ONCE. The caller runs this check every
+                // frame, so returning an already-discovered location would
+                // re-fire the "Secret Location Discovered!" modal endlessly and
+                // make it impossible to dismiss.
+                if (location.discovered) {
+                    continue;
                 }
+                this.discoverLocation(location.id);
                 return location;
             }
         }
