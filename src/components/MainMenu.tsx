@@ -27,15 +27,78 @@ const YELLOW = "#FFD84D";
 
 /** Ambient floating math symbols drifting behind the menu. */
 const FLOATING_SYMBOLS = [
-    { char: "＋", left: "6%", size: "text-7xl", duration: 16, delay: 0, opacity: 0.28 },
-    { char: "π", left: "14%", size: "text-6xl", duration: 21, delay: -7, opacity: 0.22 },
-    { char: "×", left: "24%", size: "text-8xl", duration: 18, delay: -3, opacity: 0.2 },
-    { char: "÷", left: "34%", size: "text-6xl", duration: 24, delay: -11, opacity: 0.26 },
-    { char: "√", left: "46%", size: "text-7xl", duration: 17, delay: -5, opacity: 0.2 },
-    { char: "−", left: "56%", size: "text-8xl", duration: 22, delay: -9, opacity: 0.24 },
-    { char: "≈", left: "66%", size: "text-6xl", duration: 19, delay: -2, opacity: 0.2 },
-    { char: "∑", left: "76%", size: "text-7xl", duration: 23, delay: -13, opacity: 0.22 },
-    { char: "∞", left: "88%", size: "text-6xl", duration: 16, delay: -8, opacity: 0.2 },
+    {
+        char: "＋",
+        left: "6%",
+        size: "text-7xl",
+        duration: 16,
+        delay: 0,
+        opacity: 0.28,
+    },
+    {
+        char: "π",
+        left: "14%",
+        size: "text-6xl",
+        duration: 21,
+        delay: -7,
+        opacity: 0.22,
+    },
+    {
+        char: "×",
+        left: "24%",
+        size: "text-8xl",
+        duration: 18,
+        delay: -3,
+        opacity: 0.2,
+    },
+    {
+        char: "÷",
+        left: "34%",
+        size: "text-6xl",
+        duration: 24,
+        delay: -11,
+        opacity: 0.26,
+    },
+    {
+        char: "√",
+        left: "46%",
+        size: "text-7xl",
+        duration: 17,
+        delay: -5,
+        opacity: 0.2,
+    },
+    {
+        char: "−",
+        left: "56%",
+        size: "text-8xl",
+        duration: 22,
+        delay: -9,
+        opacity: 0.24,
+    },
+    {
+        char: "≈",
+        left: "66%",
+        size: "text-6xl",
+        duration: 19,
+        delay: -2,
+        opacity: 0.2,
+    },
+    {
+        char: "∑",
+        left: "76%",
+        size: "text-7xl",
+        duration: 23,
+        delay: -13,
+        opacity: 0.22,
+    },
+    {
+        char: "∞",
+        left: "88%",
+        size: "text-6xl",
+        duration: 16,
+        delay: -8,
+        opacity: 0.2,
+    },
 ];
 
 /** Shared secondary button: cream game-card with a colored icon tile. */
@@ -180,7 +243,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                                 </button>
 
                                 {/* Leaderboard */}
-                                <button
+
+                                {/* <button
                                     onClick={() => onShowLeaderboard?.()}
                                     className={secondaryButtonClasses}
                                 >
@@ -191,7 +255,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                                         Leaderboard
                                     </span>
                                     <ChevronRight className="h-4 w-4 text-tutor-navy/40 transition-transform group-hover:translate-x-0.5" />
-                                </button>
+                                </button>*/}
 
                                 {/* How to Play / Tutorial */}
                                 <button
