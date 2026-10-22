@@ -111,8 +111,19 @@ export abstract class OpenWorldMapScene extends Scene {
 
     protected abstract getLocationDisplayColor(): string;
 
+    /** Toggle key (L) for the dev-only location label above the player. */
+    private locationToggleKey: Phaser.Input.Keyboard.Key | null = null;
+
     createLocationDisplay() {
-        // Create location display above player head
+        // L toggles the label while authoring NPC/collectible positions.
+        this.locationToggleKey =
+            this.input.keyboard?.addKey(
+                Phaser.Input.Keyboard.KeyCodes.L,
+            ) ?? null;
+
+        // Create location display above player head. Hidden by default: the
+        // percent coordinates are a position-editing aid for config authoring,
+        // not player-facing UI. Press L to reveal it while editing.
         this.locationDisplay = this.add
             .text(
                 this.player.x,
@@ -139,7 +150,7 @@ export abstract class OpenWorldMapScene extends Scene {
             .setOrigin(0.5)
             .setDepth(500) // Above player but below UI elements
             .setScrollFactor(1) // Follow camera (moves with world)
-            .setVisible(true);
+            .setVisible(false);
 
         console.log(
             `${this.scene.key} location display created above player head`,
@@ -837,6 +848,19 @@ export abstract class OpenWorldMapScene extends Scene {
 
     update() {
         if (!this.player) return;
+
+        // L toggles the dev-only location label above the player (position
+        // coordinates used while authoring NPC/collectible config values).
+        if (
+            this.locationToggleKey &&
+            Phaser.Input.Keyboard.JustDown(this.locationToggleKey) &&
+            this.locationDisplay
+        ) {
+            this.locationDisplay.setVisible(!this.locationDisplay.visible);
+            console.log(
+                `${this.scene.key} location display toggled: ${this.locationDisplay.visible}`,
+            );
+        }
 
         // Dialogue cutscene: freeze the player and skip world updates while
         // the conversation box is up.

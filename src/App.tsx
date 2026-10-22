@@ -449,35 +449,38 @@ function App() {
                 phaserRef.current.game.scene.start(startScene);
                 console.log(`${startScene} scene started successfully`);
 
-                // Show level-specific welcome message
-                if (
-                    progress.completedMissions.length >=
-                    (progress.level - 1) * 10
-                ) {
+                // Show a per-level briefing so the player knows the math focus
+                // of this map before playing (data-driven from ACTIVE_LEVELS).
+                const briefing = ACTIVE_LEVELS.find(
+                    (lv) => lv.level === progress.level,
+                );
+                if (briefing) {
                     const levelNames: Record<number, string> = {
+                        1: "your Barangay",
                         2: "the City",
                         3: "the Province",
                         4: "the Region",
                         5: "the National Stage",
                     };
-                    const levelName = levelNames[progress.level];
-                    if (levelName) {
-                        setTimeout(() => {
-                            showGameNotification({
-                                type: "info",
-                                title: `Welcome to ${levelName}, ${name}!`,
-                                message: `Congratulations! You've mastered basic math and are now ready for advanced challenges! The city awaits with complex business, urban planning, and financial math problems. Show your intermediate algebra skills!`,
-                                icon: "🏢",
-                                actions: [
-                                    {
-                                        label: "Start City Challenges!",
-                                        action: closeNotification,
-                                        style: "primary",
-                                    },
-                                ],
-                            });
-                        }, 3000); // Show after scene loads
-                    }
+                    const levelName = levelNames[briefing.level] ?? briefing.name;
+                    const skillsList = briefing.skills
+                        .map((skill) => `• ${skill}`)
+                        .join("\n");
+                    setTimeout(() => {
+                        showGameNotification({
+                            type: "info",
+                            title: `${briefing.icon} Level ${briefing.level}: ${briefing.name} Briefing`,
+                            message: `Welcome to ${levelName}, ${name}!\n\n📘 Math focus: ${briefing.focus}\n\n🎯 You will practice:\n${skillsList}\n\n🏆 After this level you can: ${briefing.achievement}\n\nMissions ${briefing.missionStart}-${briefing.missionEnd} will test these skills.`,
+                            icon: briefing.icon,
+                            actions: [
+                                {
+                                    label: "Let's Start!",
+                                    action: closeNotification,
+                                    style: "primary",
+                                },
+                            ],
+                        });
+                    }, 3000); // Show after scene loads
                 }
             } else if (retryCount < maxRetries) {
                 retryCount++;

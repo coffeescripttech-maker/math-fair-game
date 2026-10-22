@@ -198,7 +198,7 @@ export const GameNotification: React.FC<GameNotificationProps> = ({
                             </span>
                         </div>
                         <div
-                            className={`rounded-lg sm:rounded-xl border-[3px] border-tutor-navy p-2 sm:p-4 font-playful text-[11px] sm:text-sm leading-relaxed ${getMessageBox()}`}
+                            className={`whitespace-pre-line rounded-lg sm:rounded-xl border-[3px] border-tutor-navy p-2 sm:p-4 font-playful text-[11px] sm:text-sm leading-relaxed ${getMessageBox()}`}
                         >
                             {notification.message}
                         </div>
