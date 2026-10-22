@@ -63,7 +63,7 @@ export const LEVEL_CATALOG: LevelDefinition[] = [
         tone: "green",
         missionStart: 1,
         missionEnd: 10,
-        theme: "Community tutoring: radicals & inverse functions",
+        theme: "Community tutoring: integers & basic operations",
     },
     {
         level: 2,
