@@ -55,6 +55,7 @@ import {
 } from "./config/gameConfig";
 import type { LevelTone } from "./config/gameConfig";
 import { quizzes, defaultQuiz } from "./data/quizzes";
+import { quizzesRemix } from "./data/quizzesRemix";
 
 // 🧪 TESTING MODE: Set to true to bypass mission prerequisites for testing
 const DEBUG_BYPASS_PREREQUISITES = false;
@@ -90,6 +91,8 @@ const LEVEL_ICON_TONE: Record<LevelTone, string> = {
 function App() {
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const gameStateManager = useRef(GameStateManager.getInstance());
+    // Mastery Mode unlock announcement is shown once per game session.
+    const masteryNotifiedRef = useRef(false);
     const [gameInfo, setGameInfo] = useState({
         currentScene: "MainMenu",
         playerName: "",
@@ -142,6 +145,9 @@ function App() {
     const [showMission, setShowMission] = useState(false);
     const [currentQuiz, setCurrentQuiz] = useState<any>(null);
     const [currentMission, setCurrentMission] = useState<any>(null);
+    // True when the open mission panel is a Mastery Mode practice replay
+    // (a completed mission being revisited with fresh remix questions).
+    const [practiceMode, setPracticeMode] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [joystickDirection, setJoystickDirection] = useState({ x: 0, y: 0 });
     const [notification, setNotification] = useState<NotificationData | null>(
@@ -482,6 +488,33 @@ function App() {
                         });
                     }, 3000); // Show after scene loads
                 }
+
+                // 🧠 Mastery Mode unlock banner (once per session): when a
+                // save has already finished EVERY mission, every map load
+                // would be a good moment to finally surface the reward.
+                if (
+                    gameStateManager.current.isMasteryUnlocked() &&
+                    !masteryNotifiedRef.current
+                ) {
+                    masteryNotifiedRef.current = true;
+                    // Delay past the level briefing so the two modals don't
+                    // overwrite each other.
+                    setTimeout(() => {
+                        showGameNotification({
+                            type: "success",
+                            title: "Mastery Mode Unlocked! 🧠",
+                            message: `You've completed every mission on every map, ${name}!\n\nFrom now on, any NPC you've already helped will offer a brand-new PRACTICE challenge — same topics, harder twists, fresh numbers.\n\nPractice runs never change your score, badges, or coins. This is pure mastery sharpening!`,
+                            icon: "🧠",
+                            actions: [
+                                {
+                                    label: "Awesome!",
+                                    action: closeNotification,
+                                    style: "primary",
+                                },
+                            ],
+                        });
+                    }, 6500);
+                }
             } else if (retryCount < maxRetries) {
                 retryCount++;
                 console.log(
@@ -498,7 +531,27 @@ function App() {
     };
 
     const handleQuizAnswer = (isCorrect: boolean) => {
-        if (currentMission && currentQuiz) {
+        if (practiceMode && currentMission && currentQuiz) {
+            // 🧠 Mastery practice replay: feedback only. No progress updates,
+            // no coins, points, badges, or leaderboard submission — the save
+            // is never touched here, so replays are safe and unlimited.
+            audioManager.playEffect(isCorrect ? "quiz-correct" : "quiz-wrong");
+            showGameNotification({
+                type: isCorrect ? "success" : "warning",
+                title: isCorrect ? "Practice Solved! 🧠" : "Practice Attempt",
+                message: isCorrect
+                    ? `Great work on "${currentMission.title}"! Practice runs never change your score, badges, or coins — but nailing the twist confirms you've truly mastered this mission. Replay again anytime!`
+                    : `Not quite — review the steps and formula, then talk to the NPC for another practice run. Practice mode has no penalties and is unlimited!`,
+                icon: isCorrect ? "🧠" : "📚",
+                actions: [
+                    {
+                        label: "Back to the Map",
+                        action: closeNotification,
+                        style: "primary",
+                    },
+                ],
+            });
+        } else if (currentMission && currentQuiz) {
             try {
                 const missionId = parseInt(currentMission.id);
                 const selectedAnswer = isCorrect
@@ -770,6 +823,18 @@ function App() {
 
             // Check if mission is already completed
             if (gameStateManager.current.isMissionCompleted(missionId)) {
+                // 🧠 Mastery Mode: when practiceMode is set (opened from a
+                // completed NPC after full completion), replay the mission
+                // with the remix bank — no rewrite of the completed mission.
+                if (practiceMode) {
+                    setShowMission(false);
+                    setShowQuiz(true);
+                    setCurrentQuiz(
+                        getPracticeQuizForMission(currentMission.id),
+                    );
+                    return;
+                }
+
                 console.log(`Mission ${missionId} is already completed`);
                 setShowMission(false);
                 return;
@@ -789,6 +854,16 @@ function App() {
 
     const getQuizForMission = (missionId: string) => {
         return quizzes[missionId] || defaultQuiz;
+    };
+
+    // Mastery Mode lookup: prefer the remix bank for practice replays, then
+    // gracefully fall back (remix bank may not cover every mission yet).
+    const getPracticeQuizForMission = (missionId: string) => {
+        return (
+            quizzesRemix[missionId] ||
+            quizzes[missionId] ||
+            defaultQuiz
+        );
     };
 
     // Helper function to update UI from game progress
@@ -907,6 +982,9 @@ function App() {
     useEffect(() => {
         const handleShowMission = (data: any) => {
             console.log("Mission event received:", data);
+            // `practice` is set by the scene when a completed NPC offers a
+            // Mastery Mode practice replay.
+            setPracticeMode(Boolean(data.practice));
             setCurrentMission(data.mission);
             setShowMission(true);
         };
@@ -1011,6 +1089,7 @@ function App() {
                     }}
                     missionId={currentMission?.id}
                     level={gameInfo.level}
+                    practiceMode={practiceMode}
                 />
             )}
             {showMission && currentMission && (

@@ -27,6 +27,7 @@ interface EnhancedQuizSystemProps {
     onClose: () => void;
     missionId?: string;
     level?: number; // 1 for Barangay, 2 for City
+    practiceMode?: boolean; // Mastery Mode practice replay (no rewards)
 }
 
 export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
@@ -35,6 +36,7 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
     onClose,
     missionId,
     level = 1,
+    practiceMode = false,
 }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
@@ -209,6 +211,11 @@ export const EnhancedQuizSystem: React.FC<EnhancedQuizSystemProps> = ({
                                     >
                                         Level {level}
                                     </span>
+                                    {practiceMode && (
+                                        <span className="shrink-0 rounded-lg border-2 border-tutor-navy bg-tutor-green px-2 py-1 font-playful text-xs font-bold uppercase text-tutor-cream shadow-[2px_2px_0_0_#071B3A] sm:inline-block">
+                                            🧠 Practice
+                                        </span>
+                                    )}
                                 </div>
                                 <button
                                     onClick={onClose}

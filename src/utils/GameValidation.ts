@@ -429,6 +429,16 @@ export class GameValidation {
         return this.MISSION_REWARDS[missionId];
     }
 
+    /**
+     * Mastery Mode gate: once every active mission is completed, NPCs may
+     * offer "practice" replays of their completed missions with fresh
+     * (harder) remix questions. Computed live from the passed list — no
+     * extra save field, so old saves gain this behavior automatically.
+     */
+    public static isMasteryUnlocked(completedMissions: number[]): boolean {
+        return completedMissions.length >= TOTAL_MISSIONS;
+    }
+
     private static readonly QUIZ_SCORING = {
         CORRECT_ANSWER: 50,
         PERFECT_SCORE_BONUS: 25, // Bonus for getting all questions correct

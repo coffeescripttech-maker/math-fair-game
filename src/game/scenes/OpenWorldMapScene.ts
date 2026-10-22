@@ -364,6 +364,18 @@ export abstract class OpenWorldMapScene extends Scene {
 
         // Check if mission is already completed
         if (gameStateManager.isMissionCompleted(location.missionId)) {
+            // 🧠 Mastery Mode: once every mission is done, completed NPCs
+            // offer a practice replay with fresh remix questions (no rewards).
+            if (gameStateManager.isMasteryUnlocked()) {
+                EventBus.emit("show-mission", {
+                    missionId: location.missionId,
+                    npcName: location.npc,
+                    missionName: location.name,
+                    mission: this.getMissionData(location.missionId),
+                    practice: true,
+                });
+                return;
+            }
             EventBus.emit("show-notification", {
                 type: "success",
                 title: flavor.completedTitle,
@@ -379,6 +391,7 @@ export abstract class OpenWorldMapScene extends Scene {
             });
             return;
         }
+
 
         // Check if mission is accessible
         if (

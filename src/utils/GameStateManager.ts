@@ -162,6 +162,16 @@ export class GameStateManager {
     }
 
     /**
+     * Check if Mastery Mode is unlocked (all active missions completed).
+     */
+    public isMasteryUnlocked(): boolean {
+        if (!this.gameProgress) return false;
+        return GameValidation.isMasteryUnlocked(
+            this.gameProgress.completedMissions
+        );
+    }
+
+    /**
      * Get player statistics
      */
     public getPlayerStats() {
