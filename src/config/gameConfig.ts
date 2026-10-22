@@ -46,6 +46,12 @@ export interface LevelDefinition {
     missionEnd: number;
     /** One-line description of the level's content */
     theme: string;
+    /** Math topic the level trains (the difficulty ladder step) */
+    focus: string;
+    /** Specific skills practiced in this level, shown in the level briefing */
+    skills: string[];
+    /** What the player can do after completing the level */
+    achievement: string;
 }
 
 /** The knob for how much of the game is live. 1-5. */
@@ -64,6 +70,15 @@ export const LEVEL_CATALOG: LevelDefinition[] = [
         missionStart: 1,
         missionEnd: 10,
         theme: "Community tutoring: integers & basic operations",
+        focus: "Integers & basic operations",
+        skills: [
+            "Add, subtract, multiply and divide positive numbers",
+            "Compare and order integers on the number line",
+            "Work with negative values in money and temperature",
+            "Use absolute value to measure distance from zero",
+        ],
+        achievement:
+            "Solve real-life integer problems about scores, budgets and temperatures",
     },
     {
         level: 2,
@@ -73,7 +88,16 @@ export const LEVEL_CATALOG: LevelDefinition[] = [
         tone: "blue",
         missionStart: 11,
         missionEnd: 20,
-        theme: "Business & intermediate algebra around the city",
+        theme: "City business: fractions, decimals & percent",
+        focus: "Fractions, decimals & percent",
+        skills: [
+            "Find a fraction of a whole (multiply fraction × total)",
+            "Multiply, add and subtract decimal amounts",
+            "Apply percents to prices, scores and commissions",
+            "Convert percents to fractions in lowest terms",
+        ],
+        achievement:
+            "Handle discounts, percentage scores and money math like a city entrepreneur",
     },
     {
         level: 3,
@@ -83,7 +107,17 @@ export const LEVEL_CATALOG: LevelDefinition[] = [
         tone: "purple",
         missionStart: 21,
         missionEnd: 30,
-        theme: "Scholarship coaching with deeper radicals",
+        theme: "Scholarship coaching: ratio & proportion with radical flourishes",
+        focus: "Ratio & proportion, with radical flourishes",
+        skills: [
+            "Split totals using ratios and part-whole division",
+            "Solve direct proportion problems with unit rates",
+            "Solve inverse proportion problems (workers, drip rates, pumps)",
+            "Simplify ratios and read map scales",
+            "Simplify simple radicals inside ratios",
+        ],
+        achievement:
+            "Scale budgets, schedules and plans up or down proportionally",
     },
     {
         level: 4,
@@ -93,7 +127,15 @@ export const LEVEL_CATALOG: LevelDefinition[] = [
         tone: "orange",
         missionStart: 31,
         missionEnd: 40,
-        theme: "Regional competition: physics & formula-driven problems",
+        theme: "Regional competition: linear equations & algebra",
+        focus: "Linear equations & algebraic expressions",
+        skills: [
+            "Solve one-variable linear equations",
+            "Translate word problems into equations",
+            "Simplify and evaluate algebraic expressions",
+        ],
+        achievement:
+            "Model and solve real regional problems with linear equations",
     },
     {
         level: 5,
@@ -103,7 +145,15 @@ export const LEVEL_CATALOG: LevelDefinition[] = [
         tone: "red",
         missionStart: 41,
         missionEnd: 50,
-        theme: "National Olympiad mentoring for government agencies",
+        theme: "National Olympiad: radicals & inverse functions mastery",
+        focus: "Radicals & inverse functions mastery",
+        skills: [
+            "Simplify and operate on radical expressions",
+            "Solve radical equations and check solutions",
+            "Use inverse functions to reverse real-world formulas",
+        ],
+        achievement:
+            "Take on national-level olympiad radical and inverse function problems",
     },
 ];
 
